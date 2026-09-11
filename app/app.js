@@ -10,7 +10,9 @@ const PALETA = ['#1f6feb', '#e2506b', '#1a9e6a', '#d98324', '#8250df', '#0aa2c0'
 
 const estado = {
   ativos: [],
-  selecionados: new Set(['cdb-100-cdi']),
+  carteira: [],       // { id, ativoId, nome, valorInicial, aporteMensal } — cada item é um aporte oficializado
+  proximoIdCarteira: 1,
+  modoVisualizacao: 'individual', // 'individual' | 'somado'
   ultimaSimulacao: null,
   serieHistorica: null,
   premissas: null,
@@ -119,31 +121,38 @@ async function carregarAtivos() {
     <details class="grupo" open>
       <summary>
         ${NOMES_CLASSE[classe] || classe}
-        <span class="cont-grupo" data-classe="${classe}"></span>
+        <span class="cont-grupo">${itens.length}</span>
       </summary>
       <div class="grupo-corpo">
         ${itens.map((a) => `
-          <label class="ativo" title="${escapar(a.descricao)}">
-            <input type="checkbox" value="${a.id}" data-classe="${classe}"
-                   ${estado.selecionados.has(a.id) ? 'checked' : ''}>
+          <button type="button" class="ativo" data-id="${a.id}" title="${escapar(a.descricao)}">
             <span>
               <span class="nome">${escapar(a.nome)}</span>
               ${TIPOS_NAO_CONTRATADOS.has(a.rendimento.tipo) ? '<span class="selo estimado">estimado</span>' : ''}
               ${a.tributacao.regime === 'isento' ? '<span class="selo isento">isento de IR</span>' : ''}
               <div class="meta">${rotuloRendimento(a)} · risco ${a.risco}/6</div>
             </span>
-          </label>`).join('')}
+          </button>`).join('')}
       </div>
     </details>
   `).join('');
 
-  $$('#lista-ativos input').forEach((caixa) => caixa.addEventListener('change', () => {
-    if (caixa.checked) estado.selecionados.add(caixa.value);
-    else estado.selecionados.delete(caixa.value);
-    atualizarContagem();
-    agendarSimulacao();
+  $$('#lista-ativos .ativo').forEach((botao) => botao.addEventListener('click', () => {
+    $('#select-ativo').value = botao.dataset.id;
+    $('#valor-inicial').focus();
   }));
-  atualizarContagem();
+
+  preencherSelectAtivo();
+  $('#contagem-ativos').textContent = `(${catalogo.ativos.length} disponíveis)`;
+}
+
+function preencherSelectAtivo() {
+  const porClasse = {};
+  for (const ativo of estado.ativos) (porClasse[ativo.classe] ||= []).push(ativo);
+  $('#select-ativo').innerHTML = Object.entries(porClasse).map(([classe, itens]) => `
+    <optgroup label="${escapar(NOMES_CLASSE[classe] || classe)}">
+      ${itens.map((a) => `<option value="${a.id}">${escapar(a.nome)}</option>`).join('')}
+    </optgroup>`).join('');
 }
 
 function rotuloRendimento(a) {
@@ -161,17 +170,66 @@ function rotuloRendimento(a) {
   }
 }
 
-function atualizarContagem() {
-  const n = estado.selecionados.size;
-  $('#contagem-ativos').textContent = n ? `(${n} selecionado${n > 1 ? 's' : ''})` : '';
-  // Cada grupo mostra quantos dos seus estão marcados, para o accordion
-  // fechado não esconder uma seleção ativa.
-  $$('.cont-grupo').forEach((selo) => {
-    const classe = selo.dataset.classe;
-    const caixas = $$(`#lista-ativos input[data-classe="${classe}"]`);
-    const marcados = caixas.filter((c) => c.checked).length;
-    selo.textContent = marcados ? `${marcados}/${caixas.length}` : String(caixas.length);
+/* ---------------------------------------------------------- carteira */
+function adicionarAoCarteira() {
+  const ativoId = $('#select-ativo').value;
+  const ativo = estado.ativos.find((a) => a.id === ativoId);
+  const avisoEl = $('#aviso-adicionar');
+  if (!ativo) {
+    avisoEl.textContent = 'Escolha um ativo.';
+    return;
+  }
+  const valorInicial = Number($('#valor-inicial').value) || 0;
+  const aporteMensal = Number($('#aporte-mensal').value) || 0;
+  if (valorInicial <= 0 && aporteMensal <= 0) {
+    avisoEl.textContent = 'Informe um valor inicial ou aporte mensal maior que zero.';
+    return;
+  }
+  avisoEl.textContent = '';
+  estado.carteira.push({
+    id: 'c' + estado.proximoIdCarteira++,
+    ativoId,
+    nome: ativo.nome,
+    valorInicial,
+    aporteMensal,
   });
+  renderizarCarteira();
+  simular();
+}
+
+function renderizarCarteira() {
+  const lista = $('#lista-carteira');
+  const vazio = $('#carteira-vazia');
+  const modo = $('#modo-visualizacao');
+  if (!estado.carteira.length) {
+    lista.innerHTML = '';
+    vazio.hidden = false;
+    modo.hidden = true;
+    return;
+  }
+  vazio.hidden = true;
+  modo.hidden = estado.carteira.length < 2;
+
+  lista.innerHTML = estado.carteira.map((c, i) => {
+    const partes = [];
+    if (c.valorInicial > 0) partes.push(`${moeda(c.valorInicial)} inicial`);
+    if (c.aporteMensal > 0) partes.push(`${moeda(c.aporteMensal)}/mês`);
+    return `
+      <li>
+        <span class="pastilha" style="background:${PALETA[i % PALETA.length]}"></span>
+        <span class="item-corpo">
+          <span class="nome">${escapar(c.nome)}</span>
+          <span class="meta">${escapar(partes.join(' + '))}</span>
+        </span>
+        <button type="button" class="remover-item" data-id="${c.id}" aria-label="Remover ${escapar(c.nome)} da carteira">×</button>
+      </li>`;
+  }).join('');
+
+  $$('#lista-carteira .remover-item').forEach((botao) => botao.addEventListener('click', () => {
+    estado.carteira = estado.carteira.filter((c) => c.id !== botao.dataset.id);
+    renderizarCarteira();
+    simular();
+  }));
 }
 
 /* ---------------------------------------------------------- simulação */
@@ -184,8 +242,8 @@ function agendarSimulacao(atraso = 250) {
 }
 
 async function simular() {
-  if (!estado.selecionados.size) {
-    $('#resumo').innerHTML = '<p class="vazio">Selecione ao menos um ativo.</p>';
+  if (!estado.carteira.length) {
+    $('#resumo').innerHTML = '<p class="vazio">Adicione ao menos um ativo à carteira usando o formulário acima.</p>';
     $('#grafico-caixa').hidden = true;
     $('#painel-detalhe').hidden = true;
     return;
@@ -195,9 +253,10 @@ async function simular() {
   botao.textContent = 'Simulando…';
 
   try {
-    const parametros = {
-      valor_inicial: Number($('#valor-inicial').value) || 0,
-      aporte_mensal: Number($('#aporte-mensal').value) || 0,
+    // Prazo, cenário e as três chaves de IR/inflação/valorização são premissas
+    // da simulação inteira; valor inicial e aporte mensal são por item da
+    // carteira (cada um oficializado com o botão "Adicionar à carteira").
+    const parametrosBase = {
       meses: Number($('#meses').value) || 12,
       cenario: $('#cenario').value,
       considerar_ir: $('#considerar-ir').checked,
@@ -211,17 +270,41 @@ async function simular() {
     estado.indicadores = indicadores;
     estado.premissas = premissas;
 
-    const escolhidos = Array.from(estado.selecionados).map((id) => porId[id]).filter(Boolean);
-    // Só busca o histórico dos FII/ETF de fato marcados - a página não baixa
-    // os 13 arquivos de fundo pra simular 2 CDBs.
-    const tickersFundo = escolhidos
-      .filter((a) => a.rendimento.tipo === 'fundo_fii' || a.rendimento.tipo === 'etf_historico')
-      .map((a) => a.rendimento.ticker);
+    const itens = estado.carteira.map((c) => ({ ...c, ativo: porId[c.ativoId] })).filter((it) => it.ativo);
+    // Só busca o histórico dos FII/ETF de fato presentes na carteira - a página
+    // não baixa os 13 arquivos de fundo pra simular 2 CDBs.
+    const tickersFundo = [...new Set(itens
+      .filter((it) => it.ativo.rendimento.tipo === 'fundo_fii' || it.ativo.rendimento.tipo === 'etf_historico')
+      .map((it) => it.ativo.rendimento.ticker))];
     const fundos = tickersFundo.length ? await dados.fundos(tickersFundo) : {};
 
-    const saida = motor.comparar(escolhidos, indicadores, premissas, parametros, fundos);
-    saida.parametros = parametros;
-    saida.indicadores = indicadores;
+    // Item repetido (mesmo ativo, aportes diferentes) precisa de um rótulo que
+    // distinga as linhas na tabela e na legenda do gráfico.
+    const ocorrenciasTotal = {};
+    for (const it of itens) ocorrenciasTotal[it.ativoId] = (ocorrenciasTotal[it.ativoId] || 0) + 1;
+    const ocorrencia = {};
+
+    const resultados = [];
+    const erros = [];
+    for (const item of itens) {
+      const parametros = {
+        ...parametrosBase,
+        valor_inicial: item.valorInicial,
+        aporte_mensal: item.aporteMensal,
+      };
+      try {
+        const r = motor.projetar(item.ativo, indicadores, premissas, parametros, fundos);
+        ocorrencia[item.ativoId] = (ocorrencia[item.ativoId] || 0) + 1;
+        if (ocorrenciasTotal[item.ativoId] > 1) r.nome = `${r.nome} (#${ocorrencia[item.ativoId]})`;
+        r.item_id = item.id;
+        resultados.push(r);
+      } catch (erro) {
+        erros.push({ ativo_id: item.nome, erro: erro.message });
+      }
+    }
+    resultados.sort((a, b) => b.liquido - a.liquido);
+
+    const saida = { resultados, erros, parametros: parametrosBase, indicadores };
 
     estado.ultimaSimulacao = saida;
     renderizarResultados(saida);
@@ -246,12 +329,13 @@ function renderizarResultados(saida) {
   const cabecalho = `
     <tr>
       <th>Ativo</th><th>Taxa efetiva</th><th>Investido</th><th>Bruto</th>
+      <th title="Dividendo isento de IR recebido no período — já somado ao Bruto e ao Valor real, mostrado à parte para você acompanhar o que o fundo de fato pagou.">Dividendos</th>
       ${mostrarIR ? '<th>IR + IOF</th>' : ''}
       <th>Líquido</th>
       ${mostrarReal ? '<th>Valor real</th>' : ''}
       <th>Ganho líq.</th><th>Rent. líq.</th>
     </tr>`;
-  const colunas = 6 + (mostrarIR ? 1 : 0) + (mostrarReal ? 1 : 0) + 1;
+  const colunas = 7 + (mostrarIR ? 1 : 0) + (mostrarReal ? 1 : 0) + 1;
 
   const linhas = resultados.map((r, i) => {
     const cor = PALETA[i % PALETA.length];
@@ -263,6 +347,7 @@ function renderizarResultados(saida) {
         <td class="num">${pct(r.taxa.taxa_aa)} a.a.</td>
         <td class="num">${moeda(r.investido)}</td>
         <td class="num">${moeda(r.bruto)}</td>
+        <td class="num positivo">${r.dividendos_isentos ? moeda(r.dividendos_isentos) : '—'}</td>
         ${mostrarIR ? `<td class="num negativo">${r.impostos.total ? '−' + moeda(r.impostos.total) : '—'}</td>` : ''}
         <td class="num destaque">${moeda(r.liquido)}</td>
         ${mostrarReal ? `<td class="num">${moeda(r.liquido_real)}</td>` : ''}
@@ -271,15 +356,36 @@ function renderizarResultados(saida) {
       </tr>
       <tr class="linha-explicacao">
         <td colspan="${colunas}">${escapar(r.taxa.explicacao)}. ${escapar(r.impostos.detalhe)}.
-        ${r.dividendos_isentos ? ` Dividendo isento recebido ao longo do período: ${moeda(r.dividendos_isentos)}.` : ''}
         ${mostrarReal ? `Descontando IPCA projetado de ${pct(r.inflacao.ipca_aa_projetado)} a.a., sobra ${pct(r.rentabilidade_real_pct)} de ganho real.` : ''}</td>
       </tr>`;
   }).join('');
 
+  const totalInvestido = resultados.reduce((s, r) => s + r.investido, 0);
+  const totalBruto = resultados.reduce((s, r) => s + r.bruto, 0);
+  const totalDividendos = resultados.reduce((s, r) => s + r.dividendos_isentos, 0);
+  const totalImpostos = resultados.reduce((s, r) => s + r.impostos.total, 0);
+  const totalLiquido = resultados.reduce((s, r) => s + r.liquido, 0);
+  const totalLiquidoReal = resultados.reduce((s, r) => s + r.liquido_real, 0);
+  const totalGanho = totalLiquido - totalInvestido;
+  const sinalTotal = totalGanho >= 0 ? 'positivo' : 'negativo';
+  const rentTotalLiquida = totalInvestido > 0 ? (totalLiquido / totalInvestido - 1) * 100 : 0;
+  const linhaTotal = resultados.length > 1 ? `
+    <tr class="linha-total">
+      <td>Total da carteira</td>
+      <td class="num">—</td>
+      <td class="num">${moeda(totalInvestido)}</td>
+      <td class="num">${moeda(totalBruto)}</td>
+      <td class="num positivo">${totalDividendos ? moeda(totalDividendos) : '—'}</td>
+      ${mostrarIR ? `<td class="num negativo">${totalImpostos ? '−' + moeda(totalImpostos) : '—'}</td>` : ''}
+      <td class="num">${moeda(totalLiquido)}</td>
+      ${mostrarReal ? `<td class="num">${moeda(totalLiquidoReal)}</td>` : ''}
+      <td class="num ${sinalTotal}">${totalGanho >= 0 ? '+' : ''}${moeda(totalGanho)}</td>
+      <td class="num ${sinalTotal}">${pct(rentTotalLiquida)}</td>
+    </tr>` : '';
+
   const melhor = resultados[0];
   const prazoTexto = parametros.meses === 1 ? '1 mês' : `${parametros.meses} meses`;
-  const aporteTexto = parametros.aporte_mensal > 0
-    ? ` com aportes de ${moeda(parametros.aporte_mensal)} por mês` : '';
+  const nAtivos = resultados.length;
   const avisoErros = erros.length
     ? `<div class="aviso">${erros.map((e) => `${escapar(e.ativo_id)}: ${escapar(e.erro)}`).join('<br>')}</div>`
     : '';
@@ -287,30 +393,48 @@ function renderizarResultados(saida) {
   $('#resumo').innerHTML = `
     ${avisoErros}
     <p style="margin:0 0 14px;color:var(--texto-fraco)">
-      ${moeda(parametros.valor_inicial)}${aporteTexto} em <strong>${prazoTexto}</strong>.
-      Melhor resultado líquido: <strong style="color:var(--texto)">${escapar(melhor.nome)}</strong>
+      ${moeda(totalInvestido)} investidos em ${nAtivos} aporte${nAtivos > 1 ? 's' : ''} ao longo de
+      <strong>${prazoTexto}</strong>.
+      Melhor posição individual: <strong style="color:var(--texto)">${escapar(melhor.nome)}</strong>
       com ${moeda(melhor.liquido)}${mostrarReal ? ` (${moeda(melhor.liquido_real)} em poder de compra de hoje)` : ''}.
+      ${totalDividendos ? ` Dos quais ${moeda(totalDividendos)} vieram de dividendo isento de FII, já embutido no bruto e no líquido.` : ''}
     </p>
-    <div class="tabela-envolucro"><table><thead>${cabecalho}</thead><tbody>${linhas}</tbody></table></div>`;
+    <div class="tabela-envolucro"><table><thead>${cabecalho}</thead><tbody>${linhas}${linhaTotal}</tbody></table></div>`;
 
   $('#grafico-caixa').hidden = false;
-  const series = resultados.map((r, i) => ({
-    nome: r.nome,
-    cor: PALETA[i % PALETA.length],
-    valores: r.serie.map((p) => p.bruto),
-  }));
-  series.push({
-    nome: 'Total investido',
-    cor: 'var(--texto-tenue)',
-    tracejada: true,
-    valores: resultados[0].serie.map((p) => p.investido),
-  });
+  const series = estado.modoVisualizacao === 'somado' && resultados.length > 1
+    ? [
+      {
+        nome: 'Total da carteira',
+        cor: PALETA[0],
+        valores: somarSeries(resultados.map((r) => r.serie.map((p) => p.bruto))),
+      },
+      {
+        nome: 'Total investido',
+        cor: 'var(--texto-tenue)',
+        tracejada: true,
+        valores: somarSeries(resultados.map((r) => r.serie.map((p) => p.investido))),
+      },
+    ]
+    : resultados.map((r, i) => ({
+      nome: r.nome,
+      cor: PALETA[i % PALETA.length],
+      valores: r.serie.map((p) => p.bruto),
+    }));
   desenharLinhas($('#grafico'), series, { rotuloX: (i) => `mês ${i}` });
 
   $('#legenda').innerHTML = series.map((s) =>
     `<span><i class="pastilha" style="background:${s.cor}"></i>${escapar(s.nome)}</span>`).join('');
 
   renderizarDetalhe(saida);
+}
+
+/** Soma, mês a mês, várias séries do mesmo prazo — usada no modo "Somado". */
+function somarSeries(arrs) {
+  const n = Math.max(...arrs.map((a) => a.length));
+  const total = new Array(n).fill(0);
+  for (const arr of arrs) arr.forEach((v, i) => { total[i] += v; });
+  return total;
 }
 
 function renderizarDetalhe(saida) {
@@ -569,6 +693,15 @@ function ligarTema() {
 /* ---------------------------------------------------------- eventos */
 function ligarControles() {
   $('#simular').addEventListener('click', simular);
+  $('#adicionar-aporte').addEventListener('click', adicionarAoCarteira);
+
+  $('#modo-visualizacao').addEventListener('click', (evento) => {
+    const botao = evento.target.closest('button');
+    if (!botao) return;
+    estado.modoVisualizacao = botao.dataset.modo;
+    $$('#modo-visualizacao button').forEach((b) => b.setAttribute('aria-pressed', String(b === botao)));
+    if (estado.ultimaSimulacao) renderizarResultados(estado.ultimaSimulacao);
+  });
 
   $('#prazos').addEventListener('click', (evento) => {
     const botao = evento.target.closest('button');
@@ -592,8 +725,7 @@ function ligarControles() {
   }));
   $('#serie-historica').addEventListener('change', carregarHistorico);
 
-  ['valor-inicial', 'aporte-mensal', 'meses', 'cenario', 'considerar-ir', 'considerar-inflacao',
-    'considerar-valorizacao']
+  ['meses', 'cenario', 'considerar-ir', 'considerar-inflacao', 'considerar-valorizacao']
     .forEach((id) => $('#' + id).addEventListener('change', () => {
       if (estado.ultimaSimulacao) simular();
     }));
@@ -618,5 +750,19 @@ function marcarPrazo() {
   ligarControles();
   marcarPrazo();
   await Promise.all([carregarIndicadores(), carregarAtivos()]);
+
+  // A página nunca abre vazia: oficializa um aporte padrão com os valores que
+  // já estão nos campos, se o catálogo tiver o CDB de referência.
+  const padrao = estado.ativos.find((a) => a.id === 'cdb-100-cdi');
+  if (padrao) {
+    estado.carteira.push({
+      id: 'c' + estado.proximoIdCarteira++,
+      ativoId: padrao.id,
+      nome: padrao.nome,
+      valorInicial: Number($('#valor-inicial').value) || 100,
+      aporteMensal: Number($('#aporte-mensal').value) || 0,
+    });
+    renderizarCarteira();
+  }
   simular();
 })();

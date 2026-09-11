@@ -29,6 +29,11 @@
 
   <div class="cabecalho-grade">
     <section class="controles-sim">
+      <div class="campo-inline campo-aporte">
+        <label for="select-ativo">Ativo a aportar</label>
+        <select id="select-ativo"><!-- preenchido por app.js a partir do catálogo --></select>
+      </div>
+
       <div class="campo-inline">
         <label for="valor-inicial">Valor inicial (R$)</label>
         <input type="number" id="valor-inicial" value="100" min="0" step="10">
@@ -37,6 +42,11 @@
       <div class="campo-inline">
         <label for="aporte-mensal">Aporte mensal (R$)</label>
         <input type="number" id="aporte-mensal" value="0" min="0" step="10">
+      </div>
+
+      <div class="campo-inline">
+        <button type="button" class="secundario" id="adicionar-aporte">+ Adicionar à carteira</button>
+        <span class="aviso-inline" id="aviso-adicionar"></span>
       </div>
 
       <div class="campo-inline">
@@ -83,6 +93,7 @@
   <div>
     <section class="painel">
       <h2>Ativos <span id="contagem-ativos" style="text-transform:none;letter-spacing:0"></span></h2>
+      <p class="dica-painel">Clique num ativo para selecioná-lo no formulário de aporte, acima.</p>
       <div id="lista-ativos"><p class="vazio">carregando catálogo…</p></div>
     </section>
   </div>
@@ -97,11 +108,24 @@
 
       <div id="aba-projecao">
         <div id="aviso-degradado"></div>
-        <div id="resumo"><p class="vazio">Escolha os ativos à esquerda e clique em <strong>Simular</strong>.</p></div>
-        <div class="grafico-caixa" id="grafico-caixa" hidden>
-          <canvas id="grafico"></canvas>
-          <div id="leitura"></div>
-          <div class="legenda" id="legenda"></div>
+        <div id="resumo"><p class="vazio">Adicione ao menos um ativo à carteira usando o formulário acima.</p></div>
+        <div class="area-projecao">
+          <div class="grafico-caixa" id="grafico-caixa" hidden>
+            <canvas id="grafico"></canvas>
+            <div id="leitura"></div>
+            <div class="legenda" id="legenda"></div>
+          </div>
+          <aside class="painel carteira-painel" id="carteira-caixa">
+            <div class="carteira-cabecalho">
+              <h2>Carteira</h2>
+              <div class="modo-visualizacao" id="modo-visualizacao" role="group" aria-label="Modo de visualização do gráfico" hidden>
+                <button type="button" data-modo="individual" aria-pressed="true">Individual</button>
+                <button type="button" data-modo="somado" aria-pressed="false">Somado</button>
+              </div>
+            </div>
+            <ul id="lista-carteira"></ul>
+            <p class="vazio" id="carteira-vazia">Nenhum ativo adicionado ainda.</p>
+          </aside>
         </div>
       </div>
 

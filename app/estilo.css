@@ -145,6 +145,15 @@ header {
 .controles-sim button.principal {
   width: auto; padding: 9px 22px; align-self: flex-end;
 }
+.controles-sim button.secundario {
+  width: auto; padding: 8px 14px; align-self: flex-end;
+  background: var(--superficie-2); color: var(--texto);
+  border: 1px solid var(--borda); border-radius: 8px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.controles-sim button.secundario:hover { border-color: var(--acento); color: var(--acento); }
+.campo-aporte select { width: 190px; }
+.aviso-inline { color: var(--alerta); font-size: 11px; max-width: 190px; }
 
 .indicadores {
   display: flex; gap: 6px; flex-wrap: wrap;
@@ -239,12 +248,13 @@ button.principal:disabled { opacity: .55; cursor: progress; }
   border: 1px solid var(--borda); border-radius: 999px; padding: 0 7px;
 }
 .grupo-corpo { padding: 2px 0 8px; }
+.dica-painel { font-size: 11px; color: var(--texto-tenue); margin: -6px 0 8px; }
 .ativo {
-  display: flex; align-items: flex-start; gap: 9px;
+  display: flex; align-items: flex-start; gap: 9px; width: 100%;
   padding: 7px 8px; border-radius: 8px; cursor: pointer;
+  background: transparent; border: 0; text-align: left; font: inherit; color: inherit;
 }
 .ativo:hover { background: var(--superficie-2); }
-.ativo input { margin-top: 2px; accent-color: var(--acento); width: 15px; height: 15px; }
 .ativo .nome { font-size: 13px; }
 .ativo .meta { font-size: 11px; color: var(--texto-tenue); }
 .selo {
@@ -277,6 +287,43 @@ td.destaque { font-weight: 650; }
 .pastilha { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; }
 .linha-explicacao td { font-size: 11px; color: var(--texto-tenue); padding-top: 0; border-bottom: 0; }
 tr.tem-explicacao td { border-bottom: 0; }
+tr.linha-total td { font-weight: 700; border-top: 2px solid var(--borda); border-bottom: 0; }
+
+/* ---------- carteira (grupo de ativos + aportes em simulação) ---------- */
+.area-projecao { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.area-projecao .grafico-caixa { flex: 4 1 340px; min-width: 280px; }
+.carteira-painel { flex: 1 1 220px; max-width: 260px; }
+.carteira-cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.carteira-cabecalho h2 { margin: 0; }
+.modo-visualizacao {
+  display: flex; gap: 2px; padding: 2px;
+  background: var(--superficie-2); border: 1px solid var(--borda); border-radius: 999px;
+}
+.modo-visualizacao[hidden] { display: none; }
+.modo-visualizacao button {
+  padding: 3px 9px; background: transparent; border: 0; border-radius: 999px;
+  color: var(--texto-fraco); font-size: 11px; cursor: pointer;
+}
+.modo-visualizacao button[aria-pressed="true"] {
+  background: var(--superficie); color: var(--texto); font-weight: 650; box-shadow: var(--sombra);
+}
+#lista-carteira { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+#lista-carteira li {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px; border: 1px solid var(--borda); border-radius: 8px; background: var(--superficie-2);
+}
+#lista-carteira .pastilha { margin-top: 4px; flex: none; }
+#lista-carteira .item-corpo { flex: 1; min-width: 0; }
+#lista-carteira .nome { display: block; font-size: 12px; font-weight: 600; }
+#lista-carteira .meta { display: block; font-size: 11px; color: var(--texto-fraco); font-family: var(--mono); }
+#lista-carteira .remover-item {
+  background: transparent; border: 0; color: var(--texto-tenue);
+  font-size: 16px; line-height: 1; cursor: pointer; padding: 0 2px;
+}
+#lista-carteira .remover-item:hover { color: var(--negativo); }
+@media (max-width: 720px) {
+  .carteira-painel { max-width: 100%; flex-basis: 100%; }
+}
 
 /* ---------- grafico ---------- */
 .grafico-caixa { position: relative; }

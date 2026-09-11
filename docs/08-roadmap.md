@@ -54,10 +54,14 @@ constante.
 
 ## Fase 4 — Carteira
 
-- Simular combinação de ativos com pesos, não só um contra o outro.
+- ✅ **Múltiplos aportes na mesma simulação** (2026-09): cada item da carteira tem seu
+  próprio valor inicial e aporte mensal; prazo/cenário/IR/inflação continuam globais.
+  Visualização individual (uma linha por item) ou somada (uma linha com o total da
+  carteira). Ver docs 07.
 - Rebalanceamento periódico.
-- Salvar e recarregar cenários.
-- Aporte distribuído por percentual entre ativos.
+- Salvar e recarregar cenários (a carteira hoje vive só em memória, some ao recarregar
+  a página).
+- Aporte distribuído por percentual entre ativos, em vez de valor fixo por item.
 
 ## Fase 5 — Incerteza
 

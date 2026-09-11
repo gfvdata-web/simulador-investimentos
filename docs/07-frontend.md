@@ -6,7 +6,7 @@ O cálculo roda no navegador, em `app/nucleo/` (doc 06).
 
 | Arquivo | Papel |
 |---|---|
-| `index.html` (raiz) | estrutura e ids — nenhum texto de resultado é escrito aqui. Os controles da simulação (valor, aporte, prazo, cenário, opções, botão) ficam no `<header>`; a coluna esquerda do `<main>` tem só o card de ativos |
+| `index.html` (raiz) | estrutura e ids — nenhum texto de resultado é escrito aqui. Os controles da simulação (formulário de aporte, prazo, cenário, opções, botão) ficam no `<header>`; a coluna esquerda do `<main>` tem o card de ativos (catálogo, só consulta) |
 | `app/estilo.css` | tokens de tema e todos os componentes |
 | `app/app.js` | estado, render da tabela, gráfico e alternador de tema |
 | `app/dados.js` | leitura dos JSON do repositório e procedência dos indicadores |
@@ -17,12 +17,14 @@ Um objeto só, no topo de `app.js`:
 
 ```js
 const estado = {
-  ativos: [],               // catálogo cru de dados/catalogo/ativos.json
-  selecionados: new Set(),  // ids marcados
-  ultimaSimulacao: null,    // última saída de motor.comparar()
-  serieHistorica: null,     // última série carregada de dados/mercado/series/
+  ativos: [],                // catálogo cru de dados/catalogo/ativos.json
+  carteira: [],               // { id, ativoId, nome, valorInicial, aporteMensal } — aportes oficializados
+  proximoIdCarteira: 1,
+  modoVisualizacao: 'individual', // 'individual' | 'somado', controla só o gráfico
+  ultimaSimulacao: null,      // última saída montada em simular()
+  serieHistorica: null,       // última série carregada de dados/mercado/series/
   premissas: null,
-  indicadores: null,        // já com procedência e idade do retrato
+  indicadores: null,          // já com procedência e idade do retrato
 };
 ```
 
@@ -30,31 +32,55 @@ Sem framework e sem reatividade: cada função de render recebe os dados e reesc
 `innerHTML` da sua região. Para um punhado de linhas e um gráfico, isso é mais simples
 de seguir do que qualquer camada de binding.
 
-## Fluxo
+## Carteira: múltiplos ativos, cada um com seu próprio aporte
 
-1. `iniciar()` liga os controles, carrega indicadores e catálogo em paralelo, e dispara
-   uma simulação inicial com o ativo padrão — a página nunca abre vazia.
-2. Mudar qualquer campo re-simula automaticamente, mas só se já houve uma simulação
-   antes (`estado.ultimaSimulacao`). Evita render duplicado enquanto a página carrega.
-   Marcar/desmarcar um ativo também re-simula, com debounce de 250 ms
-   (`agendarSimulacao()`), então o gráfico ganha e perde linhas na hora, sem clicar em
-   "Simular".
-3. `renderizarResultados()` escreve o resumo em uma frase, a tabela, o gráfico e o
-   painel de procedência.
+A simulação não compara ativos com um valor/aporte compartilhado — cada item da
+carteira carrega seu próprio `valorInicial`/`aporteMensal`, e só prazo, cenário e as
+três chaves de IR/inflação/valorização são premissas globais da simulação inteira.
+
+Fluxo de uso: escolher um ativo em `#select-ativo` (ou clicar num item do catálogo à
+esquerda, que só preenche esse seletor — o catálogo não seleciona nada sozinho),
+preencher valor inicial e/ou aporte mensal, clicar **"+ Adicionar à carteira"**
+(`adicionarAoCarteira()`). Isso empilha um item em `estado.carteira` e resimula. O card
+"Carteira" (`renderizarCarteira()`), fixado ao lado do gráfico via `.area-projecao`,
+lista cada item com um botão de remover — remover também resimula.
+
+O mesmo ativo pode entrar mais de uma vez na carteira, com aportes diferentes; `simular()`
+desambigua o nome com um sufixo `(#2)`, `(#3)` quando isso acontece.
+
+`simular()` chama `motor.projetar()` uma vez por item da carteira (não usa mais
+`motor.comparar()`), passando os parâmetros globais mais o valor/aporte daquele item.
+A tabela de resultados ganha uma linha extra em negrito com o total da carteira quando
+há mais de um item.
+
+## Individual vs. somado
+
+O toggle `#modo-visualizacao` (dois estados, só aparece com 2+ itens na carteira) afeta
+só o gráfico:
+
+- **Individual** (padrão): uma linha por item da carteira, cor de `PALETA` por índice.
+- **Somado**: duas linhas — a soma mês a mês do bruto de todos os itens
+  (`somarSeries()`) e a soma do investido, tracejada. Como todos os itens compartilham o
+  mesmo prazo global, as séries sempre têm o mesmo comprimento e somam ponto a ponto sem
+  ajuste.
 
 ## Controles da simulação
 
 `#considerar-ir`, `#considerar-inflacao` e `#considerar-valorizacao` (a mais nova: liga
 a projeção de valorização patrimonial de FII, ver docs 02 e 03) seguem o mesmo padrão —
 checkbox lido direto em `simular()`, re-simula em `change`. Novo parâmetro booleano
-segue os mesmos três passos: campo em `index.html`, leitura em `simular()`, id na lista
-de `ligarControles()`.
+global segue os mesmos três passos: campo em `index.html`, leitura em `simular()`, id na
+lista de `ligarControles()`. `#valor-inicial` e `#aporte-mensal` **não** entram nessa
+lista — são campos de estagiamento, só lidos por `adicionarAoCarteira()` no clique do
+botão, não disparam simulação sozinhos.
 
 ## Convenções de interface
 
-**Ativos agrupados por classe, cada grupo colapsável.** Cada classe é um `<details open>`
-com `<summary>`; o contador `marcados/total` no canto direito é atualizado por
-`atualizarContagem()`. Abrir/fechar é só o comportamento nativo do `<details>`, sem JS.
+**Ativos agrupados por classe, cada grupo colapsável — mas o card é só catálogo.** Cada
+classe é um `<details open>` com `<summary>` e uma contagem estática de itens do grupo.
+Clicar num ativo do card não o adiciona a nada: só copia o id para `#select-ativo`, como
+atalho para preencher o formulário de aporte acima. Abrir/fechar é só o comportamento
+nativo do `<details>`, sem JS.
 
 **Toda estimativa é marcada.** Ativo cujo `rendimento.tipo` está em
 `TIPOS_NAO_CONTRATADOS` (`estimado`, `fundo_fii`, `etf_historico`) ganha o selo âmbar
