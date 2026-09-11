@@ -136,6 +136,19 @@ FUNDOS = {
     "WRLD11": {"tipo": "etf", "rotulo": "WRLD11 (Investo MSCI World)", "indice": "MSCI World"},
     "XINA11": {"tipo": "etf", "rotulo": "XINA11 (XP ETF China)", "indice": "ações chinesas"},
     "NASD11": {"tipo": "etf", "rotulo": "NASD11 (Trend Nasdaq)", "indice": "Nasdaq-100"},
+    # BDR (recibo de ação estrangeira negociado na B3): mesma fonte de preço e
+    # mesmo metodo de calculo do ETF (tipo 'etf' aqui so identifica a fonte de
+    # dados, B3 COTAHIST - nao a natureza fiscal do ativo). O que muda e o
+    # regime tributario em ativos.json: BDR segue a regra de acao (15%, isento
+    # ate R$20.000/mes), nao a de ETF (15% sem isencao) - ver docs/05.
+    "MSFT34": {"tipo": "etf", "rotulo": "MSFT34 (BDR Microsoft)", "indice": "ação MSFT (Nasdaq)"},
+    "MELI34": {"tipo": "etf", "rotulo": "MELI34 (BDR MercadoLibre)", "indice": "ação MELI (Nasdaq)"},
+    "AMZO34": {"tipo": "etf", "rotulo": "AMZO34 (BDR Amazon)", "indice": "ação AMZN (Nasdaq)"},
+    "TSLA34": {"tipo": "etf", "rotulo": "TSLA34 (BDR Tesla)", "indice": "ação TSLA (Nasdaq)"},
+    "M2ST34": {"tipo": "etf", "rotulo": "M2ST34 (BDR Strategy, ex-MicroStrategy)", "indice": "ação MSTR (Nasdaq)"},
+    "S2EA34": {"tipo": "etf", "rotulo": "S2EA34 (BDR Sea Limited)", "indice": "ação SE (NYSE)"},
+    "NFLX34": {"tipo": "etf", "rotulo": "NFLX34 (BDR Netflix)", "indice": "ação NFLX (Nasdaq)"},
+    "NVDC34": {"tipo": "etf", "rotulo": "NVDC34 (BDR Nvidia)", "indice": "ação NVDA (Nasdaq)"},
 }
 
 JANELA_FUNDOS_MESES = 36
