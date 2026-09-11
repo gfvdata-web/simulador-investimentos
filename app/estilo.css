@@ -145,14 +145,35 @@ header {
 .controles-sim button.principal {
   width: auto; padding: 9px 22px; align-self: flex-end;
 }
-.controles-sim button.secundario {
-  width: auto; padding: 8px 14px; align-self: flex-end;
-  background: var(--superficie-2); color: var(--texto);
-  border: 1px solid var(--borda); border-radius: 8px;
-  font-size: 13px; font-weight: 600; cursor: pointer;
+
+/* Botão "+ Adicionar à carteira": contorno na cor de acento, não um botão
+   sólido — ele soma um item, não dispara a simulação (isso é o "Simular"). */
+.botao-adicionar {
+  display: flex; align-items: center; gap: 6px;
+  width: auto; padding: 8px 16px; align-self: flex-end;
+  background: transparent; color: var(--acento);
+  border: 1.5px solid var(--acento); border-radius: 8px;
+  font-size: 13px; font-weight: 650; cursor: pointer;
+  transition: background-color .12s ease, color .12s ease;
 }
-.controles-sim button.secundario:hover { border-color: var(--acento); color: var(--acento); }
-.campo-aporte select { width: 190px; }
+.botao-adicionar:hover { background: var(--acento-suave); }
+.botao-adicionar:active { background: var(--acento); color: #fff; }
+.botao-adicionar .icone-mais {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--acento); color: #fff; font-size: 12px; line-height: 1;
+}
+.botao-adicionar:active .icone-mais { background: #fff; color: var(--acento); }
+
+.rotulo-campo { font-size: 11px; color: var(--texto-fraco); }
+.rotulo-campo .dica { color: var(--texto-tenue); }
+.ativo-escolhido {
+  display: flex; align-items: center; gap: 7px;
+  min-width: 170px; height: 33px; padding: 0 10px;
+  background: var(--acento-suave); border: 1px solid var(--acento); border-radius: 8px;
+  font-size: 13px; font-weight: 600; color: var(--texto);
+}
+.ativo-escolhido .pastilha { background: var(--acento); flex: none; }
 .aviso-inline { color: var(--alerta); font-size: 11px; max-width: 190px; }
 
 .indicadores {
@@ -252,10 +273,13 @@ button.principal:disabled { opacity: .55; cursor: progress; }
 .ativo {
   display: flex; align-items: flex-start; gap: 9px; width: 100%;
   padding: 7px 8px; border-radius: 8px; cursor: pointer;
-  background: transparent; border: 0; text-align: left; font: inherit; color: inherit;
+  border: 1px solid transparent;
 }
 .ativo:hover { background: var(--superficie-2); }
+.ativo:has(input:checked) { background: var(--acento-suave); border-color: var(--acento); }
+.ativo input[type="radio"] { margin-top: 3px; accent-color: var(--acento); width: 14px; height: 14px; flex: none; }
 .ativo .nome { font-size: 13px; }
+.ativo:has(input:checked) .nome { font-weight: 650; }
 .ativo .meta { font-size: 11px; color: var(--texto-tenue); }
 .selo {
   display: inline-block; font-size: 10px; padding: 0 5px; border-radius: 4px;
@@ -324,6 +348,14 @@ tr.linha-total td { font-weight: 700; border-top: 2px solid var(--borda); border
 @media (max-width: 720px) {
   .carteira-painel { max-width: 100%; flex-basis: 100%; }
 }
+
+.lista-resumo-historico { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.lista-resumo-historico li {
+  display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--texto-fraco);
+  padding: 8px; border: 1px solid var(--borda); border-radius: 8px; background: var(--superficie-2);
+}
+.lista-resumo-historico .pastilha { margin-top: 3px; flex: none; }
+.lista-resumo-historico strong { color: var(--texto); }
 
 /* ---------- grafico ---------- */
 .grafico-caixa { position: relative; }

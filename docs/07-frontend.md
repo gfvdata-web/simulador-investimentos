@@ -38,12 +38,17 @@ A simulação não compara ativos com um valor/aporte compartilhado — cada ite
 carteira carrega seu próprio `valorInicial`/`aporteMensal`, e só prazo, cenário e as
 três chaves de IR/inflação/valorização são premissas globais da simulação inteira.
 
-Fluxo de uso: escolher um ativo em `#select-ativo` (ou clicar num item do catálogo à
-esquerda, que só preenche esse seletor — o catálogo não seleciona nada sozinho),
-preencher valor inicial e/ou aporte mensal, clicar **"+ Adicionar à carteira"**
-(`adicionarAoCarteira()`). Isso empilha um item em `estado.carteira` e resimula. O card
-"Carteira" (`renderizarCarteira()`), fixado ao lado do gráfico via `.area-projecao`,
+Fluxo de uso: marcar um ativo na lista à esquerda (rádio de seleção única,
+`name="ativo-escolhido"` — só um pode estar marcado por vez, e é ele quem dita o que
+"+ Adicionar à carteira" vai usar), preencher valor inicial e/ou aporte mensal, clicar o
+botão (`adicionarAoCarteira()`). Isso empilha um item em `estado.carteira` e resimula. O
+card "Carteira" (`renderizarCarteira()`), fixado ao lado do gráfico via `.area-projecao`,
 lista cada item com um botão de remover — remover também resimula.
+
+`estado.ativoEscolhido` é a única fonte de verdade de "qual ativo está prestes a ser
+adicionado" — `escolherAtivo(id)` marca o rádio certo (mesmo se a mudança veio de outro
+lugar) e atualiza o resuminho no cabeçalho (`#ativo-escolhido-nome`). Não existe mais
+seletor `<select>` duplicando essa escolha.
 
 O mesmo ativo pode entrar mais de uma vez na carteira, com aportes diferentes; `simular()`
 desambigua o nome com um sufixo `(#2)`, `(#3)` quando isso acontece.
@@ -76,11 +81,12 @@ botão, não disparam simulação sozinhos.
 
 ## Convenções de interface
 
-**Ativos agrupados por classe, cada grupo colapsável — mas o card é só catálogo.** Cada
+**Ativos agrupados por classe, cada grupo colapsável — e a lista É o seletor.** Cada
 classe é um `<details open>` com `<summary>` e uma contagem estática de itens do grupo.
-Clicar num ativo do card não o adiciona a nada: só copia o id para `#select-ativo`, como
-atalho para preencher o formulário de aporte acima. Abrir/fechar é só o comportamento
-nativo do `<details>`, sem JS.
+Cada ativo é um `<label class="ativo">` com um rádio dentro (`.ativo:has(input:checked)`
+pinta a linha inteira, não só o rádio). Marcar um ativo não o adiciona à carteira sozinho
+— só o deixa pronto no formulário de aporte, acima, até o clique em "+ Adicionar à
+carteira". Abrir/fechar o grupo é só o comportamento nativo do `<details>`, sem JS.
 
 **Toda estimativa é marcada.** Ativo cujo `rendimento.tipo` está em
 `TIPOS_NAO_CONTRATADOS` (`estimado`, `fundo_fii`, `etf_historico`) ganha o selo âmbar
@@ -88,10 +94,12 @@ nativo do `<details>`, sem JS.
 remova ao redesenhar, e acrescente um tipo novo nesse `Set` se ele não for uma taxa
 contratada.
 
-**Dividendo isento aparece à parte.** Quando `resultado.dividendos_isentos > 0` (só em
-FII), a linha de explicação da tabela ganha uma frase extra dizendo quanto foi
-recebido isento ao longo do período — sem isso o número apareceria só embutido no
-"Líquido", escondendo que uma parte não pagou imposto nenhum.
+**Dividendo isento tem coluna própria.** A tabela de resultados tem uma coluna
+"Dividendos" com `resultado.dividendos_isentos` (só FII preenche; o resto mostra "—").
+O valor já está embutido em "Bruto", "Líquido" e "Valor real" — a coluna só existe pra
+não esconder que uma parte do retorno já chegou como dividendo isento, sem esperar o
+resgate. O resumo em texto acima da tabela também soma o total de dividendos da carteira
+quando há algum.
 
 **Todo número explica de onde veio.** Cada linha da tabela tem, logo abaixo, uma linha
 em cinza com `taxa.explicacao`, `impostos.detalhe` e o efeito da inflação. O painel "de

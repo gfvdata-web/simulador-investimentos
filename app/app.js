@@ -10,11 +10,12 @@ const PALETA = ['#1f6feb', '#e2506b', '#1a9e6a', '#d98324', '#8250df', '#0aa2c0'
 
 const estado = {
   ativos: [],
+  ativoEscolhido: null, // id marcado na lista à esquerda — o que "+ Adicionar à carteira" usa
   carteira: [],       // { id, ativoId, nome, valorInicial, aporteMensal } — cada item é um aporte oficializado
   proximoIdCarteira: 1,
   modoVisualizacao: 'individual', // 'individual' | 'somado'
   ultimaSimulacao: null,
-  serieHistorica: null,
+  historico: null,
   premissas: null,
   indicadores: null,
 };
@@ -125,34 +126,40 @@ async function carregarAtivos() {
       </summary>
       <div class="grupo-corpo">
         ${itens.map((a) => `
-          <button type="button" class="ativo" data-id="${a.id}" title="${escapar(a.descricao)}">
+          <label class="ativo" title="${escapar(a.descricao)}">
+            <input type="radio" name="ativo-escolhido" value="${a.id}">
             <span>
               <span class="nome">${escapar(a.nome)}</span>
               ${TIPOS_NAO_CONTRATADOS.has(a.rendimento.tipo) ? '<span class="selo estimado">estimado</span>' : ''}
               ${a.tributacao.regime === 'isento' ? '<span class="selo isento">isento de IR</span>' : ''}
               <div class="meta">${rotuloRendimento(a)} · risco ${a.risco}/6</div>
             </span>
-          </button>`).join('')}
+          </label>`).join('')}
       </div>
     </details>
   `).join('');
 
-  $$('#lista-ativos .ativo').forEach((botao) => botao.addEventListener('click', () => {
-    $('#select-ativo').value = botao.dataset.id;
-    $('#valor-inicial').focus();
+  $$('#lista-ativos input[name="ativo-escolhido"]').forEach((radio) => radio.addEventListener('change', () => {
+    if (radio.checked) escolherAtivo(radio.value);
   }));
 
-  preencherSelectAtivo();
   $('#contagem-ativos').textContent = `(${catalogo.ativos.length} disponíveis)`;
+
+  // Página nunca abre sem um ativo pronto pra aportar: o padrão (ou o
+  // primeiro do catálogo, se ele não existir) já vem marcado.
+  const padrao = estado.ativos.find((a) => a.id === 'cdb-100-cdi') || estado.ativos[0];
+  if (padrao) escolherAtivo(padrao.id);
 }
 
-function preencherSelectAtivo() {
-  const porClasse = {};
-  for (const ativo of estado.ativos) (porClasse[ativo.classe] ||= []).push(ativo);
-  $('#select-ativo').innerHTML = Object.entries(porClasse).map(([classe, itens]) => `
-    <optgroup label="${escapar(NOMES_CLASSE[classe] || classe)}">
-      ${itens.map((a) => `<option value="${a.id}">${escapar(a.nome)}</option>`).join('')}
-    </optgroup>`).join('');
+/** Marca o rádio correspondente na lista e atualiza o resumo no formulário de
+    aporte — única fonte de verdade de "qual ativo estou prestes a adicionar". */
+function escolherAtivo(ativoId) {
+  const ativo = estado.ativos.find((a) => a.id === ativoId);
+  if (!ativo) return;
+  estado.ativoEscolhido = ativoId;
+  const radio = $(`#lista-ativos input[value="${CSS.escape(ativoId)}"]`);
+  if (radio) radio.checked = true;
+  $('#ativo-escolhido-nome').textContent = ativo.nome;
 }
 
 function rotuloRendimento(a) {
@@ -172,11 +179,11 @@ function rotuloRendimento(a) {
 
 /* ---------------------------------------------------------- carteira */
 function adicionarAoCarteira() {
-  const ativoId = $('#select-ativo').value;
+  const ativoId = estado.ativoEscolhido;
   const ativo = estado.ativos.find((a) => a.id === ativoId);
   const avisoEl = $('#aviso-adicionar');
   if (!ativo) {
-    avisoEl.textContent = 'Escolha um ativo.';
+    avisoEl.textContent = 'Escolha um ativo na lista à esquerda.';
     return;
   }
   const valorInicial = Number($('#valor-inicial').value) || 0;
@@ -195,6 +202,7 @@ function adicionarAoCarteira() {
   });
   renderizarCarteira();
   simular();
+  if (!$('#aba-historico').hidden || estado.historico) carregarHistoricoCarteira();
 }
 
 function renderizarCarteira() {
@@ -229,6 +237,7 @@ function renderizarCarteira() {
     estado.carteira = estado.carteira.filter((c) => c.id !== botao.dataset.id);
     renderizarCarteira();
     simular();
+    if (!$('#aba-historico').hidden || estado.historico) carregarHistoricoCarteira();
   }));
 }
 
@@ -458,43 +467,101 @@ function renderizarDetalhe(saida) {
 }
 
 /* ---------------------------------------------------------- histórico */
-/** Monta o seletor a partir do manifesto: série nova aparece sem tocar no HTML. */
-async function montarSeletorHistorico() {
-  const series = await dados.seriesDisponiveis();
-  const seletor = $('#serie-historica');
-  seletor.innerHTML = series.map((s) =>
-    `<option value="${escapar(s.id)}">${escapar(s.rotulo_curto || s.rotulo)}</option>`).join('');
-  seletor.disabled = !series.length;
-  return series.length;
-}
+// Ativo sem série própria de mercado usa o índice que contrata: CDI, Selic,
+// IPCA ou poupança. Prefixado e estimado não têm série real — regra 1 do
+// CLAUDE.md proíbe inventar um histórico pra eles, então ficam de fora com aviso.
+const INDEXADOR_DA_SERIE = { pos_cdi: 'cdi', pos_selic: 'selic', ipca_mais: 'ipca', poupanca: 'poupanca' };
+const MESES_HISTORICO = 12;
 
-async function carregarHistorico() {
-  const serie = $('#serie-historica').value;
-  if (!serie) {
-    $('#resumo-historico').innerHTML = '<div class="aviso">Nenhuma série coletada ainda.</div>';
+/** Monta, por ativo da carteira, a série real dos últimos 12 meses: preço/
+    valorização + dividendo pra FII/ETF, ou o indexador contratado pro resto.
+    Reage à carteira igual o gráfico de projeção — nada de seletor à parte. */
+async function carregarHistoricoCarteira() {
+  const caixa = $('#grafico-historico-caixa');
+  if (!estado.carteira.length) {
+    caixa.hidden = true;
+    $('#resumo-historico').innerHTML =
+      '<p class="vazio">Adicione um ativo à carteira para ver o histórico real dele aqui.</p>';
+    estado.historico = null;
     return;
   }
-  $('#resumo-historico').innerHTML = '<p class="vazio">carregando série do Banco Central…</p>';
-  try {
-    const hist = await dados.historico(serie, 60);
-    estado.serieHistorica = hist;
-    const primeiro = hist.pontos[0];
-    const ultimo = hist.pontos[hist.pontos.length - 1];
-    $('#resumo-historico').innerHTML = `
-      <p style="margin:0 0 12px;color:var(--texto-fraco)">
-        <strong style="color:var(--texto)">${hist.rotulo}</strong> — acumulado de
-        <strong style="color:var(--texto)">${pct(hist.acumulado_total_pct)}</strong>
-        entre ${dataBR(primeiro.data)} e ${dataBR(ultimo.data)}.
-        R$ 100 aplicados no início do período valeriam ${moeda(ultimo.indice_100)}.
-        Fonte: ${escapar(hist.fonte)}${hist.referencia_fonte ? `, série ${hist.referencia_fonte}` : ''}.
-      </p>`;
-    desenharLinhas($('#grafico-historico'), [{
-      nome: hist.rotulo,
-      cor: PALETA[0],
-      valores: hist.pontos.map((p) => p.indice_100),
-    }], { rotuloX: (i) => dataBR(hist.pontos[Math.min(i, hist.pontos.length - 1)].data) });
-  } catch (erro) {
-    $('#resumo-historico').innerHTML = `<div class="aviso">${escapar(erro.message)}</div>`;
+
+  $('#resumo-historico').innerHTML = '<p class="vazio">carregando histórico…</p>';
+  const porId = await dados.ativosPorId();
+  // Um ativo só aparece uma vez no gráfico, mesmo se tiver mais de um aporte.
+  const ativos = [...new Set(estado.carteira.map((c) => c.ativoId))]
+    .map((id) => porId[id]).filter(Boolean);
+
+  const tickers = [...new Set(ativos
+    .filter((a) => a.rendimento.tipo === 'fundo_fii' || a.rendimento.tipo === 'etf_historico')
+    .map((a) => a.rendimento.ticker))];
+  const fundos = tickers.length ? await dados.fundos(tickers) : {};
+
+  const mesAtual = new Date().toISOString().slice(0, 7);
+  const series = [];
+  const cards = [];
+  const semHistorico = [];
+
+  for (let i = 0; i < ativos.length; i++) {
+    const ativo = ativos[i];
+    const cor = PALETA[i % PALETA.length];
+    const tipo = ativo.rendimento.tipo;
+
+    if (tipo === 'fundo_fii' || tipo === 'etf_historico') {
+      const arquivo = fundos[ativo.rendimento.ticker];
+      if (!arquivo) { semHistorico.push(`${ativo.nome} (sem arquivo coletado ainda)`); continue; }
+      const pontos = arquivo.pontos.filter((p) => p.data.slice(0, 7) !== mesAtual).slice(-MESES_HISTORICO);
+      if (!pontos.length) { semHistorico.push(`${ativo.nome} (sem meses fechados)`); continue; }
+      let fator = 1;
+      const acumulado = pontos.map((p) => {
+        fator *= 1 + p.rentabilidade_efetiva_pct / 100;
+        return { ...p, indice_100: Math.round(fator * 1e6) / 1e4 };
+      });
+      series.push({ nome: ativo.nome, cor, valores: acumulado.map((p) => p.indice_100), datas: acumulado.map((p) => p.data) });
+      const somaDy = acumulado.reduce((s, p) => s + p.dividend_yield_pct, 0);
+      const ultimo = acumulado[acumulado.length - 1];
+      cards.push(`
+        <li><span class="pastilha" style="background:${cor}"></span>
+          <strong>${escapar(ativo.nome)}</strong>
+          — rentabilidade efetiva acumulada em ${acumulado.length} meses:
+          <strong>${pct(Math.round((fator - 1) * 1e6) / 1e4)}</strong>.
+          Dividend yield pago no período: ${pct(Math.round(somaDy * 1e4) / 1e4)}
+          (último mês, ${dataBR(ultimo.data)}: ${pct(ultimo.dividend_yield_pct)}).
+          Fonte: ${escapar(arquivo.fonte)}.
+        </li>`);
+    } else if (tipo in INDEXADOR_DA_SERIE) {
+      let hist;
+      try {
+        hist = await dados.historico(INDEXADOR_DA_SERIE[tipo], MESES_HISTORICO);
+      } catch (erro) { semHistorico.push(`${ativo.nome} (${erro.message})`); continue; }
+      series.push({ nome: `${ativo.nome} (via ${hist.rotulo_curto || hist.rotulo})`, cor,
+        valores: hist.pontos.map((p) => p.indice_100), datas: hist.pontos.map((p) => p.data) });
+      const ultimo = hist.pontos[hist.pontos.length - 1];
+      cards.push(`
+        <li><span class="pastilha" style="background:${cor}"></span>
+          <strong>${escapar(ativo.nome)}</strong>
+          — segue ${escapar(hist.rotulo)}, acumulado em ${hist.pontos.length} meses:
+          <strong>${pct(hist.acumulado_total_pct)}</strong> (até ${dataBR(ultimo.data)}).
+          Fonte: ${escapar(hist.fonte)}${hist.referencia_fonte ? `, série ${hist.referencia_fonte}` : ''}.
+        </li>`);
+    } else {
+      semHistorico.push(`${ativo.nome} (taxa ${tipo === 'prefixado' ? 'prefixada' : 'estimada'}, sem série de mercado própria)`);
+    }
+  }
+
+  estado.historico = { series };
+  caixa.hidden = !series.length;
+  const avisoSemHistorico = semHistorico.length
+    ? `<div class="aviso">Sem histórico real pra mostrar: ${semHistorico.map(escapar).join('; ')}.</div>` : '';
+  $('#resumo-historico').innerHTML = avisoSemHistorico +
+    (cards.length ? `<ul class="lista-resumo-historico">${cards.join('')}</ul>` : '');
+
+  if (series.length) {
+    const n = Math.max(...series.map((s) => s.valores.length));
+    desenharLinhas($('#grafico-historico'), series,
+      { rotuloX: (i) => dataBR(series.find((s) => s.datas.length === n)?.datas[i] || series[0].datas[Math.min(i, series[0].datas.length - 1)]) });
+    $('#legenda-historico').innerHTML = series.map((s) =>
+      `<span><i class="pastilha" style="background:${s.cor}"></i>${escapar(s.nome)}</span>`).join('');
   }
 }
 
@@ -672,7 +739,7 @@ function aplicarTema(tema, persistir = true) {
   // o gráfico lê as cores do tema via getComputedStyle no momento do desenho,
   // então precisa ser refeito quando o tema muda.
   if (estado.ultimaSimulacao) redesenhar($('#grafico'));
-  if (estado.serieHistorica) redesenhar($('#grafico-historico'));
+  if (estado.historico) redesenhar($('#grafico-historico'));
 }
 
 function ligarTema() {
@@ -719,11 +786,10 @@ function ligarControles() {
     $('#aba-projecao').hidden = aba !== 'projecao';
     $('#aba-historico').hidden = aba !== 'historico';
     $('#painel-detalhe').hidden = aba !== 'projecao' || !estado.ultimaSimulacao;
-    if (aba === 'historico' && !estado.serieHistorica) {
-      montarSeletorHistorico().then((n) => n && carregarHistorico());
+    if (aba === 'historico' && !estado.historico) {
+      carregarHistoricoCarteira();
     }
   }));
-  $('#serie-historica').addEventListener('change', carregarHistorico);
 
   ['meses', 'cenario', 'considerar-ir', 'considerar-inflacao', 'considerar-valorizacao']
     .forEach((id) => $('#' + id).addEventListener('change', () => {
@@ -735,7 +801,7 @@ function ligarControles() {
     clearTimeout(temporizador);
     temporizador = setTimeout(() => {
       if (estado.ultimaSimulacao) redesenhar($('#grafico'));
-      if (estado.serieHistorica) redesenhar($('#grafico-historico'));
+      if (estado.historico) redesenhar($('#grafico-historico'));
     }, 150);
   });
 }
@@ -751,10 +817,10 @@ function marcarPrazo() {
   marcarPrazo();
   await Promise.all([carregarIndicadores(), carregarAtivos()]);
 
-  // A página nunca abre vazia: oficializa um aporte padrão com os valores que
-  // já estão nos campos, se o catálogo tiver o CDB de referência.
-  const padrao = estado.ativos.find((a) => a.id === 'cdb-100-cdi');
-  if (padrao) {
+  // A página nunca abre vazia: oficializa um aporte padrão com o ativo que
+  // carregarAtivos() já deixou marcado na lista e os valores dos campos.
+  if (estado.ativoEscolhido) {
+    const padrao = estado.ativos.find((a) => a.id === estado.ativoEscolhido);
     estado.carteira.push({
       id: 'c' + estado.proximoIdCarteira++,
       ativoId: padrao.id,

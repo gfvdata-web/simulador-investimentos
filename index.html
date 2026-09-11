@@ -30,8 +30,11 @@
   <div class="cabecalho-grade">
     <section class="controles-sim">
       <div class="campo-inline campo-aporte">
-        <label for="select-ativo">Ativo a aportar</label>
-        <select id="select-ativo"><!-- preenchido por app.js a partir do catálogo --></select>
+        <span class="rotulo-campo">Ativo a aportar <span class="dica">(escolha na lista à esquerda)</span></span>
+        <div class="ativo-escolhido" id="ativo-escolhido">
+          <span class="pastilha" id="ativo-escolhido-cor"></span>
+          <span id="ativo-escolhido-nome">—</span>
+        </div>
       </div>
 
       <div class="campo-inline">
@@ -45,7 +48,9 @@
       </div>
 
       <div class="campo-inline">
-        <button type="button" class="secundario" id="adicionar-aporte">+ Adicionar à carteira</button>
+        <button type="button" class="botao-adicionar" id="adicionar-aporte">
+          <span class="icone-mais">+</span> Adicionar à carteira
+        </button>
         <span class="aviso-inline" id="aviso-adicionar"></span>
       </div>
 
@@ -93,7 +98,7 @@
   <div>
     <section class="painel">
       <h2>Ativos <span id="contagem-ativos" style="text-transform:none;letter-spacing:0"></span></h2>
-      <p class="dica-painel">Clique num ativo para selecioná-lo no formulário de aporte, acima.</p>
+      <p class="dica-painel">Escolha um ativo (seleção única) para definir o aporte no formulário acima.</p>
       <div id="lista-ativos"><p class="vazio">carregando catálogo…</p></div>
     </section>
   </div>
@@ -130,13 +135,10 @@
       </div>
 
       <div id="aba-historico" hidden>
-        <div class="campo" style="max-width:260px">
-          <label for="serie-historica">Série (dados reais já coletados)</label>
-          <select id="serie-historica"><!-- preenchido por app.js a partir do manifesto --></select>
-        </div>
         <div id="resumo-historico"></div>
-        <div class="grafico-caixa">
+        <div class="grafico-caixa" id="grafico-historico-caixa" hidden>
           <canvas id="grafico-historico"></canvas>
+          <div class="legenda" id="legenda-historico"></div>
         </div>
       </div>
     </section>
