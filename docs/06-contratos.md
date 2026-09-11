@@ -9,48 +9,87 @@ Mudou um formato aqui? Atualize o coletor, a página e este documento no mesmo c
 
 ## `dados/mercado/indicadores.json`
 
-Escrito por `coletor/atualizar.py`, lido por `app/dados.js`.
+Escrito por `coletor/atualizar.py`, lido por `app/dados.js`. É o **manifesto do
+retrato**: diz quais indicadores existem, quanto valem, como se chamam e onde ficam as
+séries. A página não tem lista própria — ela se monta a partir deste arquivo.
 
 ```jsonc
 {
   "coletado_em": "2026-09-11T00:56:22+00:00",   // UTC, ISO 8601
-  "fonte": "Banco Central do Brasil - API SGS",
-  "completo": true,                              // todos os campos com valor?
+  "completo": true,                              // todos os campos e séries ok?
   "campos": {
-    "cdi_aa":        { "valor": 13.9,   "origem": "Banco Central (SGS)", "serie_sgs": 4389, "referencia": "2026-09-09" },
-    "selic_meta_aa": { "valor": 14.0,   "origem": "Banco Central (SGS)", "serie_sgs": 432,  "referencia": "2026-09-16" },
-    "poupanca_am":   { "valor": 0.6698, "origem": "Banco Central (SGS)", "serie_sgs": 196,  "referencia": "2026-09-01" },
-    "ipca_12m":      { "valor": 4.443,  "origem": "Banco Central (SGS)", "serie_sgs": 433,  "referencia": "2026-07-01" }
-  }
+    "cdi_aa": {
+      "rotulo": "CDI",                           // texto exibido, com acento
+      "unidade": "% a.a.",                       // define a formatação na tela
+      "fonte": "Banco Central do Brasil - SGS",
+      "referencia_fonte": 4389,                  // identificador na fonte (série SGS)
+      "valor": 13.9,
+      "origem": "fonte oficial",
+      "referencia": "2026-09-09"                 // data do dado NA FONTE
+    }
+  },
+  "series": [
+    {
+      "id": "cdi",
+      "rotulo": "CDI acumulado no mês",
+      "rotulo_curto": "CDI",                     // usado no seletor da aba histórico
+      "arquivo": "series/cdi.json",              // relativo a dados/mercado/
+      "fonte": "Banco Central do Brasil - SGS",
+      "referencia_fonte": 4391,
+      "pontos": 124, "primeiro": "2016-06-01", "ultimo": "2026-09-01"
+    }
+  ]
 }
 ```
 
-- `valor: null` + `origem: "indisponivel"` quando a fonte falhou **e** não havia
-  retrato anterior de onde herdar.
-- Quando herda do retrato anterior, `origem` vira
-  `"retrato anterior (fonte indisponivel na ultima coleta)"` e ganha `coletado_em`
-  com a data do retrato de origem. A página trata isso como valor válido, mas a
-  idade continua visível.
-- `referencia` é a data do dado na fonte, não a data da coleta. As duas diferem — o
-  IPCA sai com um a dois meses de atraso, por natureza do índice.
+**`unidade` não é decoração.** A página formata por ela: `"% a.a."` vira `13,90% a.a.`,
+`"R$"` vira `R$ 5,42`, `"pontos"` vira `104,3 pontos`. Um indicador de preço declara
+`"R$"` e aparece certo sem tocar em código.
 
-## `dados/mercado/series/{cdi,selic,ipca,poupanca}.json`
+**Valores de `origem`**, em ordem de confiança:
+
+| `origem` | Significa |
+|---|---|
+| `fonte oficial` | coletado agora, valor bom |
+| `retrato anterior (fonte indisponivel na ultima coleta)` | herdado; vale, mas não é de hoje. A página marca o cartão |
+| `indisponivel` | `valor: null`. A página tenta o fallback de `premissas.json`; se não houver, o campo simplesmente não aparece |
+
+`referencia` é a data do dado na fonte, não a data da coleta. As duas diferem — o IPCA
+sai com um a dois meses de atraso, por natureza do índice.
+
+## `dados/mercado/series/*.json`
+
+Mesmos metadados da entrada no manifesto, mais os pontos:
 
 ```jsonc
 {
-  "serie": "cdi",
-  "rotulo": "CDI acumulado no mes",
-  "fonte": "Banco Central do Brasil - SGS",
-  "serie_sgs": 4391,
+  "id": "cdi", "rotulo": "CDI acumulado no mês", "rotulo_curto": "CDI",
+  "arquivo": "series/cdi.json",
+  "fonte": "Banco Central do Brasil - SGS", "referencia_fonte": 4391,
   "coletado_em": "2026-09-11T00:56:22+00:00",
   "pontos": [ { "data": "2016-06-01", "valor": 1.16 } ]   // % no mês
 }
 ```
 
-`pontos` vem **sempre em ordem cronológica crescente** e inclui o mês corrente, que
-é parcial. Quem consome descarta o mês corrente — `app/dados.js` faz isso. O
-acumulado e o índice base 100 são calculados na página, não gravados no arquivo:
-dependem da janela que o usuário escolheu.
+`pontos` vem **sempre em ordem cronológica crescente** e inclui o mês corrente, que é
+parcial. Quem consome descarta o mês corrente — `app/dados.js` faz isso. O acumulado e
+o índice base 100 são calculados na página: dependem da janela escolhida.
+
+## Protocolo de uma fonte
+
+Um módulo em `coletor/fontes/` precisa expor exatamente isto:
+
+```python
+NOME                    # str, nome legível que aparece na tela
+FalhaFonte              # exceção quando a fonte não responde
+ultimo(nome)            # -> {'data': 'YYYY-MM-DD', 'valor': float}
+serie(nome, meses)      # -> [{'data': ..., 'valor': ...}], crescente por data
+acumulado_12m(nome)     # -> {'valor': float, 'referencia': 'YYYY-MM-DD'}  (se usado)
+```
+
+Nunca devolva valor inventado: levante `FalhaFonte` e deixe `atualizar.py` decidir a
+degradação. Registre o módulo em `FONTES` e acrescente as entradas em `INDICADORES`
+e/ou `SERIES` — é a única edição necessária.
 
 ## `dados/catalogo/ativos.json` e `dados/premissas/premissas.json`
 
@@ -127,15 +166,18 @@ demais são comparados normalmente.
 
 ## Contrato de `app/dados.js` para a página
 
-`indicadores()` devolve os quatro valores mais metadados com `_`:
+`indicadores()` devolve os valores por nome (`ind.cdi_aa`), mais metadados com `_`:
 
 | Campo | Significa |
 |---|---|
-| `_origem` | por indicador: origem, série SGS, data de referência |
+| `_meta` | por indicador: `rotulo`, `unidade`, `origem`, `heranca`, `referencia`, `referencia_fonte` |
 | `_degradado` | algum indicador veio do fallback de `premissas.json` |
 | `_coletado_em` | quando o retrato foi tirado (ISO, UTC) |
 | `_idade_dias` | dias desde a coleta |
 | `_vencido` | idade acima de `DIAS_ATE_VENCER` (10 dias) |
+
+`seriesDisponiveis()` devolve o manifesto de séries; é o que preenche o seletor da aba
+de histórico. A página nunca lista séries à mão.
 
 A página é obrigada a mostrar `_degradado` e `_vencido` ao usuário. Não são detalhes
 de implementação: são a diferença entre um número confiável e um número velho.

@@ -91,11 +91,22 @@ que um que não mostra número.
 Uma vantagem do desenho por snapshot: a fonte nova não precisa liberar CORS, porque
 quem fala com ela é o Actions, não o navegador.
 
-1. Um módulo por fonte em `coletor/fontes/`, com uma exceção própria (siga o padrão de
-   `FalhaFonte`).
+1. Um módulo por fonte em `coletor/fontes/`, expondo o protocolo do doc 06
+   (`NOME`, `FalhaFonte`, `ultimo`, `serie`).
 2. Normalize para `[{"data": "YYYY-MM-DD", "valor": float}]` ordenado crescente.
-3. Grave em `dados/mercado/` no formato do doc 06 e **preserve o arquivo anterior** se
-   a coleta falhar.
-4. Nunca invente valor quando a fonte falhar: levante a exceção e deixe
+3. Registre o módulo em `FONTES` e acrescente as entradas em `INDICADORES` e/ou
+   `SERIES`, em `coletor/atualizar.py`. **Só isso** — a gravação, a herança do retrato
+   anterior e a montagem da página são genéricas.
+4. Nunca invente valor quando a fonte falhar: levante `FalhaFonte` e deixe
    `atualizar.py` decidir a degradação.
 5. Documente a série e as armadilhas nas tabelas acima.
+
+Para conferir que ficou certo sem esperar o Actions:
+
+```bash
+python coletor/atualizar.py --so nome_do_indicador
+python scripts/validar.py
+```
+
+`--so` coleta apenas o que você nomear e **preserva** o resto do retrato, então dá para
+iterar numa fonte sem rebuscar tudo.

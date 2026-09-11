@@ -1,83 +1,98 @@
 # Contrato de trabalho — Simulador de Investimentos
 
-Este arquivo é lido no início de cada sessão. Ele existe para que qualquer prompt
-futuro (página, consultas, novos ativos) caia na estrutura certa sem precisar
+Lido no início de cada sessão, para qualquer prompt futuro cair na estrutura certa sem
 reexplicar o projeto.
 
-## O que este projeto é
+## O que é
 
-Um simulador local e pessoal para comparar rendimento de investimentos brasileiros
-ao longo de um prazo escolhido. Responde à pergunta: *"colocando R$ X hoje (e talvez
-R$ Y por mês), quanto eu tenho em N meses em cada uma das opções que eu marcar?"*
+Simulador pessoal para comparar rendimento de investimentos brasileiros num prazo
+escolhido. Responde a: *"colocando R$ X hoje (e talvez R$ Y por mês), quanto eu tenho
+em N meses em cada opção que eu marcar?"*
 
-Não é uma corretora, não é um robô de recomendação, não executa ordens.
+Não é corretora, não recomenda, não executa ordem. Site estático publicado no GitHub
+Pages; os dados são um retrato versionado no repositório, coletado pelo Actions.
 
-## As cinco regras que não se quebram
+## As seis regras que não se quebram
 
-1. **Nenhum número inventado.** Todo valor que chega à tela é (a) um fato buscado em
-   fonte oficial, (b) um parâmetro contratado do próprio ativo, ou (c) uma estimativa
-   explícita de `dados/premissas/premissas.json`. Se o modelo não sabe, o campo fica
-   vazio e a tela diz que está vazio — nunca um chute plausível.
-2. **A procedência viaja com o número.** Toda resposta da API carrega de onde veio cada
-   indicador (série do SGS, data de referência, ou "fallback local"). A página mostra
-   isso. Nunca remova esse rastro para "limpar" a saída.
-3. **Fato e estimativa nunca se misturam no mesmo campo.** CDI é fato. Retorno do
-   Bitcoin é palpite. Os dois nunca aparecem com o mesmo peso visual nem na mesma
-   chave de JSON.
-4. **Só fontes oficiais, públicas e de uso livre.** Banco Central (SGS), Tesouro
-   Transparente, dados públicos da B3, IBGE. Nada de scraping de site de corretora,
-   nada de API paga, nada de dado atrás de login.
-5. **Zero dependências.** O coletor usa só a biblioteca padrão do Python; a página é
-   HTML/CSS/JS puro, sem build e sem CDN. Se uma tarefa parece exigir uma dependência,
-   discuta antes de adicionar.
-6. **A página nunca acessa a rede.** Só o coletor fala com fontes externas, e ele roda
-   fora do navegador. Se algo na página precisar de `fetch` para fora do repositório,
+1. **Nenhum número inventado.** Todo valor na tela é (a) fato de fonte oficial,
+   (b) parâmetro contratado do próprio ativo, ou (c) estimativa explícita de
+   `premissas.json`. O que o simulador não sabe fica vazio e a tela diz que está vazio
+   — nunca um chute plausível. Na prática: indicador ausente faz `resolver()` lançar
+   erro e o ativo aparece na lista de erros. Não "conserte" isso com um valor padrão.
+2. **A procedência viaja com o número.** Cada indicador carrega fonte, referência da
+   série e data. A página mostra isso e avisa quando o dado é herdado, é fallback ou
+   está velho. Nunca remova esse rastro para "limpar" a saída.
+3. **Fato e estimativa nunca se misturam.** CDI é fato; retorno do Bitcoin é palpite.
+   Nunca no mesmo campo de JSON, nunca com o mesmo peso visual. O selo âmbar
+   "estimado" sai de `taxa.natureza` — mantenha-o em qualquer redesenho.
+4. **Só fontes oficiais, públicas e de uso livre.** Banco Central, Tesouro
+   Transparente, IBGE, dados públicos da B3 e da CVM. Nada de scraping de corretora,
+   nada de API paga, nada atrás de login.
+5. **Zero dependências.** Coletor usa só a stdlib do Python; a página é HTML/CSS/JS
+   puro, sem build e sem CDN. Precisa de dependência? Discuta antes.
+6. **A página nunca acessa a rede.** Só o coletor fala com fontes externas, fora do
+   navegador. Se algo na página parecer precisar de `fetch` para fora do repositório,
    a resposta certa é ensinar o coletor a trazer aquele dado.
+
+## Onde mexer para cada tarefa
+
+| Você quer… | Mexa só em | Observação |
+|---|---|---|
+| Adicionar um ativo | `dados/catalogo/ativos.json` | nenhuma linha de código, se o tipo de rendimento já existir |
+| Mudar um palpite de retorno | `dados/premissas/premissas.json` | precisa de `fonte` preenchida |
+| Indicador ou série nova de uma fonte já existente | registros `INDICADORES` / `SERIES` em `coletor/atualizar.py` | a página se monta sozinha a partir do retrato — não há lista de indicadores no JS |
+| Fonte de dados nova | novo módulo em `coletor/fontes/` + registro em `FONTES` | siga `PROTOCOLO_FONTE`; atualize `docs/04` |
+| Novo tipo de rendimento (ex.: `cdi_mais`) | `app/nucleo/indexadores.js` | some em `scripts/validar.py` e `docs/02` |
+| Nova regra fiscal | `app/nucleo/tributos.js` | tabelas vão em `premissas.json`, não no código; `docs/05` |
+| Mexer na interface | `index.html`, `app/estilo.css`, `app/app.js` | núcleo e coletor ficam intactos; `docs/07` |
+| Mudar formato de arquivo de dados | coletor **e** `app/dados.js` **e** `docs/06` | mesmo commit: são duas pontas de um contrato |
+
+A regra por trás da tabela: **adicionar nunca deve exigir editar mais de um lugar.** Se
+uma adição estiver pedindo mudança em três arquivos, o desenho está errado — conserte o
+desenho, não repita o dado.
 
 ## Convenções de código
 
-- **Português** em nomes de função, variável, chave de JSON, comentário e commit.
-  Mantém tudo no mesmo idioma do domínio (aporte, rendimento, líquido, resgate).
-- Arquivos e identificadores em `snake_case`; ids de ativo em `kebab-case`
-  (`tesouro-ipca-2035`).
+- **Português** em nome de função, variável, chave de JSON, comentário e commit. Mesmo
+  idioma do domínio (aporte, rendimento, líquido, resgate).
+- Python em `snake_case`, JavaScript em `camelCase`, chaves de JSON em `snake_case`,
+  ids de ativo em `kebab-case` (`tesouro-ipca-2035`).
 - Taxas entram e saem em **% ao ano** nas fronteiras (JSON, tela). A conversão para
-  fração mensal acontece só dentro do motor, via `indexadores.aaParaAm`.
-- Dinheiro em `float` com arredondamento só na saída. A precisão de centavo não muda
-  uma projeção de 5 anos, e simplicidade vale mais aqui.
-- Funções de `app/nucleo/` são **puras**: recebem objetos, devolvem objetos, não leem
-  arquivo nem fazem rede. Só `app/dados.js` e `coletor/` tocam I/O.
-- Python no coletor fica sem acento no código-fonte (roda em ambiente de CI com locale
-  imprevisível); JavaScript e documentação usam português com acento normal.
-
-## Onde mexer para cada tipo de tarefa
-
-| Você quer… | Mexa em | Não precisa tocar |
-|---|---|---|
-| Adicionar um ativo | `dados/catalogo/ativos.json` | código nenhum, se o tipo de rendimento já existir |
-| Mudar um palpite de retorno | `dados/premissas/premissas.json` | — |
-| Novo tipo de rendimento (ex.: `cdi_mais`) | `app/nucleo/indexadores.js` + `docs/02` | motor, tributos |
-| Nova regra fiscal | `app/nucleo/tributos.js` + `docs/05` | motor |
-| Nova fonte de dados | `coletor/fontes/` (um módulo por fonte) + `docs/04` e `docs/06` | a página |
-| Mudar formato de arquivo de dados | coletor + `app/dados.js` + `docs/06`, no mesmo commit | — |
-| Mexer na interface | `index.html`, `app/estilo.css`, `app/app.js` + `docs/07` | núcleo, coletor |
+  fração mensal acontece só dentro do núcleo, via `indexadores.aaParaAm`.
+- Dinheiro em `float`, arredondado só na saída. Precisão de centavo não muda uma
+  projeção de 5 anos.
+- `app/nucleo/` é **puro**: recebe objetos, devolve objetos, não lê arquivo nem faz
+  rede. Só `app/dados.js` e `coletor/` tocam I/O.
+- Código Python sem acento em identificador e comentário (CI roda com locale
+  imprevisível). **Exceção:** `rotulo` e outros textos que aparecem na tela levam
+  acentuação normal — são dados UTF-8, não código.
+- Todo texto vindo de arquivo de dados passa por `escapar()` antes de virar HTML.
 
 ## Como entregar
 
-- Uma frente por vez: dados, motor, API e página evoluem independentes de propósito.
-- Toda mudança no motor precisa de um caso conferido à mão no comentário ou no teste
-  (ex.: "R$ 100 a 100% do CDI de 13,90% por 12 meses = R$ 113,90 bruto; IR de 20% sobre
-  R$ 13,90 = R$ 2,78; líquido R$ 111,12").
-- Mudou o formato de um arquivo de dados? Atualize `docs/06-contratos.md`, o coletor e
-  a página no mesmo commit — são duas pontas que só conversam por aquele contrato.
-- Adicionou ativo com retorno estimado? A estimativa precisa de `fonte` preenchida.
+```bash
+python -m http.server 8765     # a página usa módulos ES: file:// não funciona
+python scripts/validar.py      # antes de qualquer commit que toque em dados/
+```
+
+- Uma frente por vez: catálogo, núcleo, coletor e página evoluem independentes.
+- Toda mudança no núcleo reconfere a tabela de casos do `docs/03`. Se um número mudar,
+  descubra se você achou um bug antigo ou criou um novo **antes** de atualizar a tabela.
+- Tipo, regime ou classe nova: acrescente também em `scripts/validar.py`, senão o
+  validador passa a reprovar o catálogo (ele faz checagem cruzada com o código).
+- Não rode o coletor só para "atualizar" — cada execução vira commit de dados. Rode
+  quando estiver mexendo em fonte, ou deixe o Actions fazer.
 
 ## Estado atual
 
-v0.2.0 — publicado no GitHub Pages, sem backend. O site é estático e os dados são um
-retrato versionado, atualizado pelo Actions. Ver `docs/08-roadmap.md` para o que vem em
+v0.2.0 — estático, publicado, sem backend. Ver `docs/08-roadmap.md` para o que vem em
 seguida e `docs/00-catalogo.md` para o índice da documentação.
 
-A v0.1 tinha um backend Python que consultava o BCB a cada clique. Ele foi removido
-quando ficou claro que (a) o BCB libera CORS, então ele não resolvia o problema que
-justificava sua existência, e (b) o Pages só serve estático. Está no histórico do git
-se algum dia fizer falta.
+Duas decisões que já foram revertidas uma vez — não as refaça sem motivo novo:
+
+- **Backend Python consultando a fonte a cada clique** (v0.1). Removido: o BCB libera
+  CORS, então ele não resolvia o problema que o justificava, e o Pages só serve
+  estático. Está no histórico do git.
+- **Listas de indicadores escritas à mão no JS.** Removidas: um indicador novo exigia
+  editar cinco arquivos. Hoje o retrato é autodescrito (rótulo, unidade, fonte) e a
+  página se monta a partir dele.

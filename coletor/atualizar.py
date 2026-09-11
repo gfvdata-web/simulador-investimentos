@@ -6,14 +6,17 @@ no git. Isso deixa cada simulacao auditavel (da para ver no historico do
 repositorio exatamente qual CDI foi usado em cada dia) e faz o site funcionar
 mesmo se a fonte estiver fora do ar.
 
-Roda sozinho pelo GitHub Actions (.github/workflows/atualizar-dados.yml) e
-tambem na mao:
-
     python coletor/atualizar.py
-    python coletor/atualizar.py --meses 120 --verbose
+    python coletor/atualizar.py --meses 120 --so cdi_aa,ipca_12m
 
-Se uma fonte falhar, o arquivo anterior e PRESERVADO: dado velho com data
-visivel e melhor que dado ausente, e muito melhor que dado inventado.
+PARA ACRESCENTAR UM INDICADOR OU UMA SERIE, edite so os registros INDICADORES e
+SERIES logo abaixo. O retrato gravado carrega rotulo e unidade de cada item, e a
+pagina se monta a partir disso - nao ha lista de indicadores escrita na mao do
+lado do navegador. Fonte nova: crie o modulo em coletor/fontes/ seguindo o
+protocolo documentado em PROTOCOLO_FONTE e registre em FONTES.
+
+Se uma fonte falhar, o dado anterior e PRESERVADO: dado velho com data visivel e
+melhor que dado ausente, e muito melhor que dado inventado.
 """
 from __future__ import annotations
 
@@ -31,15 +34,66 @@ RAIZ = Path(__file__).resolve().parents[1]
 DIR_MERCADO = RAIZ / "dados" / "mercado"
 DIR_SERIES = DIR_MERCADO / "series"
 
-# Series historicas mensais publicadas para a pagina.
-SERIES_HISTORICAS = {
-    "cdi": ("cdi_mensal", "CDI acumulado no mes", 4391),
-    "selic": ("selic_mensal", "Selic acumulada no mes", 4390),
-    "ipca": ("ipca_mensal", "IPCA mensal", 433),
-    "poupanca": ("poupanca_mensal", "Rendimento da poupanca", 196),
+MESES_PADRAO = 120
+
+# Convencao do arquivo: identificadores e comentarios sem acento (o CI roda com
+# locale imprevisivel), mas 'rotulo' e texto que aparece na tela do usuario e
+# leva acentuacao normal - ele viaja como dado UTF-8 para o JSON.
+
+PROTOCOLO_FONTE = """
+Um modulo de fonte precisa expor:
+    FalhaFonte              excecao levantada quando a fonte nao responde
+    ultimo(nome) -> dict    {'data': 'YYYY-MM-DD', 'valor': float}
+    serie(nome, meses)      [{'data': ..., 'valor': ...}], crescente por data
+    NOME                    nome legivel da fonte, usado na tela
+Nada de inventar valor: se falhar, levante FalhaFonte.
+"""
+
+FONTES = {
+    "bcb": bcb_sgs,
 }
 
-MESES_PADRAO = 120
+# --- Indicadores: o valor "de hoje" de cada referencia do mercado -----------
+# agregacao: 'ultimo' pega o ponto mais recente; 'acumulado_12m' compoe os 12
+# ultimos pontos mensais em uma taxa anual.
+INDICADORES = {
+    "cdi_aa": {
+        "fonte": "bcb", "serie": "cdi_aa", "agregacao": "ultimo",
+        "rotulo": "CDI", "unidade": "% a.a.", "referencia_fonte": 4389,
+    },
+    "selic_meta_aa": {
+        "fonte": "bcb", "serie": "selic_meta_aa", "agregacao": "ultimo",
+        "rotulo": "Selic meta", "unidade": "% a.a.", "referencia_fonte": 432,
+    },
+    "ipca_12m": {
+        "fonte": "bcb", "serie": "ipca_mensal", "agregacao": "acumulado_12m",
+        "rotulo": "IPCA 12 meses", "unidade": "%", "referencia_fonte": 433,
+    },
+    "poupanca_am": {
+        "fonte": "bcb", "serie": "poupanca_mensal", "agregacao": "ultimo",
+        "rotulo": "Poupança", "unidade": "% a.m.", "referencia_fonte": 196,
+    },
+}
+
+# --- Series historicas mensais publicadas para a aba de historico ----------
+SERIES = {
+    "cdi": {
+        "fonte": "bcb", "serie": "cdi_mensal", "referencia_fonte": 4391,
+        "rotulo": "CDI acumulado no mês", "rotulo_curto": "CDI",
+    },
+    "selic": {
+        "fonte": "bcb", "serie": "selic_mensal", "referencia_fonte": 4390,
+        "rotulo": "Selic acumulada no mês", "rotulo_curto": "Selic",
+    },
+    "ipca": {
+        "fonte": "bcb", "serie": "ipca_mensal", "referencia_fonte": 433,
+        "rotulo": "IPCA mensal", "rotulo_curto": "IPCA",
+    },
+    "poupanca": {
+        "fonte": "bcb", "serie": "poupanca_mensal", "referencia_fonte": 196,
+        "rotulo": "Rendimento da poupança", "rotulo_curto": "Poupança",
+    },
+}
 
 
 def agora() -> str:
@@ -53,60 +107,53 @@ def gravar(caminho: Path, conteudo: dict) -> None:
     )
 
 
-def coletar_indicadores(relatorio: list) -> dict:
-    """Fotografia atual dos indicadores, cada campo com sua procedencia."""
+def modulo_da(definicao: dict):
+    nome = definicao["fonte"]
+    if nome not in FONTES:
+        raise KeyError(f"Fonte '{nome}' nao registrada em FONTES")
+    return FONTES[nome]
+
+
+def coletar_indicadores(quais: set, relatorio: list) -> dict:
     campos = {}
-
-    def tentar(chave, funcao, codigo):
+    for chave, definicao in INDICADORES.items():
+        if quais and chave not in quais:
+            continue
+        modulo = modulo_da(definicao)
+        # Metadados vao para o arquivo mesmo quando a coleta falha: a pagina
+        # precisa saber rotular o campo para poder avisar que ele esta vazio.
+        meta = {
+            "rotulo": definicao["rotulo"],
+            "unidade": definicao["unidade"],
+            "fonte": modulo.NOME,
+            "referencia_fonte": definicao.get("referencia_fonte"),
+        }
         try:
-            campos[chave] = funcao()
-            relatorio.append(f"  ok    {chave} = {campos[chave]['valor']} (SGS {codigo})")
-        except bcb_sgs.FalhaFonte as erro:
-            campos[chave] = {"valor": None, "origem": "indisponivel", "detalhe": str(erro)}
+            if definicao["agregacao"] == "acumulado_12m":
+                bruto = modulo.acumulado_12m(definicao["serie"])
+            else:
+                ponto = modulo.ultimo(definicao["serie"])
+                bruto = {"valor": ponto["valor"], "referencia": ponto["data"]}
+            campos[chave] = {**meta, "valor": bruto["valor"],
+                             "origem": "fonte oficial", "referencia": bruto["referencia"]}
+            relatorio.append(f"  ok    {chave} = {bruto['valor']} {definicao['unidade']}")
+        except modulo.FalhaFonte as erro:
+            campos[chave] = {**meta, "valor": None, "origem": "indisponivel", "detalhe": str(erro)}
             relatorio.append(f"  FALHA {chave}: {erro}")
-
-    def campo(nome_serie, codigo):
-        ponto = bcb_sgs.ultimo(nome_serie)
-        return {
-            "valor": ponto["valor"],
-            "origem": "Banco Central (SGS)",
-            "serie_sgs": codigo,
-            "referencia": ponto["data"],
-        }
-
-    tentar("cdi_aa", lambda: campo("cdi_aa", 4389), 4389)
-    tentar("selic_meta_aa", lambda: campo("selic_meta_aa", 432), 432)
-    tentar("poupanca_am", lambda: campo("poupanca_mensal", 196), 196)
-
-    def ipca():
-        bruto = bcb_sgs.ipca_acumulado_12m()
-        return {
-            "valor": bruto["valor"],
-            "origem": "Banco Central (SGS)",
-            "serie_sgs": 433,
-            "referencia": bruto["referencia"],
-        }
-
-    tentar("ipca_12m", ipca, 433)
     return campos
 
 
-def mesclar_com_anterior(campos: dict, caminho: Path, relatorio: list) -> dict:
-    """Campo que falhou herda o valor do retrato anterior, marcado como vencido."""
-    if not caminho.exists():
-        return campos
-    try:
-        anterior = json.loads(caminho.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return campos
-
-    for chave, valor in campos.items():
-        if valor.get("valor") is not None:
+def herdar_do_anterior(campos: dict, anterior: dict, relatorio: list) -> dict:
+    """Campo que falhou fica com o valor do retrato anterior, marcado como tal."""
+    for chave, campo in campos.items():
+        if campo.get("valor") is not None:
             continue
-        antigo = anterior.get("campos", {}).get(chave)
+        antigo = (anterior.get("campos") or {}).get(chave)
         if antigo and antigo.get("valor") is not None:
             campos[chave] = {
-                **antigo,
+                **campo,
+                "valor": antigo["valor"],
+                "referencia": antigo.get("referencia"),
                 "origem": "retrato anterior (fonte indisponivel na ultima coleta)",
                 "coletado_em": anterior.get("coletado_em"),
             }
@@ -114,52 +161,76 @@ def mesclar_com_anterior(campos: dict, caminho: Path, relatorio: list) -> dict:
     return campos
 
 
-def coletar_series(meses: int, relatorio: list) -> None:
-    for nome, (chave, rotulo, codigo) in SERIES_HISTORICAS.items():
+def coletar_series(meses: int, quais: set, relatorio: list, anterior: dict) -> list:
+    manifesto = []
+    indice_anterior = {s["id"]: s for s in (anterior.get("series") or [])}
+
+    for nome, definicao in SERIES.items():
+        if quais and nome not in quais:
+            continue
         caminho = DIR_SERIES / f"{nome}.json"
+        modulo = modulo_da(definicao)
+        entrada = {
+            "id": nome,
+            "rotulo": definicao["rotulo"],
+            "rotulo_curto": definicao["rotulo_curto"],
+            "arquivo": f"series/{nome}.json",
+            "fonte": modulo.NOME,
+            "referencia_fonte": definicao.get("referencia_fonte"),
+        }
         try:
-            pontos = bcb_sgs.serie(chave, meses=meses)
-        except bcb_sgs.FalhaFonte as erro:
+            pontos = modulo.serie(definicao["serie"], meses=meses)
+        except modulo.FalhaFonte as erro:
             relatorio.append(f"  FALHA serie {nome}: {erro} (arquivo anterior preservado)")
+            if caminho.exists() and nome in indice_anterior:
+                manifesto.append(indice_anterior[nome])
             continue
 
-        gravar(caminho, {
-            "serie": nome,
-            "rotulo": rotulo,
-            "fonte": "Banco Central do Brasil - SGS",
-            "serie_sgs": codigo,
-            "coletado_em": agora(),
-            "pontos": pontos,
-        })
+        gravar(caminho, {**entrada, "coletado_em": agora(), "pontos": pontos})
+        manifesto.append({**entrada, "pontos": len(pontos),
+                          "primeiro": pontos[0]["data"], "ultimo": pontos[-1]["data"]})
         relatorio.append(f"  ok    serie {nome}: {len(pontos)} pontos ate {pontos[-1]['data']}")
+
+    return manifesto
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Atualiza os dados de mercado")
     parser.add_argument("--meses", type=int, default=MESES_PADRAO,
                         help=f"quantos meses de historico buscar (padrao {MESES_PADRAO})")
-    parser.add_argument("--verbose", action="store_true")
+    parser.add_argument("--so", default="",
+                        help="coleta so estes indicadores/series, separados por virgula")
     args = parser.parse_args()
+    quais = {p.strip() for p in args.so.split(",") if p.strip()}
+
+    caminho = DIR_MERCADO / "indicadores.json"
+    anterior = {}
+    if caminho.exists():
+        try:
+            anterior = json.loads(caminho.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            pass
 
     relatorio = [f"Coleta iniciada em {agora()}"]
-    caminho_indicadores = DIR_MERCADO / "indicadores.json"
+    campos = herdar_do_anterior(coletar_indicadores(quais, relatorio), anterior, relatorio)
+    series = coletar_series(args.meses, quais, relatorio, anterior)
 
-    campos = coletar_indicadores(relatorio)
-    campos = mesclar_com_anterior(campos, caminho_indicadores, relatorio)
+    # Coleta parcial (--so) nao pode apagar o que ja estava no retrato.
+    if quais:
+        campos = {**(anterior.get("campos") or {}), **campos}
+        ids = {s["id"] for s in series}
+        series = series + [s for s in (anterior.get("series") or []) if s["id"] not in ids]
 
     vivos = sum(1 for c in campos.values() if c.get("valor") is not None)
-    gravar(caminho_indicadores, {
+    gravar(caminho, {
         "coletado_em": agora(),
-        "fonte": "Banco Central do Brasil - API SGS",
-        "completo": vivos == len(campos),
+        "completo": vivos == len(campos) and len(series) == len(SERIES),
         "campos": campos,
+        "series": series,
     })
-    relatorio.append(f"  {vivos}/{len(campos)} indicadores com valor")
-
-    coletar_series(args.meses, relatorio)
+    relatorio.append(f"  {vivos}/{len(campos)} indicadores com valor, {len(series)} serie(s)")
 
     print("\n".join(relatorio))
-
     if vivos == 0:
         print("\nNenhum indicador coletado. Falhando para o Actions avisar.", file=sys.stderr)
         return 1

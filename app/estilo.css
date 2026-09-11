@@ -302,3 +302,7 @@ canvas { display: block; width: 100%; height: 320px; }
 .rodape-nota code { font-family: var(--mono); }
 
 .idade-dados { font-size: 11px; color: var(--texto-tenue); }
+
+/* indicador herdado de um retrato anterior: o valor vale, mas não é de hoje */
+.indicadores li.herdado { border-style: dashed; }
+.indicadores li.herdado .fonte { color: var(--alerta); }

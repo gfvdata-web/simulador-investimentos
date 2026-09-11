@@ -46,7 +46,10 @@ SimuladorInvestimentos/
 ├── .github/workflows/
 │   ├── atualizar-dados.yml        coleta agendada
 │   └── publicar.yml               publicacao no GitHub Pages
-├── scripts/                       atalhos para Windows
+├── scripts/
+│   ├── validar.py                 confere catalogo e premissas contra o codigo
+│   ├── iniciar.cmd                sobe servidor estatico e abre a pagina
+│   └── atualizar-dados.cmd        roda o coletor na mao
 └── docs/                          esta documentacao
 ```
 

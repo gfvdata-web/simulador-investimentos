@@ -33,13 +33,24 @@ const dec = (v, casas = 2) => v.toLocaleString('pt-BR', {
 export function resolver(ativo, indicadores, premissas, cenario = 'base') {
   const spec = ativo.rendimento;
   const estimativas = premissas.estimativas || {};
-  const { cdi_aa: cdi, selic_meta_aa: selic, ipca_12m: ipca, poupanca_am: poupancaAm } = indicadores;
+
+  // Indicador ausente daria NaN e viraria "R$ NaN" na tela. Falhar aqui faz o
+  // ativo aparecer na lista de erros com o motivo, sem contaminar a comparação.
+  const exigir = (chave) => {
+    const valor = indicadores[chave];
+    if (typeof valor !== 'number' || !Number.isFinite(valor)) {
+      throw new Error(
+        `"${ativo.nome}" depende do indicador ${chave}, que não está no retrato de mercado`);
+    }
+    return valor;
+  };
 
   let bruta, explicacao, natureza;
 
   switch (spec.tipo) {
     case 'pos_cdi': {
       const pct = spec.percentual_cdi;
+      const cdi = exigir('cdi_aa');
       bruta = (cdi * pct) / 100;
       explicacao = `${pct}% do CDI (${dec(cdi)}% a.a.)`;
       natureza = 'contratada';
@@ -47,6 +58,7 @@ export function resolver(ativo, indicadores, premissas, cenario = 'base') {
     }
     case 'pos_selic': {
       const spread = spec.spread_aa || 0;
+      const selic = exigir('selic_meta_aa');
       bruta = spread ? compor(selic, spread) : selic;
       explicacao = `Selic ${dec(selic)}% a.a.` + (spread ? ` + ${spread}%` : '');
       natureza = 'contratada';
@@ -60,13 +72,14 @@ export function resolver(ativo, indicadores, premissas, cenario = 'base') {
     }
     case 'ipca_mais': {
       const spread = spec.spread_aa;
-      const ipcaProj = valorDoCenario(estimativas.ipca_projetado_aa, cenario, ipca);
+      const ipcaProj = valorDoCenario(estimativas.ipca_projetado_aa, cenario, indicadores.ipca_12m);
       bruta = compor(ipcaProj, spread);
       explicacao = `IPCA projetado ${dec(ipcaProj)}% a.a. + ${spread}% de juro real`;
       natureza = 'hibrida';
       break;
     }
     case 'poupanca': {
+      const poupancaAm = exigir('poupanca_am');
       bruta = amParaAa(poupancaAm / 100);
       explicacao = `Poupança a ${dec(poupancaAm, 4)}% a.m., anualizado`;
       natureza = 'contratada';

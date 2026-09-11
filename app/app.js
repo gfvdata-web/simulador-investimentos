@@ -28,6 +28,20 @@ const moedaCurta = (v) => {
   if (abs >= 1e3) return 'R$ ' + (v / 1e3).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'k';
   return 'R$ ' + v.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
 };
+/** Formata segundo a unidade que o coletor declarou. Nem todo indicador é
+    percentual: preço de ativo chega como "R$", e taxa como "% a.a.". */
+const MOEDAS = ['R$', 'US$', 'EUR', '€', '$'];
+const valorComUnidade = (valor, unidade = '') => {
+  if (unidade.startsWith('%')) return pct(valor) + unidade.slice(1).trimEnd();
+  const moeda = MOEDAS.find((m) => unidade.startsWith(m));
+  if (moeda) {
+    const resto = unidade.slice(moeda.length).trim();
+    const numero = valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return `${moeda} ${numero}${resto ? ' ' + resto : ''}`;
+  }
+  const numero = valor.toLocaleString('pt-BR', { maximumFractionDigits: 4 });
+  return unidade ? `${numero} ${unidade}` : numero;
+};
 const pct = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
 const dataBR = (iso) => {
   if (!iso) return '';
@@ -40,6 +54,7 @@ const textoIdade = (dias) => {
   if (dias === 1) return 'ontem';
   return `há ${dias} dias`;
 };
+const abreviarFonte = (nome) => String(nome).split(' - ')[0].replace('Banco Central do Brasil', 'BCB');
 const escapar = (t) => String(t).replace(/[&<>"]/g, (c) => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -48,19 +63,17 @@ async function carregarIndicadores() {
   try {
     const ind = await dados.indicadores();
     estado.indicadores = ind;
-    const fonte = (chave) => {
-      const o = ind._origem[chave] || {};
-      return o.origem === 'Banco Central (SGS)' ? `BCB · ${dataBR(o.referencia)}` : 'fallback local';
-    };
-    const cartoes = [
-      ['CDI', pct(ind.cdi_aa) + ' a.a.', fonte('cdi_aa')],
-      ['Selic meta', pct(ind.selic_meta_aa) + ' a.a.', fonte('selic_meta_aa')],
-      ['IPCA 12 meses', pct(ind.ipca_12m), fonte('ipca_12m')],
-      ['Poupança', pct(ind.poupanca_am) + ' a.m.', fonte('poupanca_am')],
-    ];
-    $('#indicadores').innerHTML = cartoes.map(([r, v, f]) =>
-      `<li><span class="rotulo">${r}</span><div class="valor">${v}</div><span class="fonte">${f}</span></li>`
-    ).join('');
+    // Nada de lista fixa: os cartões saem do próprio retrato, com o rótulo
+    // e a unidade que o coletor gravou. Indicador novo aparece sozinho.
+    $('#indicadores').innerHTML = Object.entries(ind._meta).map(([chave, m]) => {
+      const procedencia = m.origem === 'fallback de premissas.json'
+        ? 'fallback local'
+        : `${abreviarFonte(m.origem)} · ${dataBR(m.referencia)}`;
+      return `<li${m.heranca ? ' class="herdado" title="' + escapar(m.heranca) + '"' : ''}>
+        <span class="rotulo">${escapar(m.rotulo)}</span>
+        <div class="valor">${valorComUnidade(ind[chave], m.unidade)}</div>
+        <span class="fonte">${escapar(procedencia)}</span></li>`;
+    }).join('');
 
     const avisos = [];
     if (ind._degradado) {
@@ -193,7 +206,6 @@ async function simular() {
     const escolhidos = Array.from(estado.selecionados).map((id) => porId[id]).filter(Boolean);
     const saida = motor.comparar(escolhidos, indicadores, premissas, parametros);
     saida.parametros = parametros;
-    saida.procedencia = indicadores._origem;
     saida.indicadores = indicadores;
 
     estado.ultimaSimulacao = saida;
@@ -286,14 +298,13 @@ function renderizarResultados(saida) {
 }
 
 function renderizarDetalhe(saida) {
-  const rotulos = { cdi_aa: 'CDI', selic_meta_aa: 'Selic meta', ipca_12m: 'IPCA 12 meses', poupanca_am: 'Poupança' };
-  const unidade = { cdi_aa: ' a.a.', selic_meta_aa: ' a.a.', ipca_12m: '', poupanca_am: ' a.m.' };
-  const linhas = Object.entries(saida.procedencia).map(([chave, info]) => `
+  const ind = saida.indicadores;
+  const linhas = Object.entries(ind._meta).map(([chave, m]) => `
     <tr>
-      <td>${rotulos[chave] || chave}</td>
-      <td class="num">${pct(saida.indicadores[chave])}${unidade[chave] || ''}</td>
-      <td>${escapar(info.origem)}${info.serie_sgs ? ` · série SGS ${info.serie_sgs}` : ''}</td>
-      <td>${dataBR(info.referencia)}</td>
+      <td>${escapar(m.rotulo)}</td>
+      <td class="num">${valorComUnidade(ind[chave], m.unidade)}</td>
+      <td>${escapar(m.heranca || m.origem)}${m.referencia_fonte ? ` · série ${m.referencia_fonte}` : ''}</td>
+      <td>${dataBR(m.referencia)}</td>
     </tr>`).join('');
 
   $('#painel-detalhe').hidden = false;
@@ -307,8 +318,22 @@ function renderizarDetalhe(saida) {
 }
 
 /* ---------------------------------------------------------- histórico */
+/** Monta o seletor a partir do manifesto: série nova aparece sem tocar no HTML. */
+async function montarSeletorHistorico() {
+  const series = await dados.seriesDisponiveis();
+  const seletor = $('#serie-historica');
+  seletor.innerHTML = series.map((s) =>
+    `<option value="${escapar(s.id)}">${escapar(s.rotulo_curto || s.rotulo)}</option>`).join('');
+  seletor.disabled = !series.length;
+  return series.length;
+}
+
 async function carregarHistorico() {
   const serie = $('#serie-historica').value;
+  if (!serie) {
+    $('#resumo-historico').innerHTML = '<div class="aviso">Nenhuma série coletada ainda.</div>';
+    return;
+  }
   $('#resumo-historico').innerHTML = '<p class="vazio">carregando série do Banco Central…</p>';
   try {
     const hist = await dados.historico(serie, 60);
@@ -321,7 +346,7 @@ async function carregarHistorico() {
         <strong style="color:var(--texto)">${pct(hist.acumulado_total_pct)}</strong>
         entre ${dataBR(primeiro.data)} e ${dataBR(ultimo.data)}.
         R$ 100 aplicados no início do período valeriam ${moeda(ultimo.indice_100)}.
-        Fonte: ${hist.fonte}, série ${hist.serie_sgs}.
+        Fonte: ${escapar(hist.fonte)}${hist.referencia_fonte ? `, série ${hist.referencia_fonte}` : ''}.
       </p>`;
     desenharLinhas($('#grafico-historico'), [{
       nome: hist.rotulo,
@@ -545,7 +570,9 @@ function ligarControles() {
     $('#aba-projecao').hidden = aba !== 'projecao';
     $('#aba-historico').hidden = aba !== 'historico';
     $('#painel-detalhe').hidden = aba !== 'projecao' || !estado.ultimaSimulacao;
-    if (aba === 'historico' && !estado.serieHistorica) carregarHistorico();
+    if (aba === 'historico' && !estado.serieHistorica) {
+      montarSeletorHistorico().then((n) => n && carregarHistorico());
+    }
   }));
   $('#serie-historica').addEventListener('change', carregarHistorico);
 

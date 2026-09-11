@@ -22,6 +22,7 @@ import urllib.error
 import urllib.request
 from datetime import date, timedelta
 
+NOME = "Banco Central do Brasil - SGS"
 BASE = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados"
 TIMEOUT = 20
 TENTATIVAS = 3
@@ -115,9 +116,15 @@ def ultimo(nome: str) -> dict:
     return {"data": f"{ano}-{mes}-{dia}", "valor": float(str(item["valor"]).replace(",", "."))}
 
 
-def ipca_acumulado_12m() -> dict:
-    """Compoe os 12 ultimos IPCAs mensais em uma taxa acumulada (% a.a.)."""
-    pontos = serie("ipca_mensal", meses=13)[-12:]
+def acumulado_12m(nome: str) -> dict:
+    """Compoe os 12 ultimos pontos mensais em uma taxa acumulada (% a.a.).
+
+    Usado pelo IPCA. Pedimos 13 meses e cortamos porque a consulta por
+    intervalo de datas pode devolver um mes a mais nas bordas.
+    """
+    pontos = serie(nome, meses=13)[-12:]
+    if len(pontos) < 12:
+        raise FalhaFonte(f"Serie {nome} com menos de 12 meses para acumular")
     fator = 1.0
     for ponto in pontos:
         fator *= 1 + ponto["valor"] / 100

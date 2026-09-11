@@ -27,14 +27,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Conferir que os dados de mercado existem
-        run: |
-          test -f dados/mercado/indicadores.json || {
-            echo 'dados/mercado/indicadores.json não existe — rode o workflow de coleta antes.'
-            exit 1
-          }
-          python -c "import json,sys; d=json.load(open('dados/mercado/indicadores.json')); \
-            sys.exit(0 if any(c.get('valor') is not None for c in d['campos'].values()) else 1)"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Catalogo com typo (regime inexistente, chave_premissa quebrada) nao chega
+      # ao ar: numero errado na tela e pior que pagina fora do ar.
+      - name: Validar dados
+        run: python scripts/validar.py
 
       - uses: actions/configure-pages@v5
 
