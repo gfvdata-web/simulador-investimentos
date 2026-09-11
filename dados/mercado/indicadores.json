@@ -1,5 +1,5 @@
 {
-  "coletado_em": "2026-09-11T10:55:04+00:00",
+  "coletado_em": "2026-09-11T23:02:34+00:00",
   "completo": true,
   "campos": {
     "cdi_aa": {
@@ -9,7 +9,7 @@
       "referencia_fonte": 4389,
       "valor": 13.9,
       "origem": "fonte oficial",
-      "referencia": "2026-09-09"
+      "referencia": "2026-09-10"
     },
     "selic_meta_aa": {
       "rotulo": "Selic meta",
@@ -25,9 +25,9 @@
       "unidade": "%",
       "fonte": "Banco Central do Brasil - SGS",
       "referencia_fonte": 433,
-      "valor": 4.443,
+      "valor": 4.2235,
       "origem": "fonte oficial",
-      "referencia": "2026-07-01"
+      "referencia": "2026-08-01"
     },
     "poupanca_am": {
       "rotulo": "Poupança",
@@ -69,9 +69,9 @@
       "arquivo": "series/ipca.json",
       "fonte": "Banco Central do Brasil - SGS",
       "referencia_fonte": 433,
-      "pontos": 122,
+      "pontos": 123,
       "primeiro": "2016-06-01",
-      "ultimo": "2026-07-01"
+      "ultimo": "2026-08-01"
     },
     {
       "id": "poupanca",
@@ -87,166 +87,6 @@
   ],
   "fundos": [
     {
-      "ticker": "ITUSTECH",
-      "tipo": "fi",
-      "rotulo": "Itaú Index US Tech Ações",
-      "arquivo": "fundos/ITUSTECH.json",
-      "pontos": 12,
-      "primeiro": "2025-09-30",
-      "ultimo": "2026-08-31",
-      "coletado_em": "2026-09-11T10:51:43+00:00"
-    },
-    {
-      "ticker": "ITVALE",
-      "tipo": "fi",
-      "rotulo": "Itaú Index Vale Ações",
-      "arquivo": "fundos/ITVALE.json",
-      "pontos": 12,
-      "primeiro": "2025-09-30",
-      "ultimo": "2026-08-31",
-      "coletado_em": "2026-09-11T10:52:12+00:00"
-    },
-    {
-      "ticker": "ITUNIBCO",
-      "tipo": "fi",
-      "rotulo": "Itaú Index Itaú Unibanco Ações",
-      "arquivo": "fundos/ITUNIBCO.json",
-      "pontos": 12,
-      "primeiro": "2025-09-30",
-      "ultimo": "2026-08-31",
-      "coletado_em": "2026-09-11T10:52:40+00:00"
-    },
-    {
-      "ticker": "ITELEBRAS",
-      "tipo": "fi",
-      "rotulo": "Itaú Eletrobras Ações FIC FI",
-      "arquivo": "fundos/ITELEBRAS.json",
-      "pontos": 12,
-      "primeiro": "2025-09-30",
-      "ultimo": "2026-08-31",
-      "coletado_em": "2026-09-11T10:53:09+00:00"
-    },
-    {
-      "ticker": "ITSABESP",
-      "tipo": "fi",
-      "rotulo": "Itaú Sabesp Ações FIF RL",
-      "arquivo": "fundos/ITSABESP.json",
-      "pontos": 12,
-      "primeiro": "2025-09-30",
-      "ultimo": "2026-08-31",
-      "coletado_em": "2026-09-11T10:53:38+00:00"
-    },
-    {
-      "ticker": "ITGDPLUS",
-      "tipo": "fi",
-      "rotulo": "Itaú Global Dinâmico Plus Multimercado",
-      "arquivo": "fundos/ITGDPLUS.json",
-      "pontos": 12,
-      "primeiro": "2025-09-30",
-      "ultimo": "2026-08-31",
-      "coletado_em": "2026-09-11T10:54:06+00:00"
-    },
-    {
-      "ticker": "ITGOLDMM",
-      "tipo": "fi",
-      "rotulo": "Itaú Index Gold Multimercado",
-      "arquivo": "fundos/ITGOLDMM.json",
-      "pontos": 12,
-      "primeiro": "2025-09-30",
-      "ultimo": "2026-08-31",
-      "coletado_em": "2026-09-11T10:54:36+00:00"
-    },
-    {
-      "ticker": "ITMODMM",
-      "tipo": "fi",
-      "rotulo": "Carteira Itaú Asset de Investimento Moderado Multimercado",
-      "arquivo": "fundos/ITMODMM.json",
-      "pontos": 12,
-      "primeiro": "2025-09-30",
-      "ultimo": "2026-08-31",
-      "coletado_em": "2026-09-11T10:55:04+00:00"
-    },
-    {
-      "ticker": "NVDC34",
-      "tipo": "etf",
-      "rotulo": "NVDC34 (BDR Nvidia)",
-      "arquivo": "fundos/NVDC34.json",
-      "pontos": 45,
-      "primeiro": "2023-01-31",
-      "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T10:42:38+00:00"
-    },
-    {
-      "ticker": "MSFT34",
-      "tipo": "etf",
-      "rotulo": "MSFT34 (BDR Microsoft)",
-      "arquivo": "fundos/MSFT34.json",
-      "pontos": 45,
-      "primeiro": "2023-01-31",
-      "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T10:37:53+00:00"
-    },
-    {
-      "ticker": "MELI34",
-      "tipo": "etf",
-      "rotulo": "MELI34 (BDR MercadoLibre)",
-      "arquivo": "fundos/MELI34.json",
-      "pontos": 45,
-      "primeiro": "2023-01-31",
-      "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T10:38:10+00:00"
-    },
-    {
-      "ticker": "AMZO34",
-      "tipo": "etf",
-      "rotulo": "AMZO34 (BDR Amazon)",
-      "arquivo": "fundos/AMZO34.json",
-      "pontos": 45,
-      "primeiro": "2023-01-31",
-      "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T10:38:28+00:00"
-    },
-    {
-      "ticker": "TSLA34",
-      "tipo": "etf",
-      "rotulo": "TSLA34 (BDR Tesla)",
-      "arquivo": "fundos/TSLA34.json",
-      "pontos": 45,
-      "primeiro": "2023-01-31",
-      "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T10:38:46+00:00"
-    },
-    {
-      "ticker": "M2ST34",
-      "tipo": "etf",
-      "rotulo": "M2ST34 (BDR Strategy, ex-MicroStrategy)",
-      "arquivo": "fundos/M2ST34.json",
-      "pontos": 45,
-      "primeiro": "2023-01-31",
-      "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T10:39:03+00:00"
-    },
-    {
-      "ticker": "S2EA34",
-      "tipo": "etf",
-      "rotulo": "S2EA34 (BDR Sea Limited)",
-      "arquivo": "fundos/S2EA34.json",
-      "pontos": 45,
-      "primeiro": "2023-01-31",
-      "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T10:39:20+00:00"
-    },
-    {
-      "ticker": "NFLX34",
-      "tipo": "etf",
-      "rotulo": "NFLX34 (BDR Netflix)",
-      "arquivo": "fundos/NFLX34.json",
-      "pontos": 45,
-      "primeiro": "2023-01-31",
-      "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T10:39:38+00:00"
-    },
-    {
       "ticker": "VILG11",
       "tipo": "fii",
       "rotulo": "VILG11 (Vinci Logística FII)",
@@ -254,7 +94,7 @@
       "pontos": 36,
       "primeiro": "2023-08-01",
       "ultimo": "2026-07-01",
-      "coletado_em": "2026-09-11T01:34:16+00:00"
+      "coletado_em": "2026-09-11T22:51:54+00:00"
     },
     {
       "ticker": "ALZR11",
@@ -264,7 +104,7 @@
       "pontos": 36,
       "primeiro": "2023-08-01",
       "ultimo": "2026-07-01",
-      "coletado_em": "2026-09-11T01:34:16+00:00"
+      "coletado_em": "2026-09-11T22:51:55+00:00"
     },
     {
       "ticker": "BTLG11",
@@ -274,7 +114,7 @@
       "pontos": 36,
       "primeiro": "2023-08-01",
       "ultimo": "2026-07-01",
-      "coletado_em": "2026-09-11T01:34:17+00:00"
+      "coletado_em": "2026-09-11T22:51:55+00:00"
     },
     {
       "ticker": "GGRC11",
@@ -284,7 +124,7 @@
       "pontos": 36,
       "primeiro": "2023-08-01",
       "ultimo": "2026-07-01",
-      "coletado_em": "2026-09-11T01:34:17+00:00"
+      "coletado_em": "2026-09-11T22:51:55+00:00"
     },
     {
       "ticker": "RECR11",
@@ -294,7 +134,7 @@
       "pontos": 36,
       "primeiro": "2023-08-01",
       "ultimo": "2026-07-01",
-      "coletado_em": "2026-09-11T01:34:17+00:00"
+      "coletado_em": "2026-09-11T22:51:55+00:00"
     },
     {
       "ticker": "HGLG11",
@@ -304,7 +144,7 @@
       "pontos": 36,
       "primeiro": "2023-08-01",
       "ultimo": "2026-07-01",
-      "coletado_em": "2026-09-11T01:34:18+00:00"
+      "coletado_em": "2026-09-11T22:51:55+00:00"
     },
     {
       "ticker": "XPLG11",
@@ -314,7 +154,7 @@
       "pontos": 36,
       "primeiro": "2023-08-01",
       "ultimo": "2026-07-01",
-      "coletado_em": "2026-09-11T01:34:18+00:00"
+      "coletado_em": "2026-09-11T22:51:55+00:00"
     },
     {
       "ticker": "KNCR11",
@@ -324,7 +164,7 @@
       "pontos": 36,
       "primeiro": "2023-08-01",
       "ultimo": "2026-07-01",
-      "coletado_em": "2026-09-11T01:34:19+00:00"
+      "coletado_em": "2026-09-11T22:51:56+00:00"
     },
     {
       "ticker": "DIVO11",
@@ -334,7 +174,7 @@
       "pontos": 45,
       "primeiro": "2023-01-31",
       "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T01:34:42+00:00"
+      "coletado_em": "2026-09-11T22:57:58+00:00"
     },
     {
       "ticker": "GOLD11",
@@ -344,7 +184,7 @@
       "pontos": 45,
       "primeiro": "2023-01-31",
       "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T01:34:56+00:00"
+      "coletado_em": "2026-09-11T22:58:07+00:00"
     },
     {
       "ticker": "WRLD11",
@@ -354,7 +194,7 @@
       "pontos": 45,
       "primeiro": "2023-01-31",
       "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T01:35:09+00:00"
+      "coletado_em": "2026-09-11T22:58:15+00:00"
     },
     {
       "ticker": "XINA11",
@@ -364,7 +204,7 @@
       "pontos": 45,
       "primeiro": "2023-01-31",
       "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T01:35:22+00:00"
+      "coletado_em": "2026-09-11T22:58:24+00:00"
     },
     {
       "ticker": "NASD11",
@@ -374,7 +214,167 @@
       "pontos": 45,
       "primeiro": "2023-01-31",
       "ultimo": "2026-09-10",
-      "coletado_em": "2026-09-11T01:35:36+00:00"
+      "coletado_em": "2026-09-11T22:58:32+00:00"
+    },
+    {
+      "ticker": "MSFT34",
+      "tipo": "etf",
+      "rotulo": "MSFT34 (BDR Microsoft)",
+      "arquivo": "fundos/MSFT34.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T22:58:41+00:00"
+    },
+    {
+      "ticker": "MELI34",
+      "tipo": "etf",
+      "rotulo": "MELI34 (BDR MercadoLibre)",
+      "arquivo": "fundos/MELI34.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T22:58:50+00:00"
+    },
+    {
+      "ticker": "AMZO34",
+      "tipo": "etf",
+      "rotulo": "AMZO34 (BDR Amazon)",
+      "arquivo": "fundos/AMZO34.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T22:58:58+00:00"
+    },
+    {
+      "ticker": "TSLA34",
+      "tipo": "etf",
+      "rotulo": "TSLA34 (BDR Tesla)",
+      "arquivo": "fundos/TSLA34.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T22:59:07+00:00"
+    },
+    {
+      "ticker": "M2ST34",
+      "tipo": "etf",
+      "rotulo": "M2ST34 (BDR Strategy, ex-MicroStrategy)",
+      "arquivo": "fundos/M2ST34.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T22:59:16+00:00"
+    },
+    {
+      "ticker": "S2EA34",
+      "tipo": "etf",
+      "rotulo": "S2EA34 (BDR Sea Limited)",
+      "arquivo": "fundos/S2EA34.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T22:59:24+00:00"
+    },
+    {
+      "ticker": "NFLX34",
+      "tipo": "etf",
+      "rotulo": "NFLX34 (BDR Netflix)",
+      "arquivo": "fundos/NFLX34.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T22:59:33+00:00"
+    },
+    {
+      "ticker": "NVDC34",
+      "tipo": "etf",
+      "rotulo": "NVDC34 (BDR Nvidia)",
+      "arquivo": "fundos/NVDC34.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T22:59:42+00:00"
+    },
+    {
+      "ticker": "ITUSTECH",
+      "tipo": "fi",
+      "rotulo": "Itaú Index US Tech Ações",
+      "arquivo": "fundos/ITUSTECH.json",
+      "pontos": 12,
+      "primeiro": "2025-09-30",
+      "ultimo": "2026-08-31",
+      "coletado_em": "2026-09-11T23:01:05+00:00"
+    },
+    {
+      "ticker": "ITVALE",
+      "tipo": "fi",
+      "rotulo": "Itaú Index Vale Ações",
+      "arquivo": "fundos/ITVALE.json",
+      "pontos": 12,
+      "primeiro": "2025-09-30",
+      "ultimo": "2026-08-31",
+      "coletado_em": "2026-09-11T23:01:17+00:00"
+    },
+    {
+      "ticker": "ITUNIBCO",
+      "tipo": "fi",
+      "rotulo": "Itaú Index Itaú Unibanco Ações",
+      "arquivo": "fundos/ITUNIBCO.json",
+      "pontos": 12,
+      "primeiro": "2025-09-30",
+      "ultimo": "2026-08-31",
+      "coletado_em": "2026-09-11T23:01:30+00:00"
+    },
+    {
+      "ticker": "ITELEBRAS",
+      "tipo": "fi",
+      "rotulo": "Itaú Eletrobras Ações FIC FI",
+      "arquivo": "fundos/ITELEBRAS.json",
+      "pontos": 12,
+      "primeiro": "2025-09-30",
+      "ultimo": "2026-08-31",
+      "coletado_em": "2026-09-11T23:01:43+00:00"
+    },
+    {
+      "ticker": "ITSABESP",
+      "tipo": "fi",
+      "rotulo": "Itaú Sabesp Ações FIF RL",
+      "arquivo": "fundos/ITSABESP.json",
+      "pontos": 12,
+      "primeiro": "2025-09-30",
+      "ultimo": "2026-08-31",
+      "coletado_em": "2026-09-11T23:01:56+00:00"
+    },
+    {
+      "ticker": "ITGDPLUS",
+      "tipo": "fi",
+      "rotulo": "Itaú Global Dinâmico Plus Multimercado",
+      "arquivo": "fundos/ITGDPLUS.json",
+      "pontos": 12,
+      "primeiro": "2025-09-30",
+      "ultimo": "2026-08-31",
+      "coletado_em": "2026-09-11T23:02:08+00:00"
+    },
+    {
+      "ticker": "ITGOLDMM",
+      "tipo": "fi",
+      "rotulo": "Itaú Index Gold Multimercado",
+      "arquivo": "fundos/ITGOLDMM.json",
+      "pontos": 12,
+      "primeiro": "2025-09-30",
+      "ultimo": "2026-08-31",
+      "coletado_em": "2026-09-11T23:02:21+00:00"
+    },
+    {
+      "ticker": "ITMODMM",
+      "tipo": "fi",
+      "rotulo": "Carteira Itaú Asset de Investimento Moderado Multimercado",
+      "arquivo": "fundos/ITMODMM.json",
+      "pontos": 12,
+      "primeiro": "2025-09-30",
+      "ultimo": "2026-08-31",
+      "coletado_em": "2026-09-11T23:02:34+00:00"
     }
   ]
 }
