@@ -1,0 +1,114 @@
+{
+  "versao": "1.0.0",
+  "atualizado_em": "2026-09-10",
+  "observacao": "Duas familias de numero. 'indicadores' sao FATOS que o backend busca no Banco Central (os valores aqui sao apenas fallback offline). 'estimativas' sao PALPITES explicitos para ativos de retorno nao contratado - toda estimativa precisa de fonte e cenarios.",
+  "indicadores": {
+    "_fonte": "Banco Central do Brasil - API SGS. Fallback usado apenas quando a API esta indisponivel; sincronizado em 2026-09-10.",
+    "cdi_aa": 13.9,
+    "selic_meta_aa": 14.0,
+    "ipca_12m": 4.443,
+    "poupanca_am": 0.6698,
+    "tr_am": 0.0
+  },
+  "estimativas": {
+    "_fonte": "Placeholder do autor do projeto. Substituir por Relatorio Focus (BCB) / consenso de mercado antes de usar para decidir qualquer coisa.",
+    "ipca_projetado_aa": {
+      "pessimista": 6.5,
+      "base": 4.443,
+      "otimista": 3.2,
+      "fonte": "Relatorio Focus - mediana de expectativas de IPCA"
+    },
+    "bova11": {
+      "retorno_aa": {
+        "pessimista": -8.0,
+        "base": 11.0,
+        "otimista": 24.0
+      },
+      "volatilidade_aa": 24.0,
+      "fonte": "Media historica de longo prazo do Ibovespa; NAO e previsao."
+    },
+    "ivvb11": {
+      "retorno_aa": {
+        "pessimista": -10.0,
+        "base": 12.0,
+        "otimista": 22.0
+      },
+      "volatilidade_aa": 20.0,
+      "fonte": "S&P 500 em USD + variacao cambial; NAO e previsao."
+    },
+    "bitcoin": {
+      "retorno_aa": {
+        "pessimista": -45.0,
+        "base": 15.0,
+        "otimista": 70.0
+      },
+      "volatilidade_aa": 60.0,
+      "fonte": "Ilustrativo. Bitcoin nao tem retorno esperado estatisticamente confiavel."
+    }
+  },
+  "tributacao": {
+    "ir_regressivo_rf": [
+      {
+        "ate_dias": 180,
+        "aliquota": 22.5
+      },
+      {
+        "ate_dias": 360,
+        "aliquota": 20.0
+      },
+      {
+        "ate_dias": 720,
+        "aliquota": 17.5
+      },
+      {
+        "ate_dias": null,
+        "aliquota": 15.0
+      }
+    ],
+    "ir_renda_variavel_aliquota": 15.0,
+    "ir_cripto_aliquota": 15.0,
+    "isencao_venda_acoes_mensal": 20000.0,
+    "isencao_venda_cripto_mensal": 35000.0,
+    "come_cotas_habilitado": false,
+    "iof_regressivo_30d": [
+      96,
+      93,
+      90,
+      86,
+      83,
+      80,
+      76,
+      73,
+      70,
+      66,
+      63,
+      60,
+      56,
+      53,
+      50,
+      46,
+      43,
+      40,
+      36,
+      33,
+      30,
+      26,
+      23,
+      20,
+      16,
+      13,
+      10,
+      6,
+      3,
+      0
+    ]
+  },
+  "defaults_simulacao": {
+    "valor_inicial": 100.0,
+    "aporte_mensal": 0.0,
+    "meses": 12,
+    "cenario": "base",
+    "considerar_ir": true,
+    "considerar_inflacao": true
+  }
+}

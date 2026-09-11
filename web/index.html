@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador de Investimentos</title>
+  <link rel="stylesheet" href="estilo.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>📈</text></svg>">
+</head>
+<body>
+
+<header>
+  <div class="titulo">
+    <h1>Simulador de Investimentos</h1>
+    <span class="versao">v0.1.0 &middot; preview</span>
+  </div>
+  <ul class="indicadores" id="indicadores">
+    <li><span class="rotulo">carregando</span><div class="valor">&mdash;</div></li>
+  </ul>
+</header>
+
+<main>
+  <!-- ---------------- coluna de controles ---------------- -->
+  <div>
+    <section class="painel">
+      <h2>Simulação</h2>
+
+      <div class="campo">
+        <label for="valor-inicial">Valor inicial (R$)</label>
+        <input type="number" id="valor-inicial" value="100" min="0" step="10">
+      </div>
+
+      <div class="campo">
+        <label for="aporte-mensal">Aporte mensal (R$)</label>
+        <input type="number" id="aporte-mensal" value="0" min="0" step="10">
+      </div>
+
+      <div class="campo">
+        <label for="meses">Prazo</label>
+        <div class="prazos" id="prazos">
+          <button type="button" data-meses="12">12M</button>
+          <button type="button" data-meses="24">24M</button>
+          <button type="button" data-meses="60">60M</button>
+          <button type="button" data-meses="120">120M</button>
+        </div>
+        <input type="number" id="meses" value="12" min="1" max="600" step="1">
+      </div>
+
+      <div class="campo">
+        <label for="cenario">Cenário (só afeta retornos estimados)</label>
+        <select id="cenario">
+          <option value="pessimista">Pessimista</option>
+          <option value="base" selected>Base</option>
+          <option value="otimista">Otimista</option>
+        </select>
+      </div>
+
+      <label class="opcao"><input type="checkbox" id="considerar-ir" checked> Descontar IR / IOF</label>
+      <label class="opcao"><input type="checkbox" id="considerar-inflacao" checked> Mostrar valor real (IPCA)</label>
+
+      <button class="principal" id="simular">Simular</button>
+    </section>
+
+    <section class="painel">
+      <h2>Ativos <span id="contagem-ativos" style="text-transform:none;letter-spacing:0"></span></h2>
+      <div id="lista-ativos"><p class="vazio">carregando catálogo…</p></div>
+    </section>
+  </div>
+
+  <!-- ---------------- coluna de resultados ---------------- -->
+  <div>
+    <section class="painel">
+      <div class="abas" role="tablist">
+        <button role="tab" data-aba="projecao" aria-selected="true">Projeção</button>
+        <button role="tab" data-aba="historico" aria-selected="false">Histórico real (BCB)</button>
+      </div>
+
+      <div id="aba-projecao">
+        <div id="aviso-degradado"></div>
+        <div id="resumo"><p class="vazio">Escolha os ativos à esquerda e clique em <strong>Simular</strong>.</p></div>
+        <div class="grafico-caixa" id="grafico-caixa" hidden>
+          <canvas id="grafico"></canvas>
+          <div id="leitura"></div>
+          <div class="legenda" id="legenda"></div>
+        </div>
+      </div>
+
+      <div id="aba-historico" hidden>
+        <div class="campo" style="max-width:260px">
+          <label for="serie-historica">Série (dados reais do Banco Central)</label>
+          <select id="serie-historica">
+            <option value="cdi">CDI</option>
+            <option value="selic">Selic</option>
+            <option value="ipca">IPCA</option>
+            <option value="poupanca">Poupança</option>
+          </select>
+        </div>
+        <div id="resumo-historico"></div>
+        <div class="grafico-caixa">
+          <canvas id="grafico-historico"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="painel" id="painel-detalhe" hidden>
+      <h2>De onde vem cada número</h2>
+      <div id="detalhe"></div>
+    </section>
+
+    <p class="rodape-nota">
+      Ferramenta de estudo pessoal, não é recomendação de investimento. Indicadores vêm da API pública
+      do Banco Central (SGS); retornos de renda variável e cripto são <strong>estimativas</strong> definidas
+      por você em <code>dados/premissas/premissas.json</code> e não têm valor preditivo.
+    </p>
+  </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
