@@ -42,23 +42,50 @@ export function projetar(ativo, indicadores, premissas, {
   const isentoAm = taxa.componente_isento_am || 0;
   const tributavelAm = taxa.componente_tributavel_am ?? taxaAm;
 
+  // Come-cotas: só roda para o regime 'fundo_longo_prazo' e só se a chave
+  // global estiver ligada. A cada 6 meses (maio/novembro reais, aqui
+  // aproximados por múltiplo de 6 do mês simulado - ver docs/03), a Receita
+  // antecipa 15% sobre o ganho acumulado desde a última cobrança, "comendo"
+  // cotas. Isso não é imposto extra: é adiantamento, abatido do IR final em
+  // tributos.js. Ver docs/05.
+  const usaComeCotas = ativo.tributacao.regime === 'fundo_longo_prazo'
+    && !!(premissas.tributacao && premissas.tributacao.come_cotas_habilitado);
+  const aliquotaComeCotas = (premissas.tributacao && premissas.tributacao.aliquota_come_cotas_longo_prazo) || 15;
+
   const lotes = [];
   const serie = [{ mes: 0, bruto: arredondar(valorInicial), investido: arredondar(valorInicial) }];
   let investido = valorInicial;
   let dividendosIsentos = 0;
 
   if (valorInicial > 0) {
-    lotes.push({ mes_entrada: 1, principal: valorInicial, valor_final: valorInicial });
+    lotes.push({
+      mes_entrada: 1, principal: valorInicial, valor_final: valorInicial,
+      base_come_cotas: valorInicial, come_cotas_pago: 0,
+    });
   }
 
   for (let mes = 1; mes <= meses; mes++) {
     if (aporteMensal > 0) {
-      lotes.push({ mes_entrada: mes, principal: aporteMensal, valor_final: aporteMensal });
+      lotes.push({
+        mes_entrada: mes, principal: aporteMensal, valor_final: aporteMensal,
+        base_come_cotas: aporteMensal, come_cotas_pago: 0,
+      });
       investido += aporteMensal;
     }
     for (const lote of lotes) {
       dividendosIsentos += lote.valor_final * isentoAm;
       lote.valor_final *= 1 + tributavelAm;
+    }
+    if (usaComeCotas && mes % 6 === 0 && mes !== meses) {
+      for (const lote of lotes) {
+        const ganho = lote.valor_final - lote.base_come_cotas;
+        if (ganho > 0) {
+          const imposto = (ganho * aliquotaComeCotas) / 100;
+          lote.valor_final -= imposto;
+          lote.come_cotas_pago += imposto;
+        }
+        lote.base_come_cotas = lote.valor_final;
+      }
     }
     const brutoPatrimonialMes = lotes.reduce((s, l) => s + l.valor_final, 0);
     serie.push({

@@ -90,7 +90,48 @@ existir (dividendos_isentos fica sempre `0`). Essa equivalência foi conferida
 rodando o caso do CDB abaixo antes e depois da mudança: mesmo resultado, ao
 centavo.
 
-## Casos conferidos à mão
+## Come-cotas (regime `fundo_longo_prazo`)
+
+Fundo multimercado/renda-fixa-longo-prazo antecipa IR duas vezes por ano (maio e
+novembro): a Receita tributa a 15% o ganho acumulado desde a última cobrança e
+"come" a diferença em cotas. Não é imposto extra — é adiantamento do que seria
+devido no resgate, creditado contra a mesma tabela regressiva da renda fixa
+(doc 05) quando a posição é encerrada.
+
+Ligado só quando `premissas.tributacao.come_cotas_habilitado` é `true` (é o
+padrão) **e** o regime do ativo é `fundo_longo_prazo`. Maio/novembro reais são
+aproximados por múltiplo de 6 do mês simulado (`mes % 6 === 0`), pulando o
+próprio mês do resgate — essa é a mesma simplificação de mês comercial que já
+existe pro IR, documentada, não escondida.
+
+Em `projetar()`, a cada evento, por lote:
+
+```
+ganho = lote.valor_final − lote.base_come_cotas
+imposto = ganho × 15% (se ganho > 0)
+lote.valor_final    −= imposto
+lote.come_cotas_pago += imposto
+lote.base_come_cotas  = lote.valor_final
+```
+
+No resgate, `tributos.tributar()` reconstrói o ganho **bruto** do período
+inteiro (somando de volta o que já foi retido), aplica a alíquota regressiva
+final sobre esse bruto, e cobra só a diferença:
+
+```
+ganho_bruto = (lote.valor_final − lote.principal) + lote.come_cotas_pago
+ir_devido   = ganho_bruto × alíquota_final(lote.dias) / 100
+ir_a_pagar  = max(0, ir_devido − lote.come_cotas_pago)
+```
+
+Se o prazo passar de 720 dias, a alíquota final também é 15% e `ir_a_pagar`
+fecha em ~0 — o come-cotas já cobriu tudo. Prazo menor (ex.: resgate aos 18
+meses, alíquota final 17,5%) ainda deve a diferença. Efeito líquido: o
+resultado **cai** em relação a "tributar 15% só no fim", porque o imposto sai
+mais cedo e reduz a base que compõe juros depois — é isso que fazia o projeto
+recusar fundo comum no catálogo antes desta implementação (ver doc 08).
+
+## Dividendo isento x valorização tributável (FII)
 
 Com CDI em 13,90% a.a. e IPCA projetado em 4,443% a.a. (cenário base):
 
@@ -102,6 +143,8 @@ Com CDI em 13,90% a.a. e IPCA projetado em 4,443% a.a. (cenário base):
 | R$ 1.000 + R$ 200/mês, CDB 100% CDI, 24 meses | investido R$ 5.800 · bruto R$ 6.809,75 · IR R$ 182,30 (faixas 17,5% a 22,5%) | sim |
 | R$ 100, FII sintético (regime `fii`, dividend yield 0%, valorização 1%/mês), 12 meses, projeção ligada | cota: 100 × 1,01¹² = R$ 112,68 · ganho R$ 12,68 · IR 20% = R$ 2,54 · líquido R$ 110,14 · dividendos_isentos R$ 0 | sim |
 | R$ 100, VILG11 (FII real), 12 meses, projeção de valorização desligada | dividendos_isentos = Σ DY mensal medido pela CVM (~R$ 7,17 com o DY médio coletado em 2026-09) · sem ganho de capital (cota não se moveu na projeção) · IR R$ 0 · líquido = 100 + dividendos_isentos | sim, refeito em 2026-09-10 |
+| R$ 100, fundo sintético 1%/mês (regime `fundo_longo_prazo`, come-cotas ligado), 6 meses (sem cruzar maio/novembro simulado) | igual a não ter come-cotas: bruto R$ 106,15 · IR 22,5% sobre R$ 6,15 = R$ 1,38 · líquido R$ 104,77 | sim |
+| Mesmo fundo sintético, 24 meses | come-cotas em 6/12/18 meses (R$ 2,92 retidos no total) · bruto final R$ 123,69 · IR no resgate R$ 1,74 (17,5% do ganho bruto menos o já retido) · líquido R$ 121,95 — **menor** que sem come-cotas (R$ 122,25 líquido), como devia ser | sim |
 
 O segundo caso é o que importa manter estável — não depende de dado coletado,
 só da fórmula (ver seção anterior). O terceiro depende do DY vigente do fundo:
@@ -126,7 +169,9 @@ Ver doc 08 para a lista completa de dívidas. As três que mais afetam a fidelid
 
 1. **Marcação a mercado.** Prefixado e IPCA+ são projetados como se fossem levados ao
    vencimento. Resgate antecipado pode dar resultado bem diferente.
-2. **Come-cotas.** Fundos pagariam IR semestral, o que reduz o efeito de juros
-   compostos. Por isso não há fundo no catálogo semente.
-3. **Volatilidade.** Renda variável rende hoje uma linha reta com a taxa do cenário.
+2. **Volatilidade.** Renda variável rende hoje uma linha reta com a taxa do cenário.
    `volatilidade_aa` já está no JSON esperando o Monte Carlo.
+3. **Come-cotas por múltiplo fixo de 6 meses, não maio/novembro reais.** Uma posição
+   aberta em fevereiro tem seu primeiro come-cotas simulado em agosto, não maio — a
+   diferença de meses é pequena o bastante para não mudar a ordem do ranking, mas o
+   valor exato de um resgate perto de um desses eventos pode variar um pouco do real.

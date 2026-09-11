@@ -21,6 +21,14 @@ Sair dos 10 ativos-semente para algo que reflita o que você realmente considera
   XINA11, NASD11) via B3 (COTAHIST). Novo tipo de rendimento (`fundo_fii`,
   `etf_historico`), novo regime tributário (`fii`, dividendo isento separado de ganho
   de capital) — ver docs 02, 03, 04, 05.
+- ✅ **BDR cadastrado** (2026-09): 8 BDRs de ações americanas (MSFT34, MELI34, AMZO34,
+  TSLA34, M2ST34, S2EA34, NFLX34, NVDC34) via B3 (COTAHIST) — mesma fonte do ETF, regime
+  `acoes` (isenção de R$20.000/mês, diferente de ETF).
+- ✅ **Fundo comum sem ticker cadastrado** (2026-09): 8 fundos Itaú — 5 de ações
+  (ITUSTECH, ITVALE, ITUNIBCO, ITELEBRAS, ITSABESP, regime `fundo_acoes`) e 3
+  multimercado (ITGDPLUS, ITGOLDMM, ITMODMM, regime `fundo_longo_prazo`, com
+  come-cotas). Nova fonte (`coletor/fontes/cvm_fi.py`, informe diário de FI da CVM) e
+  novo tipo de rendimento (`fundo_cvm_historico`) — ver docs 02, 04.
 - Cadastrar os demais ativos que você de fato usa ou avalia.
 - Integrar o **Tesouro Transparente** para puxar taxa real de cada título público em vez
   do valor fixo no catálogo — hoje `tesouro-prefixado-2029` diz 12,50% porque alguém
@@ -32,7 +40,8 @@ Sair dos 10 ativos-semente para algo que reflita o que você realmente considera
 
 ## Fase 2 — Fidelidade do cálculo
 
-- **Come-cotas** em fundos (doc 05 tem o desenho da implementação).
+- ✅ **Come-cotas** em fundos (2026-09): regime `fundo_longo_prazo` completo, semestral
+  a 15%, creditado contra a tabela regressiva no resgate — ver docs 03 e 05.
 - **Marcação a mercado** de prefixados e IPCA+ para resgate antes do vencimento.
 - Calendário real em vez de mês comercial de 30 dias no IR.
 - Carência e liquidez afetando o resgate: hoje `liquidez` é texto decorativo.
@@ -74,18 +83,19 @@ constante.
 
 | Dívida | Impacto | Onde |
 |---|---|---|
-| Come-cotas não modelado | fundo renderia mais do que renderia de verdade | `tributos.js` |
 | Sem marcação a mercado | prefixado e IPCA+ só fazem sentido até o vencimento | `motor.js` |
-| Mês comercial de 30 dias | casos de fronteira de IR podem cair na faixa errada | `motor.js` |
-| Isenção mensal assume venda única | ações e cripto podem ficar mais isentos na prática | `tributos.js` |
+| Mês comercial de 30 dias (IR e come-cotas) | casos de fronteira podem cair na faixa/evento errado; come-cotas simulado por múltiplo de 6 meses, não maio/novembro reais | `motor.js` |
+| Isenção mensal assume venda única | ações, BDR e cripto podem ficar mais isentos na prática | `tributos.js` |
 | `liquidez` e `fgc` são decorativos | não afetam nada no cálculo | `ativos.json` |
 | Sem testes automatizados | a tabela do doc 03 é conferida à mão | — |
 | Taxa de prefixado fixa no JSON | envelhece sem avisar | `ativos.json`, fase 1 |
-| Resumo de fundo é média simples, não ponderada | mês com PL pequeno pesa igual a mês com PL grande | `coletor/atualizar.py`, `_resumo_fii`/`_resumo_etf` |
-| ETF não separa distribuição de preço | se o ETF distribuir provento, ou está embutido no preço ou não é capturado | `b3_precos.py`, doc 05 |
-| Sem aba de histórico por fundo | `pontos` de cada FII/ETF é coletado mas só o `resumo` é usado hoje | `app/app.js` |
+| Resumo de fundo é média simples, não ponderada | mês com PL pequeno pesa igual a mês com PL grande | `coletor/atualizar.py`, `_resumo_fii`/`_resumo_precos` |
+| ETF/BDR/fundo comum não separam distribuição de preço | se distribuir provento, ou está embutido no preço/cota ou não é capturado | `b3_precos.py`, `cvm_fi.py`, doc 05 |
+| Sem aba de histórico por fundo | `pontos` de cada fundo é coletado mas só o `resumo` é usado hoje | `app/app.js` |
+| Come-cotas não compensa prejuízo | se o fundo cair de valor depois de reter come-cotas, o valor retido não é devolvido no cálculo (a lei permite compensar contra ganho futuro no mesmo fundo, não modelado) | `tributos.js` |
 
-*Nota sobre a linha acima (fundos):* adicionada em 2026-09 junto do cadastro de FII/ETF.
+*Nota sobre as linhas de fundos:* adicionadas em 2026-09 junto do cadastro de FII, ETF,
+BDR e fundo comum.
 
 ## Como escolher a próxima tarefa
 

@@ -70,7 +70,8 @@
     "ir_fii_aliquota": 20.0,
     "isencao_venda_acoes_mensal": 20000.0,
     "isencao_venda_cripto_mensal": 35000.0,
-    "come_cotas_habilitado": false,
+    "come_cotas_habilitado": true,
+    "aliquota_come_cotas_longo_prazo": 15.0,
     "iof_regressivo_30d": [
       96,
       93,

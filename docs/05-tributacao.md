@@ -34,10 +34,22 @@ ETFs de ações negociados na B3 (BOVA11, IVVB11). 15% sobre o ganho de capital,
 a isenção mensal — ela não vale para ETF. Diferença que costuma surpreender quem
 compara ETF com ação.
 
+### `fundo_acoes`
+Fundo de ações (FIA) sem ticker de bolsa (ex.: Itaú Index Vale Ações). Mesma conta de
+`etf_renda_variavel` — 15% sobre o ganho, sem isenção mensal — porque a lei trata os
+dois igual: FIA não tem come-cotas, mas também não tem a isenção de R$ 20.000/mês que
+vale só pra venda direta de ação por pessoa física. Regime separado de
+`etf_renda_variavel` só por clareza de leitura no catálogo (um FIA não é ETF), a conta
+em `tributos.js` é a mesma linha de código.
+
 ### `acoes`
 15% sobre o ganho, isento se o total vendido no mês ficar até R$ 20.000. O simulador
 compara o limite com o valor total resgatado ao fim do prazo, assumindo venda única.
 Vendas parceladas ao longo de meses poderiam ficar isentas e o simulador não modela isso.
+
+Também usado por **BDR** (recibo de ação estrangeira negociado na B3, ex.: MSFT34):
+a Receita equipara BDR a ação para fins de IR, isenção mensal incluída — diferente de
+ETF, que não tem essa isenção (ver `etf_renda_variavel` acima).
 
 ### `cripto`
 15% sobre o ganho, isento se o total alienado no mês ficar até R$ 35.000. Mesma
@@ -58,26 +70,24 @@ de todo regime acima:
 entrou neles) — se a cota não valorizou na projeção, `rendimento_total <= 0` e o
 regime devolve zero, exatamente como qualquer outro regime nesse caso.
 
-Sem come-cotas: diferente de um fundo comum, FII não antecipa IR semestral. Por isso
-ele pôde entrar no catálogo mesmo com `fundo_longo_prazo` ainda incompleto abaixo.
+Sem come-cotas: diferente de um fundo comum, FII não antecipa IR semestral — por isso
+ele entrou no catálogo antes de `fundo_longo_prazo` estar completo.
 
 ### `fundo_longo_prazo`
-Implementado de forma **incompleta**: hoje cobra 15% no resgate e ignora o come-cotas.
-Por isso não há nenhum fundo comum (multimercado, renda fixa longo prazo etc.) no
-catálogo — cadastrar um agora produziria um número otimista demais. FII (regime `fii`,
-acima) é diferente: não tem come-cotas, então não sofre desse problema.
+Fundo multimercado ou renda-fixa-longo-prazo sem ticker de bolsa (ex.: Itaú Global
+Dinâmico Plus). **Tem come-cotas**: a Receita antecipa 15% em maio e novembro sobre o
+ganho acumulado desde a última cobrança, "comendo" cotas — não é imposto extra, é
+adiantamento do que seria devido no resgate. `tributos.tributar()` credita o que já
+foi retido contra a mesma tabela regressiva da renda fixa (22,5% a 15% por prazo) na
+hora do resgate, cobrando só a diferença. O algoritmo completo, com a fórmula
+lote a lote, está no doc 03.
 
-## Come-cotas — o que falta
-
-Fundos de investimento (exceto ações) antecipam IR em maio e novembro, comendo cotas:
-15% ao ano em fundos de longo prazo, 20% em curto prazo. O efeito é reduzir o montante
-que segue rendendo, então o prejuízo cresce com o prazo — em 10 anos a diferença é
-material, não cosmética.
-
-Para implementar: em `motor.projetar()` (`app/nucleo/motor.js`), a cada 6 meses, tributar o rendimento
-acumulado de cada lote desde a última cobrança e abater do `valor_final`, guardando o
-imposto já pago para não cobrar de novo no resgate. Ligue por
-`premissas.tributacao.come_cotas_habilitado`, hoje em `false`.
+Ligado por `premissas.tributacao.come_cotas_habilitado` (hoje `true`) — só entra em
+vigor pra ativos com este regime, o resto do catálogo não é afetado. Efeito líquido:
+o resultado sai **menor** que "tributar 15% só no resgate", porque o imposto antecipado
+reduz a base que compõe juros depois. É por causa desse efeito que o projeto recusou
+cadastrar fundo comum enquanto isso não estava implementado — cadastrar sem come-cotas
+geraria um número otimista demais (dívida que constava no doc 08 até 2026-09-11).
 
 ## Outras simplificações conscientes
 

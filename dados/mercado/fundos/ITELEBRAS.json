@@ -1,0 +1,82 @@
+{
+  "ticker": "ITELEBRAS",
+  "tipo": "fi",
+  "cnpj": "42.519.896/0001-60",
+  "rotulo": "Itaú Eletrobras Ações FIC FI",
+  "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
+  "coletado_em": "2026-09-11T10:53:09+00:00",
+  "pontos": [
+    {
+      "data": "2025-09-30",
+      "valor_cota": 1.358688,
+      "variacao_mes_pct": null
+    },
+    {
+      "data": "2025-10-31",
+      "valor_cota": 1.441061,
+      "variacao_mes_pct": 6.0627
+    },
+    {
+      "data": "2025-11-28",
+      "valor_cota": 1.66527,
+      "variacao_mes_pct": 15.5586
+    },
+    {
+      "data": "2025-12-31",
+      "valor_cota": 1.690583,
+      "variacao_mes_pct": 1.5201
+    },
+    {
+      "data": "2026-01-30",
+      "valor_cota": 1.814105,
+      "variacao_mes_pct": 7.3065
+    },
+    {
+      "data": "2026-02-27",
+      "valor_cota": 2.043703,
+      "variacao_mes_pct": 12.6563
+    },
+    {
+      "data": "2026-03-31",
+      "valor_cota": 1.953405,
+      "variacao_mes_pct": -4.4184
+    },
+    {
+      "data": "2026-04-30",
+      "valor_cota": 2.068083,
+      "variacao_mes_pct": 5.8707
+    },
+    {
+      "data": "2026-05-29",
+      "valor_cota": 1.749229,
+      "variacao_mes_pct": -15.4179
+    },
+    {
+      "data": "2026-06-30",
+      "valor_cota": 1.813689,
+      "variacao_mes_pct": 3.6851
+    },
+    {
+      "data": "2026-07-31",
+      "valor_cota": 1.761576,
+      "variacao_mes_pct": -2.8733
+    },
+    {
+      "data": "2026-08-31",
+      "valor_cota": 1.77121,
+      "variacao_mes_pct": 0.5469
+    }
+  ],
+  "resumo": {
+    "janela_meses": 11,
+    "retorno_am_medio_pct": 2.7725,
+    "retorno_aa": {
+      "pessimista": 9.37,
+      "base": 38.84,
+      "otimista": 68.32
+    },
+    "volatilidade_aa": 29.48,
+    "referencia": "2026-08-31",
+    "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
+  }
+}

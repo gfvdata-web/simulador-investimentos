@@ -1,0 +1,82 @@
+{
+  "ticker": "ITUNIBCO",
+  "tipo": "fi",
+  "cnpj": "36.347.678/0001-92",
+  "rotulo": "Itaú Index Itaú Unibanco Ações",
+  "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
+  "coletado_em": "2026-09-11T10:52:40+00:00",
+  "pontos": [
+    {
+      "data": "2025-09-30",
+      "valor_cota": 27.709197,
+      "variacao_mes_pct": null
+    },
+    {
+      "data": "2025-10-31",
+      "valor_cota": 27.968223,
+      "variacao_mes_pct": 0.9348
+    },
+    {
+      "data": "2025-11-28",
+      "valor_cota": 29.523142,
+      "variacao_mes_pct": 5.5596
+    },
+    {
+      "data": "2025-12-31",
+      "valor_cota": 30.253218,
+      "variacao_mes_pct": 2.4729
+    },
+    {
+      "data": "2026-01-30",
+      "valor_cota": 35.030063,
+      "variacao_mes_pct": 15.7895
+    },
+    {
+      "data": "2026-02-27",
+      "valor_cota": 36.006878,
+      "variacao_mes_pct": 2.7885
+    },
+    {
+      "data": "2026-03-31",
+      "valor_cota": 33.76503,
+      "variacao_mes_pct": -6.2262
+    },
+    {
+      "data": "2026-04-30",
+      "valor_cota": 33.538501,
+      "variacao_mes_pct": -0.6709
+    },
+    {
+      "data": "2026-05-29",
+      "valor_cota": 31.109275,
+      "variacao_mes_pct": -7.2431
+    },
+    {
+      "data": "2026-06-30",
+      "valor_cota": 33.007936,
+      "variacao_mes_pct": 6.1032
+    },
+    {
+      "data": "2026-07-31",
+      "valor_cota": 33.546877,
+      "variacao_mes_pct": 1.6328
+    },
+    {
+      "data": "2026-08-31",
+      "valor_cota": 30.976568,
+      "variacao_mes_pct": -7.6618
+    }
+  ],
+  "resumo": {
+    "janela_meses": 11,
+    "retorno_am_medio_pct": 1.2254,
+    "retorno_aa": {
+      "pessimista": -7.98,
+      "base": 15.74,
+      "otimista": 39.45
+    },
+    "volatilidade_aa": 23.72,
+    "referencia": "2026-08-31",
+    "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
+  }
+}

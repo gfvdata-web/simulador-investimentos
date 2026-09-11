@@ -1,0 +1,82 @@
+{
+  "ticker": "ITGOLDMM",
+  "tipo": "fi",
+  "cnpj": "35.492.154/0001-22",
+  "rotulo": "Itaú Index Gold Multimercado",
+  "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
+  "coletado_em": "2026-09-11T10:54:36+00:00",
+  "pontos": [
+    {
+      "data": "2025-09-30",
+      "valor_cota": 30.034934,
+      "variacao_mes_pct": null
+    },
+    {
+      "data": "2025-10-31",
+      "valor_cota": 31.339966,
+      "variacao_mes_pct": 4.345
+    },
+    {
+      "data": "2025-11-28",
+      "valor_cota": 33.341257,
+      "variacao_mes_pct": 6.3857
+    },
+    {
+      "data": "2025-12-31",
+      "valor_cota": 34.454854,
+      "variacao_mes_pct": 3.34
+    },
+    {
+      "data": "2026-01-30",
+      "valor_cota": 37.837232,
+      "variacao_mes_pct": 9.8168
+    },
+    {
+      "data": "2026-02-27",
+      "valor_cota": 41.865438,
+      "variacao_mes_pct": 10.6461
+    },
+    {
+      "data": "2026-03-31",
+      "valor_cota": 37.377954,
+      "variacao_mes_pct": -10.7188
+    },
+    {
+      "data": "2026-04-30",
+      "valor_cota": 37.312797,
+      "variacao_mes_pct": -0.1743
+    },
+    {
+      "data": "2026-05-29",
+      "valor_cota": 37.046999,
+      "variacao_mes_pct": -0.7124
+    },
+    {
+      "data": "2026-06-30",
+      "valor_cota": 32.809645,
+      "variacao_mes_pct": -11.4378
+    },
+    {
+      "data": "2026-07-31",
+      "valor_cota": 33.274822,
+      "variacao_mes_pct": 1.4178
+    },
+    {
+      "data": "2026-08-31",
+      "valor_cota": 36.681542,
+      "variacao_mes_pct": 10.2381
+    }
+  ],
+  "resumo": {
+    "janela_meses": 11,
+    "retorno_am_medio_pct": 2.1042,
+    "retorno_aa": {
+      "pessimista": 1.89,
+      "base": 28.39,
+      "otimista": 54.88
+    },
+    "volatilidade_aa": 26.49,
+    "referencia": "2026-08-31",
+    "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
+  }
+}

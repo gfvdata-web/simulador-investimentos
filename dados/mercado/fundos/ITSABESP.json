@@ -1,0 +1,82 @@
+{
+  "ticker": "ITSABESP",
+  "tipo": "fi",
+  "cnpj": "55.390.412/0001-77",
+  "rotulo": "Itaú Sabesp Ações FIF RL",
+  "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
+  "coletado_em": "2026-09-11T10:53:38+00:00",
+  "pontos": [
+    {
+      "data": "2025-09-30",
+      "valor_cota": 1.688063,
+      "variacao_mes_pct": null
+    },
+    {
+      "data": "2025-10-31",
+      "valor_cota": 1.683677,
+      "variacao_mes_pct": -0.2598
+    },
+    {
+      "data": "2025-11-28",
+      "valor_cota": 1.800284,
+      "variacao_mes_pct": 6.9257
+    },
+    {
+      "data": "2025-12-31",
+      "valor_cota": 1.786882,
+      "variacao_mes_pct": -0.7444
+    },
+    {
+      "data": "2026-01-30",
+      "valor_cota": 1.889649,
+      "variacao_mes_pct": 5.7512
+    },
+    {
+      "data": "2026-02-27",
+      "valor_cota": 2.055797,
+      "variacao_mes_pct": 8.7925
+    },
+    {
+      "data": "2026-03-31",
+      "valor_cota": 2.126985,
+      "variacao_mes_pct": 3.4628
+    },
+    {
+      "data": "2026-04-30",
+      "valor_cota": 2.225757,
+      "variacao_mes_pct": 4.6438
+    },
+    {
+      "data": "2026-05-29",
+      "valor_cota": 1.877897,
+      "variacao_mes_pct": -15.6288
+    },
+    {
+      "data": "2026-06-30",
+      "valor_cota": 1.990927,
+      "variacao_mes_pct": 6.019
+    },
+    {
+      "data": "2026-07-31",
+      "valor_cota": 1.860788,
+      "variacao_mes_pct": -6.5366
+    },
+    {
+      "data": "2026-08-31",
+      "valor_cota": 1.698519,
+      "variacao_mes_pct": -8.7204
+    }
+  ],
+  "resumo": {
+    "janela_meses": 11,
+    "retorno_am_medio_pct": 0.3368,
+    "retorno_aa": {
+      "pessimista": -22.5,
+      "base": 4.12,
+      "otimista": 30.74
+    },
+    "volatilidade_aa": 26.62,
+    "referencia": "2026-08-31",
+    "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
+  }
+}

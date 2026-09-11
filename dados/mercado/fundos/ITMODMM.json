@@ -1,0 +1,82 @@
+{
+  "ticker": "ITMODMM",
+  "tipo": "fi",
+  "cnpj": "46.467.345/0001-50",
+  "rotulo": "Carteira Itaú Asset de Investimento Moderado Multimercado",
+  "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
+  "coletado_em": "2026-09-11T10:55:04+00:00",
+  "pontos": [
+    {
+      "data": "2025-09-30",
+      "valor_cota": 1.365728,
+      "variacao_mes_pct": null
+    },
+    {
+      "data": "2025-10-31",
+      "valor_cota": 1.384839,
+      "variacao_mes_pct": 1.3993
+    },
+    {
+      "data": "2025-11-28",
+      "valor_cota": 1.402951,
+      "variacao_mes_pct": 1.3079
+    },
+    {
+      "data": "2025-12-31",
+      "valor_cota": 1.414382,
+      "variacao_mes_pct": 0.8148
+    },
+    {
+      "data": "2026-01-30",
+      "valor_cota": 1.450822,
+      "variacao_mes_pct": 2.5764
+    },
+    {
+      "data": "2026-02-27",
+      "valor_cota": 1.474166,
+      "variacao_mes_pct": 1.609
+    },
+    {
+      "data": "2026-03-31",
+      "valor_cota": 1.462948,
+      "variacao_mes_pct": -0.761
+    },
+    {
+      "data": "2026-04-30",
+      "valor_cota": 1.478773,
+      "variacao_mes_pct": 1.0817
+    },
+    {
+      "data": "2026-05-29",
+      "valor_cota": 1.49745,
+      "variacao_mes_pct": 1.263
+    },
+    {
+      "data": "2026-06-30",
+      "valor_cota": 1.506847,
+      "variacao_mes_pct": 0.6275
+    },
+    {
+      "data": "2026-07-31",
+      "valor_cota": 1.526558,
+      "variacao_mes_pct": 1.3081
+    },
+    {
+      "data": "2026-08-31",
+      "valor_cota": 1.543026,
+      "variacao_mes_pct": 1.0788
+    }
+  ],
+  "resumo": {
+    "janela_meses": 11,
+    "retorno_am_medio_pct": 1.1187,
+    "retorno_aa": {
+      "pessimista": 11.51,
+      "base": 14.28,
+      "otimista": 17.05
+    },
+    "volatilidade_aa": 2.77,
+    "referencia": "2026-08-31",
+    "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
+  }
+}

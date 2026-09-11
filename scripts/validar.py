@@ -21,15 +21,17 @@ RAIZ = Path(__file__).resolve().parents[1]
 # checagem cruzada logo abaixo.
 TIPOS_RENDIMENTO = {
     "pos_cdi", "pos_selic", "prefixado", "ipca_mais", "poupanca", "estimado",
-    "fundo_fii", "etf_historico",
+    "fundo_fii", "etf_historico", "fundo_cvm_historico",
 }
 REGIMES = {
-    "isento", "rf_regressivo", "etf_renda_variavel", "acoes", "cripto", "fii",
-    "fundo_longo_prazo",
+    "isento", "rf_regressivo", "etf_renda_variavel", "fundo_acoes", "acoes",
+    "cripto", "fii", "fundo_longo_prazo",
 }
 CLASSES = {"renda_fixa", "renda_variavel", "cripto", "fundos"}
 CENARIOS = {"pessimista", "base", "otimista"}
-TIPOS_FUNDO = {"fundo_fii", "etf_historico"}  # leem dados/mercado/fundos/<ticker>.json, nao 'estimativas'
+# Leem dados/mercado/fundos/<ticker>.json, nao 'estimativas'. tipo -> tipo do
+# arquivo de fundo esperado (ver coletor/atualizar.py, FUNDOS).
+TIPOS_FUNDO = {"fundo_fii": "fii", "etf_historico": "etf", "fundo_cvm_historico": "fi"}
 
 CAMPOS_OBRIGATORIOS = [
     "id", "nome", "classe", "subclasse", "risco", "rendimento", "tributacao", "descricao",
@@ -41,6 +43,7 @@ CAMPOS_POR_TIPO = {
     "estimado": ["chave_premissa"],
     "fundo_fii": ["ticker"],
     "etf_historico": ["ticker"],
+    "fundo_cvm_historico": ["ticker"],
 }
 
 
@@ -99,18 +102,23 @@ def validar_catalogo(catalogo: dict, premissas: dict, erros: list, avisos: list)
                         f"{nome}: ticker '{ticker}' ainda sem dados/mercado/fundos/{ticker}.json "
                         "coletado (rode coletor/atualizar.py) - o ativo vai cair em 'erros' na pagina"
                     )
-                elif ler(caminho_fundo).get("tipo") != {"fundo_fii": "fii", "etf_historico": "etf"}[tipo]:
-                    erros.append(
-                        f"{nome}: rendimento '{tipo}' espera ticker do tipo "
-                        f"'{ {'fundo_fii': 'fii', 'etf_historico': 'etf'}[tipo] }', mas "
-                        f"dados/mercado/fundos/{ticker}.json diz '{ler(caminho_fundo).get('tipo')}'"
-                    )
+                else:
+                    tipo_esperado = TIPOS_FUNDO[tipo]
+                    tipo_arquivo = ler(caminho_fundo).get("tipo")
+                    if tipo_arquivo != tipo_esperado:
+                        erros.append(
+                            f"{nome}: rendimento '{tipo}' espera ticker do tipo '{tipo_esperado}', mas "
+                            f"dados/mercado/fundos/{ticker}.json diz '{tipo_arquivo}'"
+                        )
 
         regime = ativo.get("tributacao", {}).get("regime")
         if regime not in REGIMES:
             erros.append(f"{nome}: regime tributario '{regime}' nao implementado")
-        if regime == "fundo_longo_prazo":
-            avisos.append(f"{nome}: usa 'fundo_longo_prazo', que ainda ignora come-cotas (docs/05)")
+        if regime == "fundo_longo_prazo" and not premissas.get("tributacao", {}).get("come_cotas_habilitado"):
+            avisos.append(
+                f"{nome}: usa 'fundo_longo_prazo', mas 'come_cotas_habilitado' está desligado em "
+                "premissas.json - o número vai sair otimista demais (docs/05)"
+            )
 
         for campo, valor in (ativo.get("taxas") or {}).items():
             if not isinstance(valor, (int, float)) or valor < 0:
@@ -195,10 +203,12 @@ def validar_mercado(erros: list, avisos: list) -> None:
             for campo in ("dividend_yield_am_medio_pct", "valorizacao_patrimonial_am_media_pct"):
                 if campo not in resumo:
                     erros.append(f"mercado: fundo '{arquivo.stem}' (fii) sem '{campo}' no resumo")
-        elif fundo.get("tipo") == "etf":
+        elif fundo.get("tipo") in ("etf", "fi"):
             faltando = CENARIOS - set(resumo.get("retorno_aa", {}))
             if faltando:
-                erros.append(f"mercado: fundo '{arquivo.stem}' (etf) sem cenario(s) {sorted(faltando)}")
+                erros.append(
+                    f"mercado: fundo '{arquivo.stem}' ({fundo.get('tipo')}) sem cenario(s) {sorted(faltando)}"
+                )
 
 
 def conferir_espelho_com_codigo(erros: list) -> None:

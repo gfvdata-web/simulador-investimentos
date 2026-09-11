@@ -44,6 +44,7 @@ Implementados em `app/nucleo/indexadores.js`, função `resolver`.
 | `estimado` | `chave_premissa` | aponta para um bloco de `estimativas` | **estimada** |
 | `fundo_fii` | `ticker` | dividend yield (fato, CVM) + valorização patrimonial opcional | **híbrida** |
 | `etf_historico` | `ticker` | CAGR de preço histórico (B3), ± desvio-padrão como cenário | **estimada** |
+| `fundo_cvm_historico` | `ticker` | CAGR de cota histórica (CVM), ± desvio-padrão como cenário | **estimada** |
 
 A `natureza` volta junto do resultado e é o que faz a página marcar o selo
 "estimado". É o mecanismo que impede fato e palpite de se confundirem na tela.
@@ -52,13 +53,15 @@ A `natureza` volta junto do resultado e é o que faz a página marcar o selo
 `resolver()`, devolva `taxa_aa` + `explicacao` + `natureza`, documente a linha na
 tabela acima e só então cadastre ativos usando ele.
 
-### `fundo_fii` e `etf_historico` — os dois tipos que leem `dados/mercado/fundos/`
+### `fundo_fii`, `etf_historico` e `fundo_cvm_historico` — os três tipos que leem `dados/mercado/fundos/`
 
-Diferente de todo tipo acima, estes dois não calculam a taxa só a partir de
+Diferente de todo tipo acima, estes três não calculam a taxa só a partir de
 `indicadores`/`premissas`: `resolver()` recebe um terceiro mapa, `fundos`
 (`{TICKER: conteúdo de dados/mercado/fundos/<ticker>.json}`), carregado por
 `app/dados.js` só para os tickers que o usuário marcou. Sem o arquivo daquele
-ticker coletado, o ativo cai em `erros` da comparação — nunca em zero.
+ticker coletado, o ativo cai em `erros` da comparação — nunca em zero. Para
+`fundo_cvm_historico` (fundo sem ticker de bolsa), `ticker` é um **código
+interno** deste projeto, não um código B3 — ver doc 04.
 
 `fundo_fii` também é o único tipo que devolve `componente_isento_am` e
 `componente_tributavel_am` além de `taxa_am`: são eles que permitem ao motor
@@ -67,15 +70,17 @@ A valorização só entra na conta quando `considerar_valorizacao_projetada` est
 ligado nos parâmetros da simulação — desligado (padrão), o FII soma só o
 dividendo e a cota fica "parada" na projeção.
 
-`etf_historico` não distingue componentes: o retorno inteiro (CAGR de preço) é
-tributável, igual a `estimado`. Ver doc 04 para como cada um é coletado e doc
-05 para o regime `fii`.
+`etf_historico` e `fundo_cvm_historico` não distinguem componentes: o retorno
+inteiro (CAGR de preço ou de cota) é tributável, igual a `estimado` — os dois
+compartilham o mesmo ramo em `resolver()`, só a fonte do dado muda. Ver doc 04
+para como cada um é coletado e doc 05 para os regimes `fii`, `fundo_acoes` e
+`fundo_longo_prazo`.
 
 ### Regimes tributários
 
 Valores aceitos em `tributacao.regime`, implementados em `app/nucleo/tributos.js`:
-`isento`, `rf_regressivo`, `etf_renda_variavel`, `acoes`, `cripto`, `fii`,
-`fundo_longo_prazo`. Detalhes de cada um no doc 05.
+`isento`, `rf_regressivo`, `etf_renda_variavel`, `fundo_acoes`, `acoes`, `cripto`,
+`fii`, `fundo_longo_prazo`. Detalhes de cada um no doc 05.
 
 ## Schema das premissas
 
@@ -114,10 +119,10 @@ ainda não é usada — está reservada para o Monte Carlo da fase 5.
 `ipca_projetado_aa` segue o mesmo formato e é usado em dois lugares: no cálculo de
 `ipca_mais` e na conversão de valor nominal para valor real.
 
-**FII e ETF não usam este bloco.** O "palpite com fonte" deles não é editado à
-mão aqui — é calculado pelo coletor a partir de dado real (CVM/B3) e gravado em
-`resumo`, dentro de `dados/mercado/fundos/<ticker>.json`. Mesmo formato
-`retorno_aa: {pessimista, base, otimista}` para o ETF (reaproveita
+**FII, ETF e fundo comum não usam este bloco.** O "palpite com fonte" deles não é
+editado à mão aqui — é calculado pelo coletor a partir de dado real (CVM/B3) e
+gravado em `resumo`, dentro de `dados/mercado/fundos/<ticker>.json`. Mesmo formato
+`retorno_aa: {pessimista, base, otimista}` para ETF e fundo comum (reaproveita
 `valorDoCenario()`), mas a proveniência é outra: veja doc 04.
 
 ## Invariantes

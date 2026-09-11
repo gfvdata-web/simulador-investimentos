@@ -61,6 +61,30 @@ este projeto** a partir do fechamento (CAGR mensal composto), nunca um número p
 publicado por alguém. O método fica escrito no próprio `resumo` gravado, campo
 `metodo`, para nunca virar um número sem explicação.
 
+### CVM — Dados Abertos, Informe Diário de Fundos (FI)
+
+```
+https://dados.cvm.gov.br/dados/FI/DOC/INF_DIARIO/DADOS/inf_diario_fi_{aaaamm}.zip
+```
+
+Pública, sem chave, um arquivo por **mês** (não por ano — diferente de FII e B3),
+cobrindo todo fundo comum registrado (classe "FI"/"CLASSES - FIF" da CVM). Módulo:
+`coletor/fontes/cvm_fi.py`. Usado para fundo **sem ticker de bolsa** (comercializado
+direto pelo banco/gestora, não aparece no COTAHIST): a CVM só publica o valor da cota
+(`VL_QUOTA`) por dia, não um informe de rendimento pronto como faz pra FII — o retorno
+estimado é **calculado por este projeto** a partir dessa série, mesmo método do ETF
+(CAGR mensal composto ± desvio-padrão), documentado no `resumo` gravado.
+
+Janela de coleta menor que FII/ETF: `JANELA_FUNDOS_FI_MESES = 12`, não 36. Cada mês
+baixado é o mercado inteiro (~10-15 MB); 36 meses seria pesado demais pra rodar toda
+semana no Actions. Compromisso deliberado de banda, não limitação do dado em si — o
+`resumo` sempre declara `janela_meses` usado, então a procedência continua visível.
+
+Fundo sem ticker não tem ISIN pra conferir contra CNPJ como FII/ETF/BDR têm: o CNPJ é
+verificado à mão batendo a razão social informada contra o cadastro oficial da CVM
+(`registro_classe.csv`, dataset `fi-cad`). A chave usada em `FUNDOS` (ex.: `ITUSTECH`)
+é um código interno deste projeto, não um código de mercado.
+
 ## Armadilhas já encontradas
 
 Três coisas custaram tempo e estão resolvidas no código. Se mexer no cliente, não
@@ -150,23 +174,30 @@ python scripts/validar.py
 iterar numa fonte sem rebuscar tudo. Vale para ticker de fundo também:
 `python coletor/atualizar.py --so VILG11,GOLD11`.
 
-## Como cadastrar um FII ou ETF novo
+## Como cadastrar um FII, ETF/BDR ou fundo comum novo
 
 Diferente de indicador (protocolo genérico acima), fundo tem formato próprio porque a
 fonte e os campos mudam por tipo. Passo a passo:
 
-1. Confirme o **ticker** no COTAHIST da B3 (garante que ele negocia) e, se for FII, o
-   **CNPJ** no informe mensal da CVM — os dois batem pelo ISIN (ver seção da CVM acima).
-2. Acrescente uma linha no dicionário `FUNDOS` de `coletor/atualizar.py`: `tipo` (`fii`
-   ou `etf`), `cnpj` (só FII), `rotulo`, `segmento`/`indice`.
-3. Rode `python coletor/atualizar.py --so SEUTICKER` e confira
-   `dados/mercado/fundos/SEUTICKER.json` — `pontos` com histórico, `resumo` com o que o
+1. **FII ou ETF/BDR** (tem ticker): confirme o ticker no COTAHIST da B3 e, se for FII,
+   o CNPJ no informe mensal da CVM — os dois batem pelo ISIN (ver seção da CVM acima).
+   **Fundo comum** (sem ticker): ache o CNPJ no cadastro da CVM (`registro_classe.csv`)
+   batendo o nome contra a razão social oficial, e escolha um código interno (chave do
+   dicionário) que não colida com nenhum ticker real.
+2. Acrescente uma linha no dicionário `FUNDOS` de `coletor/atualizar.py`: `tipo` (`fii`,
+   `etf` ou `fi`), `cnpj` (FII e `fi`), `rotulo`, `segmento`/`indice` (opcional).
+3. Rode `python coletor/atualizar.py --so SUACHAVE` e confira
+   `dados/mercado/fundos/SUACHAVE.json` — `pontos` com histórico, `resumo` com o que o
    motor vai usar.
-4. Cadastre o ativo em `dados/catalogo/ativos.json`: `rendimento.tipo` (`fundo_fii` ou
-   `etf_historico`) + `rendimento.ticker`; `tributacao.regime` `fii` (FII) ou
-   `etf_renda_variavel` (ETF). Doc 02 tem o schema completo.
-5. `python scripts/validar.py` — ele confere que o ticker tem arquivo coletado e que o
-   tipo do arquivo bate com o tipo do rendimento (fii ↔ fii, etf ↔ etf).
+4. Cadastre o ativo em `dados/catalogo/ativos.json`: `rendimento.tipo` (`fundo_fii`,
+   `etf_historico` ou `fundo_cvm_historico`) + `rendimento.ticker` (a mesma chave do
+   passo 2); `tributacao.regime` — `fii` (FII), `etf_renda_variavel` (ETF de ações),
+   `acoes` (BDR), `fundo_acoes` (fundo de ações sem ticker, FIA) ou `fundo_longo_prazo`
+   (fundo multimercado/renda-fixa-longo-prazo, com come-cotas). Doc 02 tem o schema
+   completo, doc 05 tem os regimes.
+5. `python scripts/validar.py` — confere que a chave tem arquivo coletado e que o tipo
+   do arquivo bate com o tipo do rendimento (fii↔fii, etf_historico↔etf,
+   fundo_cvm_historico↔fi).
 
 O arquivo de um fundo nunca é apagado se a coleta falhar (mesma filosofia das séries,
 seção "Degradação" acima) — o pior caso é o ativo ficar um dia sem atualizar, nunca

@@ -34,7 +34,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from fontes import b3_precos, bcb_sgs, cvm_fii  # noqa: E402
+from fontes import b3_precos, bcb_sgs, cvm_fi, cvm_fii  # noqa: E402
 
 RAIZ = Path(__file__).resolve().parents[1]
 DIR_MERCADO = RAIZ / "dados" / "mercado"
@@ -59,6 +59,7 @@ Nada de inventar valor: se falhar, levante FalhaFonte.
 FONTES = {
     "bcb": bcb_sgs,
     "cvm_fii": cvm_fii,
+    "cvm_fi": cvm_fi,
     "b3": b3_precos,
 }
 
@@ -105,15 +106,20 @@ SERIES = {
 }
 
 
-# --- Fundos negociados em bolsa (FII e ETF) ---------------------------------
+# --- Fundos (FII, ETF/BDR de bolsa, e fundo comum sem ticker) ---------------
 # FII: a fonte e o informe mensal da CVM, que ja publica dividend yield e
-# valorizacao patrimonial como FATO (nao e este projeto que calcula). ETF: a
-# CVM nao publica esse informe para fundo de indice, entao a fonte e o preco
-# de fechamento da B3 (COTAHIST) e a valorizacao e calculada aqui - o metodo
-# fica descrito no proprio 'resumo' gravado, nunca escondido.
+# valorizacao patrimonial como FATO (nao e este projeto que calcula). ETF/BDR
+# ('tipo': 'etf' aqui so identifica a fonte de preco, nao a natureza fiscal):
+# preco de fechamento da B3 (COTAHIST), valorizacao calculada aqui. Fundo
+# comum sem ticker ('tipo': 'fi'): a CVM nao publica rendimento pronto pra
+# nenhum desses tres tipos alem do FII, entao ETF/BDR/FI tem a valorizacao
+# calculada por este projeto - o metodo fica descrito no proprio 'resumo'
+# gravado, nunca escondido.
 #
-# `cnpj` identifica o FII na CVM (fundo/classe). Tickers verificados a mao em
-# 2026-09-10 batendo CNPJ (CVM) x ISIN (B3 COTAHIST) - ver docs/04.
+# `cnpj` identifica o fundo na CVM (fundo/classe) para 'fii' e 'fi'. Ticker de
+# bolsa (chave do dict) verificado a mao batendo CNPJ (CVM) x ISIN (B3
+# COTAHIST) - ver docs/04. Fundo 'fi' nao tem ISIN nem ticker: a chave aqui e
+# um codigo interno deste projeto.
 FUNDOS = {
     "VILG11": {"tipo": "fii", "cnpj": "24.853.044/0001-22",
                "rotulo": "VILG11 (Vinci Logística FII)", "segmento": "Logística"},
@@ -149,9 +155,32 @@ FUNDOS = {
     "S2EA34": {"tipo": "etf", "rotulo": "S2EA34 (BDR Sea Limited)", "indice": "ação SE (NYSE)"},
     "NFLX34": {"tipo": "etf", "rotulo": "NFLX34 (BDR Netflix)", "indice": "ação NFLX (Nasdaq)"},
     "NVDC34": {"tipo": "etf", "rotulo": "NVDC34 (BDR Nvidia)", "indice": "ação NVDA (Nasdaq)"},
+    # Fundos comuns (sem ticker de bolsa, comercializados direto pelo banco).
+    # Fonte: informe diario de FI da CVM (cvm_fi.py), valor da cota - nao tem
+    # ticker, entao a "chave" aqui e um codigo interno nosso, nao um codigo B3.
+    # CNPJ verificado a mao no cadastro da CVM (registro_classe.csv) em
+    # 2026-09-11 batendo o nome informado contra a razao social oficial.
+    "ITUSTECH": {"tipo": "fi", "cnpj": "36.249.317/0001-03",
+                 "rotulo": "Itaú Index US Tech Ações"},
+    "ITVALE": {"tipo": "fi", "cnpj": "36.350.655/0001-37",
+               "rotulo": "Itaú Index Vale Ações"},
+    "ITUNIBCO": {"tipo": "fi", "cnpj": "36.347.678/0001-92",
+                 "rotulo": "Itaú Index Itaú Unibanco Ações"},
+    "ITELEBRAS": {"tipo": "fi", "cnpj": "42.519.896/0001-60",
+                  "rotulo": "Itaú Eletrobras Ações FIC FI"},
+    "ITSABESP": {"tipo": "fi", "cnpj": "55.390.412/0001-77",
+                 "rotulo": "Itaú Sabesp Ações FIF RL"},
+    # Multimercado: come-cotas semestral (ver motor.js/tributos.js e docs/05).
+    "ITGDPLUS": {"tipo": "fi", "cnpj": "26.269.983/0001-50",
+                 "rotulo": "Itaú Global Dinâmico Plus Multimercado"},
+    "ITGOLDMM": {"tipo": "fi", "cnpj": "35.492.154/0001-22",
+                 "rotulo": "Itaú Index Gold Multimercado"},
+    "ITMODMM": {"tipo": "fi", "cnpj": "46.467.345/0001-50",
+                "rotulo": "Carteira Itaú Asset de Investimento Moderado Multimercado"},
 }
 
 JANELA_FUNDOS_MESES = 36
+JANELA_FUNDOS_FI_MESES = 12  # arquivo mensal do mercado inteiro; janela menor por peso/banda, ver docs/04
 
 
 def _media(valores: list):
@@ -189,10 +218,12 @@ def _resumo_fii(pontos: list) -> dict:
     }
 
 
-def _resumo_etf(pontos: list) -> dict:
-    """ETF nao tem informe de rendimento na CVM: a 'estimativa' aqui e CAGR
-    historico de preco +/- 1 desvio-padrao anualizado, tudo calculado a partir
-    do fechamento da B3 - nunca um numero digitado a mao (regra 1 do CLAUDE.md)."""
+def _resumo_precos(pontos: list, metodo: str) -> dict:
+    """Comum a ETF e fundo comum: nenhum dos dois tem informe de rendimento na
+    CVM, entao a 'estimativa' e CAGR historico do valor (preco ou cota) +/- 1
+    desvio-padrao anualizado - nunca um numero digitado a mao (regra 1 do
+    CLAUDE.md). `metodo` so muda o texto gravado, para a fonte de cada um ficar
+    clara no proprio arquivo."""
     fechados = [p for p in pontos if p["data"][:7] != _mes_corrente_iso()]
     variacoes = [p["variacao_mes_pct"] for p in fechados if p["variacao_mes_pct"] is not None]
     media_am = _media(variacoes) or 0.0
@@ -210,10 +241,24 @@ def _resumo_etf(pontos: list) -> dict:
         },
         "volatilidade_aa": round(desvio_aa, 2),
         "referencia": referencia,
-        "metodo": ("CAGR mensal composto do fechamento (B3 COTAHIST) sobre os meses "
-                   "fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x "
-                   "raiz de 12). O mês corrente, ainda em curso, é excluído da média."),
+        "metodo": metodo,
     }
+
+
+def _resumo_etf(pontos: list) -> dict:
+    return _resumo_precos(pontos, (
+        "CAGR mensal composto do fechamento (B3 COTAHIST) sobre os meses "
+        "fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x "
+        "raiz de 12). O mês corrente, ainda em curso, é excluído da média."
+    ))
+
+
+def _resumo_fi(pontos: list) -> dict:
+    return _resumo_precos(pontos, (
+        "CAGR mensal composto do valor da cota (CVM, informe diário de FI) "
+        "sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado "
+        "(desvio mensal x raiz de 12). O mês corrente é excluído da média."
+    ))
 
 
 def _entrada_manifesto_fundo(ticker: str, definicao: dict, conteudo: dict) -> dict:
@@ -231,7 +276,7 @@ def _entrada_manifesto_fundo(ticker: str, definicao: dict, conteudo: dict) -> di
 
 
 def coletar_fundos(quais: set, relatorio: list) -> list:
-    """FII e ETF negociados em bolsa. Grava um arquivo por ticker em
+    """FII, ETF/BDR de bolsa e fundo comum (CVM, sem ticker). Grava um arquivo por
     dados/mercado/fundos/ e devolve o manifesto para indicadores.json - mesma
     filosofia de degradação das séries: falha na coleta preserva o arquivo
     anterior, nunca apaga o que já existia."""
@@ -245,11 +290,15 @@ def coletar_fundos(quais: set, relatorio: list) -> list:
                 pontos = cvm_fii.informe_mensal(definicao["cnpj"], meses=JANELA_FUNDOS_MESES)
                 resumo = _resumo_fii(pontos)
                 fonte = cvm_fii.NOME
+            elif definicao["tipo"] == "fi":
+                pontos = cvm_fi.cotas_mensais(definicao["cnpj"], meses=JANELA_FUNDOS_FI_MESES)
+                resumo = _resumo_fi(pontos)
+                fonte = cvm_fi.NOME
             else:
                 pontos = b3_precos.fechamentos_mensais(ticker, anos=max(3, JANELA_FUNDOS_MESES // 12))
                 resumo = _resumo_etf(pontos)
                 fonte = b3_precos.NOME
-        except (cvm_fii.FalhaFonte, b3_precos.FalhaFonte) as erro:
+        except (cvm_fii.FalhaFonte, cvm_fi.FalhaFonte, b3_precos.FalhaFonte) as erro:
             relatorio.append(f"  FALHA fundo {ticker}: {erro} (arquivo anterior preservado)")
             if caminho.exists():
                 try:

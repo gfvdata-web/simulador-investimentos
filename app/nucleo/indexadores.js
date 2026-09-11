@@ -132,12 +132,18 @@ export function resolver(ativo, indicadores, premissas, cenario = 'base', fundos
       natureza = 'hibrida';
       break;
     }
-    case 'etf_historico': {
+    case 'etf_historico':
+    case 'fundo_cvm_historico': {
+      // Mesmo cálculo pros dois: nenhum tem informe de rendimento pronto (CVM
+      // só publica isso pra FII), então o 'resumo' de ambos é um CAGR
+      // histórico calculado por este projeto - de preço (B3, ETF/BDR) ou de
+      // cota (CVM informe diário, fundo comum sem ticker). Ver docs/04.
       const bloco = exigirFundo(spec.ticker);
       const { resumo } = bloco;
       bruta = valorDoCenario(resumo.retorno_aa, cenario, null);
+      const origem = spec.tipo === 'fundo_cvm_historico' ? 'cota' : 'preço';
       explicacao = `Retorno ESTIMADO de ${dec(bruta)}% a.a. (cenário ${cenario}), a partir do `
-        + `CAGR de preço dos últimos ${resumo.janela_meses} meses até ${resumo.referencia} `
+        + `CAGR de ${origem} dos últimos ${resumo.janela_meses} meses até ${resumo.referencia} `
         + `(${dec(resumo.retorno_aa.base)}% a.a. no cenário base ± ${dec(resumo.volatilidade_aa)}% `
         + `de desvio-padrão anualizado, ${bloco.fonte})`;
       natureza = 'estimada';

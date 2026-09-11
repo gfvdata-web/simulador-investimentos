@@ -4,12 +4,17 @@
      isento              LCI, LCA, CRI, CRA, poupança, debênture incentivada
      rf_regressivo       CDB, RDB, LC, Tesouro Direto (IR 22,5% -> 15% + IOF < 30d)
      etf_renda_variavel  ETFs de ações: 15% sobre o ganho, SEM isenção mensal
+     fundo_acoes         Fundo de ações (FIA): mesma conta de etf_renda_variavel
+                          (15%, sem isenção) - nomes diferentes só por clareza
+                          de leitura no catálogo, ver docs/05
      acoes               15% sobre o ganho, isento até R$ 20.000 vendidos no mês
      cripto              15% sobre o ganho, isento até R$ 35.000 vendidos no mês
      fii                 20% sobre o ganho de capital na venda, SEM isenção mensal.
                           O dividendo mensal (isento) não entra aqui - o motor já
                           o separou antes de chamar `tributar` (ver motor.js)
-     fundo_longo_prazo   come-cotas semestral (ainda não modelado, ver docs/05)
+     fundo_longo_prazo   come-cotas semestral a 15% (multimercado/renda fixa
+                          longo prazo), creditado contra a mesma tabela
+                          regressiva da renda fixa no resgate - ver docs/05
 
    Nada aqui é conselho tributário. As regras refletem a legislação geral para
    pessoa física e devem ser reconferidas antes de qualquer decisão real. */
@@ -61,7 +66,8 @@ export function tributar(regime, lotes, valorVendaTotal, regras) {
     return montar(iofTotal, irTotal, rendimentoTotal, `IR regressivo: ${faixa}`);
   }
 
-  if (regime === 'etf_renda_variavel' || regime === 'acoes' || regime === 'cripto' || regime === 'fii') {
+  if (regime === 'etf_renda_variavel' || regime === 'fundo_acoes' || regime === 'acoes'
+    || regime === 'cripto' || regime === 'fii') {
     let aliquota;
     if (regime === 'acoes') {
       const limite = regras.isencao_venda_acoes_mensal || 0;
@@ -83,8 +89,31 @@ export function tributar(regime, lotes, valorVendaTotal, regras) {
   }
 
   if (regime === 'fundo_longo_prazo') {
-    return montar(0, (rendimentoTotal * 15) / 100, rendimentoTotal,
-      '15% (come-cotas ainda não modelado)');
+    // O motor (motor.js) já reteve 15% a cada 6 meses sobre o ganho acumulado
+    // desde a última cobrança, abatendo de `valor_final` - por isso
+    // `lote.valor_final - lote.principal` aqui já vem NET do que foi
+    // antecipado. Somamos de volta `come_cotas_pago` pra achar o ganho BRUTO
+    // do período inteiro, aplicamos a mesma tabela regressiva da renda fixa
+    // sobre esse bruto, e só cobramos a diferença - nunca de novo o que já
+    // foi retido. Se o prazo passou de 720 dias, a alíquota final também é
+    // 15%, e a diferença dá zero: o come-cotas já cobriu tudo.
+    let irTotal = 0;
+    let comeCotasTotal = 0;
+    let ganhoBrutoTotal = 0;
+    for (const lote of lotes) {
+      const comeCotasPago = lote.come_cotas_pago || 0;
+      comeCotasTotal += comeCotasPago;
+      const ganhoBruto = (lote.valor_final - lote.principal) + comeCotasPago;
+      ganhoBrutoTotal += ganhoBruto;
+      if (ganhoBruto <= 0) continue;
+      const aliquotaFinal = aliquotaIrRf(lote.dias, regras.ir_regressivo_rf);
+      irTotal += Math.max(0, (ganhoBruto * aliquotaFinal) / 100 - comeCotasPago);
+    }
+    const detalhe = comeCotasTotal > 0
+      ? `IR regressivo (tabela da renda fixa) sobre o ganho do período; `
+        + `${reais(comeCotasTotal)} já retidos via come-cotas semestral`
+      : 'IR regressivo (tabela da renda fixa); come-cotas semestral não chegou a incidir neste prazo';
+    return montar(0, irTotal, ganhoBrutoTotal, detalhe);
   }
 
   throw new Error(`Regime tributário desconhecido: ${regime}`);

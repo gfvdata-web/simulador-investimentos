@@ -1,0 +1,82 @@
+{
+  "ticker": "ITUSTECH",
+  "tipo": "fi",
+  "cnpj": "36.249.317/0001-03",
+  "rotulo": "Itaú Index US Tech Ações",
+  "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
+  "coletado_em": "2026-09-11T10:51:43+00:00",
+  "pontos": [
+    {
+      "data": "2025-09-30",
+      "valor_cota": 42.839243,
+      "variacao_mes_pct": null
+    },
+    {
+      "data": "2025-10-31",
+      "valor_cota": 44.848583,
+      "variacao_mes_pct": 4.6904
+    },
+    {
+      "data": "2025-11-28",
+      "valor_cota": 44.450956,
+      "variacao_mes_pct": -0.8866
+    },
+    {
+      "data": "2025-12-31",
+      "valor_cota": 43.198605,
+      "variacao_mes_pct": -2.8174
+    },
+    {
+      "data": "2026-01-30",
+      "valor_cota": 42.614802,
+      "variacao_mes_pct": -1.3514
+    },
+    {
+      "data": "2026-02-27",
+      "valor_cota": 40.849175,
+      "variacao_mes_pct": -4.1432
+    },
+    {
+      "data": "2026-03-31",
+      "valor_cota": 39.237757,
+      "variacao_mes_pct": -3.9448
+    },
+    {
+      "data": "2026-04-30",
+      "valor_cota": 45.503196,
+      "variacao_mes_pct": 15.9679
+    },
+    {
+      "data": "2026-05-29",
+      "valor_cota": 50.951931,
+      "variacao_mes_pct": 11.9744
+    },
+    {
+      "data": "2026-06-30",
+      "valor_cota": 47.94929,
+      "variacao_mes_pct": -5.8931
+    },
+    {
+      "data": "2026-07-31",
+      "valor_cota": 48.953915,
+      "variacao_mes_pct": 2.0952
+    },
+    {
+      "data": "2026-08-31",
+      "valor_cota": 52.743574,
+      "variacao_mes_pct": 7.7413
+    }
+  ],
+  "resumo": {
+    "janela_meses": 11,
+    "retorno_am_medio_pct": 2.1302,
+    "retorno_aa": {
+      "pessimista": 3.98,
+      "base": 28.78,
+      "otimista": 53.59
+    },
+    "volatilidade_aa": 24.81,
+    "referencia": "2026-08-31",
+    "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
+  }
+}

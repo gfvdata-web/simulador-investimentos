@@ -1,0 +1,82 @@
+{
+  "ticker": "ITVALE",
+  "tipo": "fi",
+  "cnpj": "36.350.655/0001-37",
+  "rotulo": "Itaú Index Vale Ações",
+  "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
+  "coletado_em": "2026-09-11T10:52:12+00:00",
+  "pontos": [
+    {
+      "data": "2025-09-30",
+      "valor_cota": 16.988723,
+      "variacao_mes_pct": null
+    },
+    {
+      "data": "2025-10-31",
+      "valor_cota": 19.223887,
+      "variacao_mes_pct": 13.1568
+    },
+    {
+      "data": "2025-11-28",
+      "valor_cota": 19.845643,
+      "variacao_mes_pct": 3.2343
+    },
+    {
+      "data": "2025-12-31",
+      "valor_cota": 22.202343,
+      "variacao_mes_pct": 11.8752
+    },
+    {
+      "data": "2026-01-30",
+      "valor_cota": 25.847947,
+      "variacao_mes_pct": 16.4199
+    },
+    {
+      "data": "2026-02-27",
+      "valor_cota": 27.066481,
+      "variacao_mes_pct": 4.7142
+    },
+    {
+      "data": "2026-03-31",
+      "valor_cota": 25.290138,
+      "variacao_mes_pct": -6.5629
+    },
+    {
+      "data": "2026-04-30",
+      "valor_cota": 24.879247,
+      "variacao_mes_pct": -1.6247
+    },
+    {
+      "data": "2026-05-29",
+      "valor_cota": 25.348685,
+      "variacao_mes_pct": 1.8869
+    },
+    {
+      "data": "2026-06-30",
+      "valor_cota": 23.830384,
+      "variacao_mes_pct": -5.9897
+    },
+    {
+      "data": "2026-07-31",
+      "valor_cota": 23.333886,
+      "variacao_mes_pct": -2.0835
+    },
+    {
+      "data": "2026-08-31",
+      "valor_cota": 24.410114,
+      "variacao_mes_pct": 4.6123
+    }
+  ],
+  "resumo": {
+    "janela_meses": 11,
+    "retorno_am_medio_pct": 3.6035,
+    "retorno_aa": {
+      "pessimista": 26.45,
+      "base": 52.93,
+      "otimista": 79.41
+    },
+    "volatilidade_aa": 26.48,
+    "referencia": "2026-08-31",
+    "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
+  }
+}

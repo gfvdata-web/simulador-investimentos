@@ -109,7 +109,9 @@ const NOMES_CLASSE = {
 // Mesmo critério que a página usa pra decidir "isso é fato ou palpite?" (regra
 // 3 do CLAUDE.md), só que aqui de antemão, a partir do catálogo cru - antes de
 // rodar o núcleo e saber a `natureza` de verdade.
-const TIPOS_NAO_CONTRATADOS = new Set(['estimado', 'fundo_fii', 'etf_historico']);
+const TIPOS_NAO_CONTRATADOS = new Set(['estimado', 'fundo_fii', 'etf_historico', 'fundo_cvm_historico']);
+// Os três tipos que leem dados/mercado/fundos/<ticker>.json (ver docs 02 e 04).
+const TIPOS_FUNDO_COM_ARQUIVO = new Set(['fundo_fii', 'etf_historico', 'fundo_cvm_historico']);
 
 async function carregarAtivos() {
   const catalogo = await dados.catalogo();
@@ -173,6 +175,7 @@ function rotuloRendimento(a) {
     case 'estimado': return 'Retorno estimado';
     case 'fundo_fii': return 'Dividend yield (fato) + valorização opcional';
     case 'etf_historico': return 'Retorno estimado (histórico de preço)';
+    case 'fundo_cvm_historico': return 'Retorno estimado (histórico de cota)';
     default: return r.tipo;
   }
 }
@@ -280,10 +283,10 @@ async function simular() {
     estado.premissas = premissas;
 
     const itens = estado.carteira.map((c) => ({ ...c, ativo: porId[c.ativoId] })).filter((it) => it.ativo);
-    // Só busca o histórico dos FII/ETF de fato presentes na carteira - a página
-    // não baixa os 13 arquivos de fundo pra simular 2 CDBs.
+    // Só busca o arquivo dos fundos de fato presentes na carteira - a página
+    // não baixa os arquivos de todos os fundos do catálogo pra simular 2 CDBs.
     const tickersFundo = [...new Set(itens
-      .filter((it) => it.ativo.rendimento.tipo === 'fundo_fii' || it.ativo.rendimento.tipo === 'etf_historico')
+      .filter((it) => TIPOS_FUNDO_COM_ARQUIVO.has(it.ativo.rendimento.tipo))
       .map((it) => it.ativo.rendimento.ticker))];
     const fundos = tickersFundo.length ? await dados.fundos(tickersFundo) : {};
 
