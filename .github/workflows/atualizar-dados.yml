@@ -1,0 +1,50 @@
+name: Atualizar dados de mercado
+
+# Roda o coletor e commita o retrato em dados/mercado/. É o único ponto do
+# projeto que fala com a internet: a página publicada lê apenas estes arquivos.
+#
+# Horário: 21h UTC (18h em Brasília) de segunda a sexta. O CDI do dia já saiu,
+# e o IPCA é mensal, então rodar mais vezes não traria nada novo.
+
+on:
+  schedule:
+    - cron: '0 21 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      meses:
+        description: 'Quantos meses de histórico buscar'
+        required: false
+        default: '120'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-dados
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Sem pip install: o coletor usa só a biblioteca padrão.
+      - name: Coletar
+        run: python coletor/atualizar.py --meses "${{ github.event.inputs.meses || '120' }}"
+
+      - name: Commitar se algo mudou
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          if git diff --quiet -- dados/mercado; then
+            echo 'Nenhum dado novo; nada a commitar.'
+            exit 0
+          fi
+          git add dados/mercado
+          git commit -m "Dados de mercado em $(date -u +'%Y-%m-%d')"
+          git push

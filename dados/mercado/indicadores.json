@@ -1,0 +1,31 @@
+{
+  "coletado_em": "2026-09-11T00:56:22+00:00",
+  "fonte": "Banco Central do Brasil - API SGS",
+  "completo": true,
+  "campos": {
+    "cdi_aa": {
+      "valor": 13.9,
+      "origem": "Banco Central (SGS)",
+      "serie_sgs": 4389,
+      "referencia": "2026-09-09"
+    },
+    "selic_meta_aa": {
+      "valor": 14.0,
+      "origem": "Banco Central (SGS)",
+      "serie_sgs": 432,
+      "referencia": "2026-09-16"
+    },
+    "poupanca_am": {
+      "valor": 0.6698,
+      "origem": "Banco Central (SGS)",
+      "serie_sgs": 196,
+      "referencia": "2026-09-01"
+    },
+    "ipca_12m": {
+      "valor": 4.443,
+      "origem": "Banco Central (SGS)",
+      "serie_sgs": 433,
+      "referencia": "2026-07-01"
+    }
+  }
+}

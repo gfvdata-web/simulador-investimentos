@@ -4,50 +4,56 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Simulador de Investimentos</title>
-  <link rel="stylesheet" href="estilo.css">
+  <link rel="stylesheet" href="app/estilo.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>📈</text></svg>">
+  <script>
+    // aplica o tema salvo antes do primeiro paint, senao a pagina pisca no tema errado
+    try {
+      var t = localStorage.getItem('simulador-investimentos:tema');
+      if (t) document.documentElement.dataset.tema = t;
+    } catch (erro) { /* localStorage indisponivel — segue com o tema do sistema */ }
+  </script>
 </head>
 <body>
 
 <header>
   <div class="titulo">
     <h1>Simulador de Investimentos</h1>
-    <span class="versao">v0.1.0 &middot; preview</span>
+    <span class="versao">v0.2.0</span>
+    <span class="idade-dados" id="idade-dados"></span>
+    <div class="alterna-tema" id="alterna-tema" role="group" aria-label="Tema da página">
+      <button type="button" data-tema-opcao="claro" aria-pressed="false">☀ Claro</button>
+      <button type="button" data-tema-opcao="escuro" aria-pressed="false">☾ Escuro</button>
+    </div>
   </div>
-  <ul class="indicadores" id="indicadores">
-    <li><span class="rotulo">carregando</span><div class="valor">&mdash;</div></li>
-  </ul>
-</header>
 
-<main>
-  <!-- ---------------- coluna de controles ---------------- -->
-  <div>
-    <section class="painel">
-      <h2>Simulação</h2>
-
-      <div class="campo">
+  <div class="cabecalho-grade">
+    <section class="controles-sim">
+      <div class="campo-inline">
         <label for="valor-inicial">Valor inicial (R$)</label>
         <input type="number" id="valor-inicial" value="100" min="0" step="10">
       </div>
 
-      <div class="campo">
+      <div class="campo-inline">
         <label for="aporte-mensal">Aporte mensal (R$)</label>
         <input type="number" id="aporte-mensal" value="0" min="0" step="10">
       </div>
 
-      <div class="campo">
-        <label for="meses">Prazo</label>
-        <div class="prazos" id="prazos">
-          <button type="button" data-meses="12">12M</button>
-          <button type="button" data-meses="24">24M</button>
-          <button type="button" data-meses="60">60M</button>
-          <button type="button" data-meses="120">120M</button>
+      <div class="campo-inline">
+        <label for="meses">Prazo (meses)</label>
+        <div class="prazo-linha">
+          <div class="prazos" id="prazos">
+            <button type="button" data-meses="12">12M</button>
+            <button type="button" data-meses="24">24M</button>
+            <button type="button" data-meses="60">60M</button>
+            <button type="button" data-meses="120">120M</button>
+          </div>
+          <input type="number" id="meses" value="12" min="1" max="600" step="1">
         </div>
-        <input type="number" id="meses" value="12" min="1" max="600" step="1">
       </div>
 
-      <div class="campo">
-        <label for="cenario">Cenário (só afeta retornos estimados)</label>
+      <div class="campo-inline">
+        <label for="cenario">Cenário <span class="dica">(só retornos estimados)</span></label>
         <select id="cenario">
           <option value="pessimista">Pessimista</option>
           <option value="base" selected>Base</option>
@@ -55,12 +61,23 @@
         </select>
       </div>
 
-      <label class="opcao"><input type="checkbox" id="considerar-ir" checked> Descontar IR / IOF</label>
-      <label class="opcao"><input type="checkbox" id="considerar-inflacao" checked> Mostrar valor real (IPCA)</label>
+      <div class="campo-inline opcoes-inline">
+        <label class="opcao"><input type="checkbox" id="considerar-ir" checked> Descontar IR / IOF</label>
+        <label class="opcao"><input type="checkbox" id="considerar-inflacao" checked> Valor real (IPCA)</label>
+      </div>
 
       <button class="principal" id="simular">Simular</button>
     </section>
 
+    <ul class="indicadores" id="indicadores">
+      <li><span class="rotulo">carregando</span><div class="valor">&mdash;</div></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+  <!-- ---------------- coluna de ativos ---------------- -->
+  <div>
     <section class="painel">
       <h2>Ativos <span id="contagem-ativos" style="text-transform:none;letter-spacing:0"></span></h2>
       <div id="lista-ativos"><p class="vazio">carregando catálogo…</p></div>
@@ -111,10 +128,12 @@
       Ferramenta de estudo pessoal, não é recomendação de investimento. Indicadores vêm da API pública
       do Banco Central (SGS); retornos de renda variável e cripto são <strong>estimativas</strong> definidas
       por você em <code>dados/premissas/premissas.json</code> e não têm valor preditivo.
+      Os dados de mercado são coletados periodicamente e ficam versionados no repositório — a página
+      não consulta nada em tempo real.
     </p>
   </div>
 </main>
 
-<script src="app.js"></script>
+<script type="module" src="app/app.js"></script>
 </body>
 </html>

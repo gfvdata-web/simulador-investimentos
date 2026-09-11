@@ -1,7 +1,7 @@
 # 03 — Motor de cálculo
 
-Arquivo: `backend/engine/motor.py`. Funções puras: recebem dicionários, devolvem
-dicionários, não tocam rede nem disco.
+Arquivo: `app/nucleo/motor.js`. Funções puras: recebem objetos, devolvem objetos,
+não tocam rede nem disco.
 
 ## Convenções de tempo
 
@@ -31,7 +31,7 @@ superestimaria o líquido.
 
 ## Fórmulas
 
-**Anual para mensal** (`indexadores.aa_para_am`):
+**Anual para mensal** (`indexadores.aaParaAm`):
 
 ```
 taxa_mensal = (1 + taxa_anual/100)^(1/12) − 1

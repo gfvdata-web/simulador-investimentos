@@ -1,6 +1,3 @@
-# cache de consultas às fontes oficiais — reconstruído sozinho
-dados/cache/*.json
-
 __pycache__/
 *.py[cod]
 .venv/

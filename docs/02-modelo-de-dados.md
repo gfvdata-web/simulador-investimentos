@@ -15,7 +15,7 @@ Central, e quanto o Bitcoin vai render vem de `premissas.json`.
 
 ```jsonc
 {
-  "id": "tesouro-ipca-2035",        // kebab-case, único, é a chave usada pela API
+  "id": "tesouro-ipca-2035",        // kebab-case, único, identifica o ativo em todo o projeto
   "nome": "Tesouro IPCA+ 2035",     // texto exibido
   "classe": "renda_fixa",           // renda_fixa | renda_variavel | cripto | fundos
   "subclasse": "tesouro_direto",    // livre, serve para agrupar e filtrar
@@ -32,7 +32,7 @@ Central, e quanto o Bitcoin vai render vem de `premissas.json`.
 
 ### Tipos de rendimento
 
-Implementados em `backend/engine/indexadores.py`, função `resolver`.
+Implementados em `app/nucleo/indexadores.js`, função `resolver`.
 
 | `tipo` | Campos | Significa | Natureza |
 |---|---|---|---|
@@ -43,7 +43,7 @@ Implementados em `backend/engine/indexadores.py`, função `resolver`.
 | `poupanca` | — | regra vigente da poupança, via série do BCB | contratada |
 | `estimado` | `chave_premissa` | aponta para um bloco de `estimativas` | **estimada** |
 
-A `natureza` volta na resposta da API e é o que faz a página marcar o selo
+A `natureza` volta junto do resultado e é o que faz a página marcar o selo
 "estimado". É o mecanismo que impede fato e palpite de se confundirem na tela.
 
 **Para criar um tipo novo** (ex.: `cdi_mais`, para "CDI + 2%"): adicione um ramo em
@@ -52,7 +52,7 @@ tabela acima e só então cadastre ativos usando ele.
 
 ### Regimes tributários
 
-Valores aceitos em `tributacao.regime`, implementados em `tributos.py`:
+Valores aceitos em `tributacao.regime`, implementados em `app/nucleo/tributos.js`:
 `isento`, `rf_regressivo`, `etf_renda_variavel`, `acoes`, `cripto`,
 `fundo_longo_prazo`. Detalhes de cada um no doc 05.
 
@@ -70,9 +70,10 @@ Valores aceitos em `tributacao.regime`, implementados em `tributos.py`:
 ### `indicadores` — só reserva
 
 Os quatro campos (`cdi_aa`, `selic_meta_aa`, `ipca_12m`, `poupanca_am`) são
-sobrescritos pelos dados do Banco Central sempre que a API responde. Eles existem para
-o simulador continuar funcionando offline — e quando isso acontece, a página mostra um
-aviso amarelo. Vale mantê-los razoavelmente atualizados mesmo assim.
+sobrescritos pelo retrato de mercado em `dados/mercado/indicadores.json`. Eles só
+entram em cena se aquele arquivo faltar ou vier com campo vazio — e, quando isso
+acontece, a página mostra um aviso amarelo. Vale mantê-los razoavelmente atualizados
+mesmo assim.
 
 ### `estimativas` — palpite com etiqueta
 
@@ -96,8 +97,8 @@ ainda não é usada — está reservada para o Monte Carlo da fase 5.
 
 - Todo `id` é único no catálogo.
 - Todo `chave_premissa` de um ativo `estimado` existe em `estimativas`. Se não existir,
-  `resolver()` levanta erro e o ativo aparece na lista `erros` da resposta, em vez de
-  render zero silenciosamente.
+  `resolver()` levanta erro e o ativo aparece na lista `erros` da comparação, em vez
+  de render zero silenciosamente.
 - Taxas estão sempre em **pontos percentuais ao ano** (`0.20` significa 0,20% a.a.,
   não 20%).
 - `risco` é uma escala editorial sua, não uma medida estatística — não use para cálculo.

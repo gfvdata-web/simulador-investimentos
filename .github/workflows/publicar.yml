@@ -1,0 +1,46 @@
+name: Publicar no GitHub Pages
+
+# O site é o próprio repositório: index.html na raiz, app/ e dados/ ao lado.
+# Não há build — este workflow só empacota os arquivos e publica.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Uma publicação por vez; se duas entrarem na fila, a mais nova vence.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacao.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir que os dados de mercado existem
+        run: |
+          test -f dados/mercado/indicadores.json || {
+            echo 'dados/mercado/indicadores.json não existe — rode o workflow de coleta antes.'
+            exit 1
+          }
+          python -c "import json,sys; d=json.load(open('dados/mercado/indicadores.json')); \
+            sys.exit(0 if any(c.get('valor') is not None for c in d['campos'].values()) else 1)"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: publicacao
+        uses: actions/deploy-pages@v4

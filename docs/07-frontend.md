@@ -1,13 +1,15 @@
 # 07 — Página do simulador
 
-Três arquivos em `web/`, sem build, sem framework, sem CDN. O backend serve a pasta
-como estática, então editar e recarregar já basta.
+`index.html` na raiz mais três arquivos em `app/`, sem build, sem framework, sem CDN.
+Um servidor estático qualquer serve o repositório, então editar e recarregar já basta.
+O cálculo roda no navegador, em `app/nucleo/` (doc 06).
 
 | Arquivo | Papel |
 |---|---|
-| `index.html` | estrutura e ids — nenhum texto de resultado é escrito aqui |
-| `estilo.css` | tokens de tema e todos os componentes |
-| `app.js` | estado, chamadas à API, tabela e gráfico |
+| `index.html` (raiz) | estrutura e ids — nenhum texto de resultado é escrito aqui. Os controles da simulação (valor, aporte, prazo, cenário, opções, botão) ficam no `<header>`; a coluna esquerda do `<main>` tem só o card de ativos |
+| `app/estilo.css` | tokens de tema e todos os componentes |
+| `app/app.js` | estado, render da tabela, gráfico e alternador de tema |
+| `app/dados.js` | leitura dos JSON do repositório e procedência dos indicadores |
 
 ## Estado
 
@@ -15,10 +17,12 @@ Um objeto só, no topo de `app.js`:
 
 ```js
 const estado = {
-  ativos: [],               // catálogo cru vindo de /api/ativos
+  ativos: [],               // catálogo cru de dados/catalogo/ativos.json
   selecionados: new Set(),  // ids marcados
-  ultimaSimulacao: null,    // última resposta de /api/simular
-  serieHistorica: null,     // última resposta de /api/historico
+  ultimaSimulacao: null,    // última saída de motor.comparar()
+  serieHistorica: null,     // última série carregada de dados/mercado/series/
+  premissas: null,
+  indicadores: null,        // já com procedência e idade do retrato
 };
 ```
 
@@ -31,11 +35,18 @@ de seguir do que qualquer camada de binding.
 1. `iniciar()` liga os controles, carrega indicadores e catálogo em paralelo, e dispara
    uma simulação inicial com o ativo padrão — a página nunca abre vazia.
 2. Mudar qualquer campo re-simula automaticamente, mas só se já houve uma simulação
-   antes (`estado.ultimaSimulacao`). Evita disparar requisição enquanto a página carrega.
+   antes (`estado.ultimaSimulacao`). Evita render duplicado enquanto a página carrega.
+   Marcar/desmarcar um ativo também re-simula, com debounce de 250 ms
+   (`agendarSimulacao()`), então o gráfico ganha e perde linhas na hora, sem clicar em
+   "Simular".
 3. `renderizarResultados()` escreve o resumo em uma frase, a tabela, o gráfico e o
    painel de procedência.
 
 ## Convenções de interface
+
+**Ativos agrupados por classe, cada grupo colapsável.** Cada classe é um `<details open>`
+com `<summary>`; o contador `marcados/total` no canto direito é atualizado por
+`atualizarContagem()`. Abrir/fechar é só o comportamento nativo do `<details>`, sem JS.
 
 **Toda estimativa é marcada.** Ativo com `rendimento.tipo === 'estimado'` ganha o selo
 âmbar "estimado" na lista. Isso implementa a regra 3 do `CLAUDE.md` na camada visual —
@@ -54,11 +65,26 @@ valores. Classe `.num` nas células numéricas.
 ## Tema
 
 Tokens em `:root` no tema claro; o bloco `@media (prefers-color-scheme: dark)` redefine
-os mesmos tokens. Nenhuma cor é definida apenas dentro do bloco escuro — se for
-adicionar, defina no claro primeiro.
+os mesmos tokens quando o sistema prefere escuro. Nenhuma cor é definida apenas dentro
+do bloco escuro — se for adicionar, defina no claro primeiro.
+
+Três estados para o atributo `data-tema` em `<html>`:
+
+| `data-tema` | Efeito |
+|---|---|
+| ausente | segue `prefers-color-scheme` do sistema (padrão) |
+| `"claro"` | força claro mesmo com o sistema em escuro |
+| `"escuro"` | força escuro mesmo com o sistema em claro (bloco `:root[data-tema="escuro"]`, fora da media query) |
+
+O botão `#alterna-tema` no cabeçalho alterna entre claro/escuro e persiste a escolha em
+`localStorage` (`simulador-investimentos:tema`). Um script inline no `<head>` de
+`index.html` aplica o tema salvo antes do primeiro paint, para não piscar no tema
+errado ao carregar. Se o usuário nunca clicou no botão, a página continua acompanhando
+o `prefers-color-scheme` do sistema ao vivo (listener em `ligarTema()`).
 
 O gráfico lê as cores de borda e texto via `getComputedStyle` no momento do desenho,
-então ele acompanha o tema sem código extra.
+então ele acompanha o tema sem código extra — `aplicarTema()` só precisa redesenhar o
+canvas existente quando o tema muda, não recalcular nada.
 
 ## Gráfico
 
@@ -72,6 +98,10 @@ desenharLinhas($('#grafico'), [
 ```
 
 - Escala Y automática com 8% de folga, começando em zero quando os valores são baixos.
+- Rótulos de dados: o valor final de cada série é escrito na margem direita, com a cor
+  da linha. Quando dois rótulos ficariam sobrepostos, são empurrados verticalmente
+  (mínimo de 13 px entre eles). Some com `opcoes.rotularPontas === false` ou acima de
+  10 séries; a margem direita cresce para abrir espaço quando ligado.
 - `devicePixelRatio` aplicado no `setTransform`, senão a linha sai borrada em tela HiDPI.
 - Rótulos das pontas ancorados para dentro (`textAlign` muda no primeiro e no último),
   senão vazam para fora da área do gráfico.

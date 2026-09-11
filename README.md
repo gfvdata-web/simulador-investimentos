@@ -8,44 +8,57 @@ quantos meses você quiser — com projeção **bruta, líquida de impostos e em
 > Ferramenta de estudo pessoal. Não é recomendação de investimento, não é consultoria
 > financeira e não tem valor preditivo.
 
-## Rodando
+## Como funciona
 
-Só precisa de Python 3.10+. **Nenhuma dependência externa.**
+O site é **estático e não acessa a internet**. Os dados oficiais são buscados por um
+coletor que roda sozinho no GitHub Actions em dias úteis e commita o resultado no
+repositório; a página lê esses arquivos e faz todo o cálculo no navegador.
+
+Isso significa que o simulador funciona mesmo com a fonte fora do ar, que cada
+simulação é auditável pelo histórico do git (dá para ver exatamente qual CDI foi usado
+em qualquer data), e que a idade do dado é sempre visível na tela.
+
+## Rodando local
+
+A página usa módulos ES, então precisa de um servidor estático — abrir o `index.html`
+por duplo clique não funciona. Com Python 3 (já vem no Windows via Store, ou instale):
 
 ```bash
-python -m backend.app
+python -m http.server 8765
 ```
 
-A página abre em <http://127.0.0.1:8765>. O servidor escuta apenas em `127.0.0.1` —
-nada fica exposto na rede local.
+Depois abra <http://127.0.0.1:8765>. No Windows dá para dar duplo clique em
+`scripts/iniciar.cmd`, que faz as duas coisas.
 
-Opções:
+Para atualizar os dados de mercado na mão, sem esperar a automação:
 
 ```bash
-python -m backend.app --porta 9000 --sem-navegador
+python coletor/atualizar.py
 ```
 
-No Windows também dá para dar duplo clique em `scripts/iniciar.cmd`.
+**Nenhuma dependência** — nem `pip install`, nem `npm install`, nem CDN.
 
-## O que já funciona (v0.1)
+## O que já funciona (v0.2)
 
-- Indicadores ao vivo do Banco Central (CDI, Selic, IPCA 12 meses, poupança), com a
-  procedência de cada número visível na tela.
+- Indicadores do Banco Central (CDI, Selic, IPCA 12 meses, poupança), cada um com a
+  série do SGS e a data de referência visíveis na tela.
+- 10 anos de histórico mensal de CDI, Selic, IPCA e poupança.
 - Catálogo de 10 ativos-semente em JSON editável à mão.
 - Projeção com aporte único e/ou aportes mensais, prazo livre de 1 a 600 meses.
 - IR regressivo por lote de aporte, IOF nos 30 primeiros dias, isenções de LCI/LCA,
   poupança e cripto, 15% em ETF/ações.
-- Valor real descontando o IPCA projetado.
-- Gráfico comparativo mês a mês e série histórica real do BCB (últimos 60 meses).
+- Valor real descontando o IPCA projetado, em três cenários.
+- Gráfico comparativo mês a mês e aba de histórico real.
+- Tema claro/escuro/sistema.
 
 ## Mapa rápido
 
 | Pasta | O que tem |
 |---|---|
-| `backend/` | Servidor HTTP, motor de cálculo, camada fiscal, cliente do BCB |
-| `dados/` | Catálogo de ativos e premissas em JSON + cache das consultas |
-| `web/` | Página do simulador (HTML/CSS/JS puro, sem build) |
-| `docs/` | Documentação de arquitetura — comece por `docs/00-catalogo.md` |
+| `index.html`, `app/` | a página: interface, motor de cálculo, camada fiscal |
+| `coletor/` | o único código que fala com a internet |
+| `dados/` | catálogo e premissas (edição humana) + retrato do mercado (gerado) |
+| `docs/` | documentação — comece por `docs/00-catalogo.md` |
 
 ## Para continuar o desenvolvimento
 

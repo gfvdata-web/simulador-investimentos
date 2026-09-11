@@ -27,9 +27,12 @@ Não é uma corretora, não é um robô de recomendação, não executa ordens.
 4. **Só fontes oficiais, públicas e de uso livre.** Banco Central (SGS), Tesouro
    Transparente, dados públicos da B3, IBGE. Nada de scraping de site de corretora,
    nada de API paga, nada de dado atrás de login.
-5. **Zero dependências de runtime.** Backend usa só a biblioteca padrão do Python;
-   o front é HTML/CSS/JS puro, sem build e sem CDN. Se uma tarefa parece exigir uma
-   dependência, discuta antes de adicionar.
+5. **Zero dependências.** O coletor usa só a biblioteca padrão do Python; a página é
+   HTML/CSS/JS puro, sem build e sem CDN. Se uma tarefa parece exigir uma dependência,
+   discuta antes de adicionar.
+6. **A página nunca acessa a rede.** Só o coletor fala com fontes externas, e ele roda
+   fora do navegador. Se algo na página precisar de `fetch` para fora do repositório,
+   a resposta certa é ensinar o coletor a trazer aquele dado.
 
 ## Convenções de código
 
@@ -37,12 +40,14 @@ Não é uma corretora, não é um robô de recomendação, não executa ordens.
   Mantém tudo no mesmo idioma do domínio (aporte, rendimento, líquido, resgate).
 - Arquivos e identificadores em `snake_case`; ids de ativo em `kebab-case`
   (`tesouro-ipca-2035`).
-- Taxas entram e saem em **% ao ano** nas fronteiras (JSON, API, tela). A conversão
-  para fração mensal acontece só dentro do motor, via `indexadores.aa_para_am`.
-- Dinheiro em `float` com arredondamento só na saída. Nada de `Decimal` por ora — a
-  precisão de centavo não muda uma projeção de 5 anos, e simplicidade vale mais aqui.
-- Funções do motor são **puras**: recebem dicionários, devolvem dicionários, não leem
-  arquivo nem fazem rede. Só `backend/dados.py` e `backend/fontes/` tocam I/O.
+- Taxas entram e saem em **% ao ano** nas fronteiras (JSON, tela). A conversão para
+  fração mensal acontece só dentro do motor, via `indexadores.aaParaAm`.
+- Dinheiro em `float` com arredondamento só na saída. A precisão de centavo não muda
+  uma projeção de 5 anos, e simplicidade vale mais aqui.
+- Funções de `app/nucleo/` são **puras**: recebem objetos, devolvem objetos, não leem
+  arquivo nem fazem rede. Só `app/dados.js` e `coletor/` tocam I/O.
+- Python no coletor fica sem acento no código-fonte (roda em ambiente de CI com locale
+  imprevisível); JavaScript e documentação usam português com acento normal.
 
 ## Onde mexer para cada tipo de tarefa
 
@@ -50,11 +55,11 @@ Não é uma corretora, não é um robô de recomendação, não executa ordens.
 |---|---|---|
 | Adicionar um ativo | `dados/catalogo/ativos.json` | código nenhum, se o tipo de rendimento já existir |
 | Mudar um palpite de retorno | `dados/premissas/premissas.json` | — |
-| Novo tipo de rendimento (ex.: `cdi_mais`) | `backend/engine/indexadores.py` + `docs/02` | motor, tributos |
-| Nova regra fiscal | `backend/engine/tributos.py` + `docs/05` | motor |
-| Nova fonte de dados | `backend/fontes/` (um módulo por fonte) + `docs/04` | motor |
-| Novo endpoint | `backend/app.py` + `docs/06` | — |
-| Mexer na página | `web/` + `docs/07` | backend |
+| Novo tipo de rendimento (ex.: `cdi_mais`) | `app/nucleo/indexadores.js` + `docs/02` | motor, tributos |
+| Nova regra fiscal | `app/nucleo/tributos.js` + `docs/05` | motor |
+| Nova fonte de dados | `coletor/fontes/` (um módulo por fonte) + `docs/04` e `docs/06` | a página |
+| Mudar formato de arquivo de dados | coletor + `app/dados.js` + `docs/06`, no mesmo commit | — |
+| Mexer na interface | `index.html`, `app/estilo.css`, `app/app.js` + `docs/07` | núcleo, coletor |
 
 ## Como entregar
 
@@ -62,10 +67,17 @@ Não é uma corretora, não é um robô de recomendação, não executa ordens.
 - Toda mudança no motor precisa de um caso conferido à mão no comentário ou no teste
   (ex.: "R$ 100 a 100% do CDI de 13,90% por 12 meses = R$ 113,90 bruto; IR de 20% sobre
   R$ 13,90 = R$ 2,78; líquido R$ 111,12").
-- Mudou contrato de API? Atualize `docs/06-api.md` no mesmo commit.
+- Mudou o formato de um arquivo de dados? Atualize `docs/06-contratos.md`, o coletor e
+  a página no mesmo commit — são duas pontas que só conversam por aquele contrato.
 - Adicionou ativo com retorno estimado? A estimativa precisa de `fonte` preenchida.
 
 ## Estado atual
 
-v0.1.0 — preview funcional. Ver `docs/08-roadmap.md` para o que vem em seguida e
-`docs/00-catalogo.md` para o índice da documentação.
+v0.2.0 — publicado no GitHub Pages, sem backend. O site é estático e os dados são um
+retrato versionado, atualizado pelo Actions. Ver `docs/08-roadmap.md` para o que vem em
+seguida e `docs/00-catalogo.md` para o índice da documentação.
+
+A v0.1 tinha um backend Python que consultava o BCB a cada clique. Ele foi removido
+quando ficou claro que (a) o BCB libera CORS, então ele não resolvia o problema que
+justificava sua existência, e (b) o Pages só serve estático. Está no histórico do git
+se algum dia fizer falta.

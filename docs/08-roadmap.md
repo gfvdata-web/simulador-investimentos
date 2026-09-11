@@ -5,7 +5,12 @@ prompts paralelos sem colidir, desde que os contratos dos docs 02 e 06 sejam res
 
 ## Fase 0 — Esqueleto ✅ concluída
 
-Estrutura, documentação, backend com motor completo, página funcional, CDI ao vivo.
+Estrutura, documentação, motor completo, página funcional, dados do BCB.
+
+## Fase 0.5 — Site estático publicado ✅ concluída
+
+Backend removido, motor portado para o navegador, coletor rodando no GitHub Actions,
+dados de mercado versionados, publicação no GitHub Pages.
 
 ## Fase 1 — Catálogo de verdade
 
@@ -18,7 +23,7 @@ Sair dos 10 ativos-semente para algo que reflita o que você realmente considera
 - Preço de BTC em BRL por API pública de mercado.
 - Campo de vencimento nos títulos, com o prazo da simulação limitado por ele.
 
-*Toca em:* `dados/catalogo/`, `backend/fontes/`. Não mexe no motor.
+*Toca em:* `dados/catalogo/`, `coletor/fontes/`. Não mexe no motor nem na página.
 
 ## Fase 2 — Fidelidade do cálculo
 
@@ -28,7 +33,7 @@ Sair dos 10 ativos-semente para algo que reflita o que você realmente considera
 - Carência e liquidez afetando o resgate: hoje `liquidez` é texto decorativo.
 - Aporte com periodicidade diferente de mensal.
 
-*Toca em:* `backend/engine/`. Reconfira a tabela de casos do doc 03 a cada mudança.
+*Toca em:* `app/nucleo/`. Reconfira a tabela de casos do doc 03 a cada mudança.
 
 ## Fase 3 — Histórico como simulação
 
@@ -40,7 +45,7 @@ constante.
 - Comparar projeção contra realizado no mesmo gráfico.
 - Séries diárias de preço para renda variável (aqui pode valer SQLite — ver doc 01).
 
-*Toca em:* `backend/engine/motor.py` (aceitar vetor de taxas), `backend/dados.py`.
+*Toca em:* `app/nucleo/motor.js` (aceitar vetor de taxas), `app/dados.js`.
 
 ## Fase 4 — Carteira
 
@@ -60,10 +65,10 @@ constante.
 
 | Dívida | Impacto | Onde |
 |---|---|---|
-| Come-cotas não modelado | fundo renderia mais do que renderia de verdade | `tributos.py` |
-| Sem marcação a mercado | prefixado e IPCA+ só fazem sentido até o vencimento | `motor.py` |
-| Mês comercial de 30 dias | casos de fronteira de IR podem cair na faixa errada | `motor.py` |
-| Isenção mensal assume venda única | ações e cripto podem ficar mais isentos na prática | `tributos.py` |
+| Come-cotas não modelado | fundo renderia mais do que renderia de verdade | `tributos.js` |
+| Sem marcação a mercado | prefixado e IPCA+ só fazem sentido até o vencimento | `motor.js` |
+| Mês comercial de 30 dias | casos de fronteira de IR podem cair na faixa errada | `motor.js` |
+| Isenção mensal assume venda única | ações e cripto podem ficar mais isentos na prática | `tributos.js` |
 | `liquidez` e `fgc` são decorativos | não afetam nada no cálculo | `ativos.json` |
 | Sem testes automatizados | a tabela do doc 03 é conferida à mão | — |
 | Taxa de prefixado fixa no JSON | envelhece sem avisar | `ativos.json`, fase 1 |

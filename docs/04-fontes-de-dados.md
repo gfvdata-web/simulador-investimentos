@@ -11,7 +11,7 @@ corretora, sem API paga, sem dado atrás de login.
 https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados/ultimos/{n}?formato=json
 ```
 
-Pública, sem chave, sem limite documentado. Módulo: `backend/fontes/bcb_sgs.py`.
+Pública, sem chave, sem limite documentado. Módulo: `coletor/fontes/bcb_sgs.py`.
 
 | Código | Série | Unidade | Uso |
 |---|---|---|---|
@@ -25,7 +25,7 @@ Pública, sem chave, sem limite documentado. Módulo: `backend/fontes/bcb_sgs.py
 
 ## Armadilhas já encontradas
 
-Duas coisas custaram tempo e estão resolvidas no código. Se mexer no cliente, não
+Três coisas custaram tempo e estão resolvidas no código. Se mexer no cliente, não
 desfaça:
 
 **1. A ordenação não é garantida.** As séries mensais voltam da mais recente para a
@@ -38,28 +38,43 @@ curso, que no dia 10 vale só um terço do mês. Incluído no histórico, ele de
 queda falsa no último ponto. `dados.historico()` descarta o mês corrente e pede um mês
 a mais para compensar.
 
-Uma terceira, ainda aberta: o IPCA sai por volta do dia 10 do mês seguinte, então o
+**3. `/ultimos/N` quebra para N grande.** O endpoint `/dados/ultimos/{n}` responde
+400 Bad Request para qualquer N acima de ~12 nas séries mensais (4391, 4390, 433,
+196) — não é intermitência, é reprodutível. A consulta por intervalo de datas
+(`?dataInicial=dd/MM/aaaa&dataFinal=dd/MM/aaaa`) funciona sem limite prático e é a
+que o coletor usa para histórico. `/ultimos/1` continua confiável e é usado para
+pegar só o valor mais recente.
+
+Uma quarta, ainda aberta: o IPCA sai por volta do dia 10 do mês seguinte, então o
 "IPCA 12 meses" está sempre um a dois meses atrasado em relação ao CDI. Isso é da
 natureza do índice, não um bug — mas explica a diferença de data de referência entre
 os cartões da página.
 
-## Cache
+## Quando e como a coleta roda
 
-`backend/fontes/cache.py`. Um arquivo JSON por consulta em `dados/cache/`, com TTL
-padrão de 6 horas. A pasta é descartável e está no `.gitignore` — apagar força uma
-releitura.
+`.github/workflows/atualizar-dados.yml`, às 21h UTC (18h em Brasília) de segunda a
+sexta, e sob demanda pelo botão "Run workflow". O coletor grava em `dados/mercado/` e
+commita só se algo mudou.
 
-Para forçar atualização sem apagar nada: `GET /api/indicadores?atualizar=1`.
+Na mão: `python coletor/atualizar.py --meses 120` (ou `scripts/atualizar-dados.cmd`).
 
-## Como o fallback funciona
+## Degradação em três níveis
 
-`dados.indicadores()` tenta cada campo separadamente. Se um falhar, aquele campo — e
-só ele — cai para `premissas.json`, marcado com `origem: "fallback de premissas.json"`.
-A resposta ganha `_degradado: true` e a página mostra um aviso amarelo.
+O coletor e a página degradam em cadeia, e cada nível é visível na tela:
 
-Nunca substitua isso por um valor padrão silencioso. A regra 1 do `CLAUDE.md` existe
-por causa deste ponto exato: um simulador que mostra número velho sem avisar é pior que
-um que não mostra número.
+1. **Coleta ok** — valor do BCB, com série SGS e data de referência.
+2. **Fonte falhou, retrato anterior existe** — o campo herda o valor antigo, marcado
+   como `"retrato anterior (fonte indisponivel na ultima coleta)"`. O arquivo de série
+   anterior é preservado intacto.
+3. **Nada disponível** — cai para `indicadores` de `premissas.json`, a página marca
+   `_degradado` e mostra aviso amarelo.
+
+Além disso, retrato com mais de 10 dias (`DIAS_ATE_VENCER` em `app/dados.js`) vira
+aviso na tela mesmo se estiver completo, porque significa que a automação parou.
+
+Nunca substitua nada disso por um valor padrão silencioso. A regra 1 do `CLAUDE.md`
+existe por causa deste ponto: um simulador que mostra número velho sem avisar é pior
+que um que não mostra número.
 
 ## Fontes mapeadas para as próximas fases
 
@@ -73,10 +88,14 @@ um que não mostra número.
 
 ## Como plugar uma fonte nova
 
-1. Um módulo por fonte em `backend/fontes/`, com uma exceção própria (siga o padrão de
+Uma vantagem do desenho por snapshot: a fonte nova não precisa liberar CORS, porque
+quem fala com ela é o Actions, não o navegador.
+
+1. Um módulo por fonte em `coletor/fontes/`, com uma exceção própria (siga o padrão de
    `FalhaFonte`).
 2. Normalize para `[{"data": "YYYY-MM-DD", "valor": float}]` ordenado crescente.
-3. Passe tudo por `cache.ler` / `cache.gravar` com um TTL adequado ao ritmo da série.
-4. Nunca invente valor quando a fonte falhar: levante a exceção e deixe `dados.py`
-   decidir o fallback.
+3. Grave em `dados/mercado/` no formato do doc 06 e **preserve o arquivo anterior** se
+   a coleta falhar.
+4. Nunca invente valor quando a fonte falhar: levante a exceção e deixe
+   `atualizar.py` decidir a degradação.
 5. Documente a série e as armadilhas nas tabelas acima.

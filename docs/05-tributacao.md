@@ -1,6 +1,6 @@
 # 05 — Tributação
 
-Arquivo: `backend/engine/tributos.py`. Tabelas em `premissas.json`, bloco `tributacao`.
+Arquivo: `app/nucleo/tributos.js`. Tabelas em `premissas.json`, bloco `tributacao`.
 
 > Reflete a legislação geral para pessoa física residente no Brasil. Não é orientação
 > tributária. Reconfira antes de usar para qualquer decisão real — e especialmente
@@ -55,7 +55,7 @@ Fundos de investimento (exceto ações) antecipam IR em maio e novembro, comendo
 que segue rendendo, então o prejuízo cresce com o prazo — em 10 anos a diferença é
 material, não cosmética.
 
-Para implementar: em `motor.projetar()`, a cada 6 meses, tributar o rendimento
+Para implementar: em `motor.projetar()` (`app/nucleo/motor.js`), a cada 6 meses, tributar o rendimento
 acumulado de cada lote desde a última cobrança e abater do `valor_final`, guardando o
 imposto já pago para não cobrar de novo no resgate. Ligue por
 `premissas.tributacao.come_cotas_habilitado`, hoje em `false`.

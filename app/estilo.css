@@ -1,5 +1,8 @@
 /* Simulador de Investimentos - folha de estilo unica.
-   Tokens no :root (tema claro), sobrescritos no bloco dark. */
+   Tokens no :root (tema claro), sobrescritos no bloco dark.
+   Tres estados possiveis para [data-tema] no <html>: ausente (segue o sistema via
+   prefers-color-scheme), "claro" (força claro) ou "escuro" (força escuro) — trocados
+   pelo botão #alterna-tema em app.js, que persiste a escolha em localStorage. */
 
 :root {
   --fundo: #f6f7f9;
@@ -42,6 +45,25 @@
   }
 }
 
+/* escolha explicita no botao, vale mesmo se o sistema estiver no claro */
+:root[data-tema="escuro"] {
+  --fundo: #0f1216;
+  --superficie: #171b21;
+  --superficie-2: #1e242c;
+  --borda: #2a313a;
+  --texto: #e8eaed;
+  --texto-fraco: #a4adb8;
+  --texto-tenue: #737d89;
+  --acento: #5a9bff;
+  --acento-suave: #16253d;
+  --positivo: #3fbf7f;
+  --negativo: #ef6b5c;
+  --alerta: #e3b341;
+  --alerta-fundo: #2b2413;
+  --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
+
 * { box-sizing: border-box; }
 
 body {
@@ -57,32 +79,89 @@ body {
 header {
   background: var(--superficie);
   border-bottom: 1px solid var(--borda);
-  padding: 18px 24px 0;
+  padding: 16px 24px 18px;
 }
 
-.titulo { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.titulo { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
 .titulo h1 { font-size: 18px; margin: 0; letter-spacing: -.01em; }
 .titulo .versao {
   font-size: 11px; color: var(--texto-tenue); font-family: var(--mono);
   border: 1px solid var(--borda); border-radius: 999px; padding: 1px 8px;
 }
 
+/* Controle segmentado com as duas opções sempre visíveis — app.js marca a ativa
+   com aria-pressed="true" a partir da escolha salva ou do prefers-color-scheme. */
+.alterna-tema {
+  margin-left: auto;
+  display: flex; gap: 2px;
+  padding: 2px;
+  background: var(--superficie-2); border: 1px solid var(--borda); border-radius: 999px;
+}
+.alterna-tema button {
+  padding: 4px 11px;
+  background: transparent; border: 0; border-radius: 999px;
+  color: var(--texto-fraco); font-size: 11px; font-family: var(--mono);
+  cursor: pointer;
+}
+.alterna-tema button:hover { color: var(--texto); }
+.alterna-tema button:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+.alterna-tema button[aria-pressed="true"] {
+  background: var(--superficie); color: var(--texto); font-weight: 650;
+  box-shadow: var(--sombra);
+}
+
+.cabecalho-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px 24px;
+  align-items: start;
+}
+@media (max-width: 1080px) {
+  .cabecalho-grade { grid-template-columns: 1fr; }
+}
+
+/* controles da simulação, agora no cabeçalho */
+.controles-sim {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 14px;
+}
+.campo-inline { display: flex; flex-direction: column; gap: 4px; }
+.campo-inline label { font-size: 11px; color: var(--texto-fraco); }
+.campo-inline label .dica { color: var(--texto-tenue); }
+.campo-inline input[type="number"], .campo-inline select {
+  width: 130px; padding: 7px 9px; font-size: 13px; font-family: var(--mono);
+  background: var(--fundo); color: var(--texto);
+  border: 1px solid var(--borda); border-radius: 8px;
+}
+.campo-inline input:focus, .campo-inline select:focus { outline: 2px solid var(--acento); outline-offset: -1px; }
+.prazo-linha { display: flex; gap: 6px; }
+.prazo-linha .prazos { margin: 0; }
+.prazo-linha #meses { width: 70px; }
+.opcoes-inline { gap: 6px; }
+.opcoes-inline .opcao { margin: 0; font-size: 12px; }
+
+.controles-sim button.principal {
+  width: auto; padding: 9px 22px; align-self: flex-end;
+}
+
 .indicadores {
-  display: flex; gap: 8px; flex-wrap: wrap;
-  margin: 14px 0 0; padding: 0 0 14px; list-style: none;
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin: 0; padding: 0; list-style: none;
 }
 .indicadores li {
   background: var(--superficie-2); border: 1px solid var(--borda);
-  border-radius: var(--raio); padding: 8px 12px; min-width: 132px;
+  border-radius: 8px; padding: 5px 9px; min-width: 96px;
 }
-.indicadores .rotulo { font-size: 11px; color: var(--texto-fraco); text-transform: uppercase; letter-spacing: .04em; }
-.indicadores .valor { font-size: 17px; font-weight: 640; font-family: var(--mono); }
-.indicadores .fonte { font-size: 10px; color: var(--texto-tenue); }
+.indicadores .rotulo { font-size: 9px; color: var(--texto-fraco); text-transform: uppercase; letter-spacing: .04em; display: block; }
+.indicadores .valor { font-size: 13px; font-weight: 640; font-family: var(--mono); }
+.indicadores .fonte { font-size: 9px; color: var(--texto-tenue); }
 
 /* ---------- layout ---------- */
 main {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-columns: 300px minmax(0, 1fr);
   gap: 20px;
   padding: 20px 24px 48px;
   align-items: start;
@@ -138,11 +217,28 @@ button.principal:hover { filter: brightness(1.08); }
 button.principal:disabled { opacity: .55; cursor: progress; }
 
 /* ---------- lista de ativos ---------- */
-.grupo-classe {
+.grupo { border-bottom: 1px solid var(--borda); }
+.grupo:last-child { border-bottom: 0; }
+.grupo > summary {
+  list-style: none; cursor: pointer; user-select: none;
+  display: flex; align-items: center; gap: 6px;
   font-size: 11px; text-transform: uppercase; letter-spacing: .05em;
-  color: var(--texto-tenue); margin: 12px 0 6px; font-weight: 600;
+  color: var(--texto-fraco); font-weight: 600;
+  padding: 9px 4px;
 }
-.grupo-classe:first-child { margin-top: 0; }
+.grupo > summary::-webkit-details-marker { display: none; }
+.grupo > summary::before {
+  content: "▸"; font-size: 10px; color: var(--texto-tenue);
+  transition: transform .12s ease;
+}
+.grupo[open] > summary::before { transform: rotate(90deg); }
+.grupo > summary:hover { color: var(--texto); }
+.grupo .cont-grupo {
+  margin-left: auto; font-size: 10px; font-weight: 500; letter-spacing: 0;
+  color: var(--texto-tenue); background: var(--superficie-2);
+  border: 1px solid var(--borda); border-radius: 999px; padding: 0 7px;
+}
+.grupo-corpo { padding: 2px 0 8px; }
 .ativo {
   display: flex; align-items: flex-start; gap: 9px;
   padding: 7px 8px; border-radius: 8px; cursor: pointer;
@@ -204,3 +300,5 @@ canvas { display: block; width: 100%; height: 320px; }
 
 .rodape-nota { font-size: 11px; color: var(--texto-tenue); margin-top: 14px; line-height: 1.6; }
 .rodape-nota code { font-family: var(--mono); }
+
+.idade-dados { font-size: 11px; color: var(--texto-tenue); }
