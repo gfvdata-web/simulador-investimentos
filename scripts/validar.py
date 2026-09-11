@@ -19,10 +19,17 @@ RAIZ = Path(__file__).resolve().parents[1]
 # Espelham o que esta implementado no navegador. Ao criar um tipo ou regime
 # novo em app/nucleo/, acrescente aqui tambem - e o proprio teste faz a
 # checagem cruzada logo abaixo.
-TIPOS_RENDIMENTO = {"pos_cdi", "pos_selic", "prefixado", "ipca_mais", "poupanca", "estimado"}
-REGIMES = {"isento", "rf_regressivo", "etf_renda_variavel", "acoes", "cripto", "fundo_longo_prazo"}
+TIPOS_RENDIMENTO = {
+    "pos_cdi", "pos_selic", "prefixado", "ipca_mais", "poupanca", "estimado",
+    "fundo_fii", "etf_historico",
+}
+REGIMES = {
+    "isento", "rf_regressivo", "etf_renda_variavel", "acoes", "cripto", "fii",
+    "fundo_longo_prazo",
+}
 CLASSES = {"renda_fixa", "renda_variavel", "cripto", "fundos"}
 CENARIOS = {"pessimista", "base", "otimista"}
+TIPOS_FUNDO = {"fundo_fii", "etf_historico"}  # leem dados/mercado/fundos/<ticker>.json, nao 'estimativas'
 
 CAMPOS_OBRIGATORIOS = [
     "id", "nome", "classe", "subclasse", "risco", "rendimento", "tributacao", "descricao",
@@ -32,6 +39,8 @@ CAMPOS_POR_TIPO = {
     "prefixado": ["taxa_aa"],
     "ipca_mais": ["spread_aa"],
     "estimado": ["chave_premissa"],
+    "fundo_fii": ["ticker"],
+    "etf_historico": ["ticker"],
 }
 
 
@@ -82,6 +91,20 @@ def validar_catalogo(catalogo: dict, premissas: dict, erros: list, avisos: list)
                         erros.append(f"{nome}: estimativa '{chave}' sem cenario(s) {sorted(faltando)}")
                     if not bloco.get("fonte"):
                         erros.append(f"{nome}: estimativa '{chave}' sem 'fonte' preenchida")
+            if tipo in TIPOS_FUNDO:
+                ticker = rendimento.get("ticker")
+                caminho_fundo = RAIZ / "dados" / "mercado" / "fundos" / f"{ticker}.json"
+                if not caminho_fundo.exists():
+                    avisos.append(
+                        f"{nome}: ticker '{ticker}' ainda sem dados/mercado/fundos/{ticker}.json "
+                        "coletado (rode coletor/atualizar.py) - o ativo vai cair em 'erros' na pagina"
+                    )
+                elif ler(caminho_fundo).get("tipo") != {"fundo_fii": "fii", "etf_historico": "etf"}[tipo]:
+                    erros.append(
+                        f"{nome}: rendimento '{tipo}' espera ticker do tipo "
+                        f"'{ {'fundo_fii': 'fii', 'etf_historico': 'etf'}[tipo] }', mas "
+                        f"dados/mercado/fundos/{ticker}.json diz '{ler(caminho_fundo).get('tipo')}'"
+                    )
 
         regime = ativo.get("tributacao", {}).get("regime")
         if regime not in REGIMES:
@@ -153,11 +176,36 @@ def validar_mercado(erros: list, avisos: list) -> None:
         if len(set(datas)) != len(datas):
             erros.append(f"mercado: serie '{arquivo.stem}' tem datas duplicadas")
 
+    dir_fundos = RAIZ / "dados" / "mercado" / "fundos"
+    for arquivo in sorted(dir_fundos.glob("*.json")):
+        fundo = ler(arquivo)
+        pontos = fundo.get("pontos", [])
+        resumo = fundo.get("resumo")
+        if not pontos:
+            erros.append(f"mercado: fundo '{arquivo.stem}' sem pontos")
+            continue
+        datas = [p["data"] for p in pontos]
+        if datas != sorted(datas):
+            erros.append(f"mercado: fundo '{arquivo.stem}' fora de ordem cronologica")
+        if len(set(datas)) != len(datas):
+            erros.append(f"mercado: fundo '{arquivo.stem}' tem datas duplicadas")
+        if not resumo:
+            erros.append(f"mercado: fundo '{arquivo.stem}' sem 'resumo'")
+        elif fundo.get("tipo") == "fii":
+            for campo in ("dividend_yield_am_medio_pct", "valorizacao_patrimonial_am_media_pct"):
+                if campo not in resumo:
+                    erros.append(f"mercado: fundo '{arquivo.stem}' (fii) sem '{campo}' no resumo")
+        elif fundo.get("tipo") == "etf":
+            faltando = CENARIOS - set(resumo.get("retorno_aa", {}))
+            if faltando:
+                erros.append(f"mercado: fundo '{arquivo.stem}' (etf) sem cenario(s) {sorted(faltando)}")
+
 
 def conferir_espelho_com_codigo(erros: list) -> None:
     """Garante que as listas deste arquivo nao fiquem para tras do codigo real."""
     pares = [
         ("app/nucleo/indexadores.js", r"case '([a-z_]+)':", TIPOS_RENDIMENTO, "tipo de rendimento"),
+        ("app/nucleo/tributos.js", r"regime === '([a-z_]+)'", REGIMES, "regime tributario"),
     ]
     for caminho, padrao, esperados, rotulo in pares:
         fonte = (RAIZ / caminho).read_text(encoding="utf-8")

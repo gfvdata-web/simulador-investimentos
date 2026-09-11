@@ -4,7 +4,9 @@ name: Atualizar dados de mercado
 # projeto que fala com a internet: a página publicada lê apenas estes arquivos.
 #
 # Horário: 21h UTC (18h em Brasília) de segunda a sexta. O CDI do dia já saiu,
-# e o IPCA é mensal, então rodar mais vezes não traria nada novo.
+# e o IPCA é mensal, então rodar mais vezes não traria nada novo. FII (CVM) e
+# ETF (B3) seguem o mesmo horário; a janela deles é fixa em JANELA_FUNDOS_MESES,
+# não usa --meses (esse input só afeta indicadores e séries do BCB).
 
 on:
   schedule:

@@ -6,6 +6,9 @@
      etf_renda_variavel  ETFs de ações: 15% sobre o ganho, SEM isenção mensal
      acoes               15% sobre o ganho, isento até R$ 20.000 vendidos no mês
      cripto              15% sobre o ganho, isento até R$ 35.000 vendidos no mês
+     fii                 20% sobre o ganho de capital na venda, SEM isenção mensal.
+                          O dividendo mensal (isento) não entra aqui - o motor já
+                          o separou antes de chamar `tributar` (ver motor.js)
      fundo_longo_prazo   come-cotas semestral (ainda não modelado, ver docs/05)
 
    Nada aqui é conselho tributário. As regras refletem a legislação geral para
@@ -58,7 +61,7 @@ export function tributar(regime, lotes, valorVendaTotal, regras) {
     return montar(iofTotal, irTotal, rendimentoTotal, `IR regressivo: ${faixa}`);
   }
 
-  if (regime === 'etf_renda_variavel' || regime === 'acoes' || regime === 'cripto') {
+  if (regime === 'etf_renda_variavel' || regime === 'acoes' || regime === 'cripto' || regime === 'fii') {
     let aliquota;
     if (regime === 'acoes') {
       const limite = regras.isencao_venda_acoes_mensal || 0;
@@ -68,11 +71,15 @@ export function tributar(regime, lotes, valorVendaTotal, regras) {
       const limite = regras.isencao_venda_cripto_mensal || 0;
       aliquota = regras.ir_cripto_aliquota;
       if (valorVendaTotal <= limite) return zero(textoIsencao(valorVendaTotal, limite));
+    } else if (regime === 'fii') {
+      aliquota = regras.ir_fii_aliquota;
     } else {
       aliquota = regras.ir_renda_variavel_aliquota;
     }
-    return montar(0, (rendimentoTotal * aliquota) / 100, rendimentoTotal,
-      `${aliquota}% sobre o ganho de capital`);
+    const detalhe = regime === 'fii'
+      ? `${aliquota}% sobre o ganho de capital na venda de cotas (dividendo mensal já isento, contado à parte)`
+      : `${aliquota}% sobre o ganho de capital`;
+    return montar(0, (rendimentoTotal * aliquota) / 100, rendimentoTotal, detalhe);
   }
 
   if (regime === 'fundo_longo_prazo') {

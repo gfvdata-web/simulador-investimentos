@@ -64,6 +64,9 @@
       <div class="campo-inline opcoes-inline">
         <label class="opcao"><input type="checkbox" id="considerar-ir" checked> Descontar IR / IOF</label>
         <label class="opcao"><input type="checkbox" id="considerar-inflacao" checked> Valor real (IPCA)</label>
+        <label class="opcao" title="Só afeta FII: projeta a variação patrimonial média histórica pra frente. Desligado, o FII soma só o dividendo (fato) e mantém o valor da cota parado.">
+          <input type="checkbox" id="considerar-valorizacao"> Projetar valorização de FII
+        </label>
       </div>
 
       <button class="principal" id="simular">Simular</button>
@@ -123,6 +126,8 @@
       Ferramenta de estudo pessoal, não é recomendação de investimento. Indicadores vêm da API pública
       do Banco Central (SGS); retornos de renda variável e cripto são <strong>estimativas</strong> definidas
       por você em <code>dados/premissas/premissas.json</code> e não têm valor preditivo.
+      FII usa dividend yield e valorização patrimonial publicados pela CVM; ETF usa retorno estimado a
+      partir do histórico de preço na B3 — nenhum dos dois é garantia de rendimento futuro.
       Os dados de mercado são coletados periodicamente e ficam versionados no repositório — a página
       não consulta nada em tempo real.
     </p>

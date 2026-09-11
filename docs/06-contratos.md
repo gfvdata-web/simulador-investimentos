@@ -75,6 +75,57 @@ Mesmos metadados da entrada no manifesto, mais os pontos:
 parcial. Quem consome descarta o mês corrente — `app/dados.js` faz isso. O acumulado e
 o índice base 100 são calculados na página: dependem da janela escolhida.
 
+## `dados/mercado/fundos/{TICKER}.json`
+
+Um arquivo por FII/ETF coletado, escrito por `coletor/atualizar.py` (`coletar_fundos`),
+lido por `app/dados.js` (`fundos(tickers)`) só para os tickers que o usuário marcou —
+não é pré-carregado como indicadores. O manifesto entra em `indicadores.json` como
+`fundos: [...]`, no mesmo espírito de `series`.
+
+FII (fonte CVM, fato):
+
+```jsonc
+{
+  "ticker": "VILG11", "tipo": "fii", "cnpj": "24.853.044/0001-22",
+  "rotulo": "VILG11 (Vinci Logística FII)", "segmento": "Logística",
+  "fonte": "CVM - Dados Abertos (Informe Mensal FII)",
+  "coletado_em": "2026-09-11T01:34:11+00:00",
+  "pontos": [
+    { "data": "2026-07-01", "dividend_yield_pct": 0.75,
+      "valorizacao_patrimonial_pct": -0.0006, "rentabilidade_efetiva_pct": 0.7495 }
+  ],
+  "resumo": {
+    "janela_meses": 36,
+    "dividend_yield_am_medio_pct": 0.5971,
+    "valorizacao_patrimonial_am_media_pct": -0.063,
+    "valorizacao_patrimonial_am_desvio_pct": 0.6247,
+    "referencia": "2026-07-01",
+    "metodo": "Média simples dos meses fechados publicados pela CVM."
+  }
+}
+```
+
+ETF (fonte B3, preço — a valorização é calculada por este projeto, ver doc 04):
+
+```jsonc
+{
+  "ticker": "GOLD11", "tipo": "etf", "rotulo": "GOLD11 (Trend Ouro)",
+  "indice": "ouro (commodity)", "fonte": "B3 - Séries Históricas (COTAHIST)",
+  "coletado_em": "2026-09-11T01:34:11+00:00",
+  "pontos": [ { "data": "2026-08-31", "fechamento": 23.98, "variacao_mes_pct": 12.2659 } ],
+  "resumo": {
+    "janela_meses": 43, "retorno_am_medio_pct": 2.0886,
+    "retorno_aa": { "pessimista": 10.78, "base": 28.15, "otimista": 45.53 },
+    "volatilidade_aa": 17.38, "referencia": "2026-08-31",
+    "metodo": "CAGR mensal composto do fechamento (B3 COTAHIST)..."
+  }
+}
+```
+
+`resumo` é o que `app/nucleo/indexadores.js` de fato lê (tipos `fundo_fii` e
+`etf_historico`, doc 02); `pontos` é o histórico bruto, guardado por transparência.
+Falha na coleta preserva o arquivo anterior, igual às séries.
+
 ## Protocolo de uma fonte
 
 Um módulo em `coletor/fontes/` precisa expor exatamente isto:
@@ -103,8 +154,9 @@ As três funções que o resto da página usa. São puras — nada de rede, nada
 
 ```js
 import { resolver } from './nucleo/indexadores.js';
-// -> { taxa_aa, taxa_aa_antes_taxas, taxa_am, custo_aa, explicacao, natureza }
-resolver(ativo, indicadores, premissas, cenario);
+// -> { taxa_aa, taxa_aa_antes_taxas, taxa_am, custo_aa, explicacao, natureza,
+//      componente_isento_am?, componente_tributavel_am? }   // só 'fundo_fii' preenche os dois últimos
+resolver(ativo, indicadores, premissas, cenario, fundos, considerarValorizacaoProjetada);
 
 import { tributar } from './nucleo/tributos.js';
 // -> { iof, ir, total, aliquota_efetiva, detalhe }
@@ -112,11 +164,17 @@ tributar(regime, lotes, valorVendaTotal, premissas.tributacao);
 
 import { projetar, comparar } from './nucleo/motor.js';
 // -> { resultados: [...], erros: [{ativo_id, erro}] }
-comparar(ativos, indicadores, premissas, parametros);
+comparar(ativos, indicadores, premissas, parametros, fundos);
 ```
 
 `parametros` aceita `valor_inicial`, `aporte_mensal`, `meses`, `cenario`,
-`considerar_ir` e `considerar_inflacao`.
+`considerar_ir`, `considerar_inflacao` e `considerar_valorizacao_projetada`.
+
+`fundos` é opcional (default `{}`) e só precisa existir quando algum ativo escolhido
+tem `rendimento.tipo` `fundo_fii` ou `etf_historico` — é o mapa
+`{TICKER: conteúdo de dados/mercado/fundos/TICKER.json}` que `app/dados.js` monta sob
+demanda (ver seção acima). Ativo do tipo fundo sem entrada em `fundos` cai em `erros`
+com mensagem clara, nunca em zero.
 
 ### Um resultado de `projetar()`
 
@@ -142,6 +200,7 @@ comparar(ativos, indicadores, premissas, parametros);
   "investido": 100,
   "bruto": 113.9,
   "rendimento_bruto": 13.9,
+  "dividendos_isentos": 0,       // > 0 só em 'fundo_fii': dividendo já recebido, isento, fora do capital tributável
   "impostos": { "iof": 0, "ir": 2.78, "total": 2.78, "aliquota_efetiva": 20, "detalhe": "IR regressivo: 20%" },
   "liquido": 111.12,
   "rendimento_liquido": 11.12,
@@ -178,6 +237,11 @@ demais são comparados normalmente.
 
 `seriesDisponiveis()` devolve o manifesto de séries; é o que preenche o seletor da aba
 de histórico. A página nunca lista séries à mão.
+
+`fundos(tickers)` devolve `{TICKER: conteúdo do arquivo}` só para os tickers pedidos
+(deduplicados) — quem decide quais tickers pedir é `app.js`, a partir dos ativos
+marcados na tela. Ticker sem arquivo coletado sai do mapa (não vira `null` nem erro
+aqui); `resolver()` é quem acusa a falta, com mensagem.
 
 A página é obrigada a mostrar `_degradado` e `_vencido` ao usuário. Não são detalhes
 de implementação: são a diferença entre um número confiável e um número velho.

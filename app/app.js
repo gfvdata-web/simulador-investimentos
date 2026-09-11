@@ -103,6 +103,11 @@ const NOMES_CLASSE = {
   fundos: 'Fundos',
 };
 
+// Mesmo critério que a página usa pra decidir "isso é fato ou palpite?" (regra
+// 3 do CLAUDE.md), só que aqui de antemão, a partir do catálogo cru - antes de
+// rodar o núcleo e saber a `natureza` de verdade.
+const TIPOS_NAO_CONTRATADOS = new Set(['estimado', 'fundo_fii', 'etf_historico']);
+
 async function carregarAtivos() {
   const catalogo = await dados.catalogo();
   estado.ativos = catalogo.ativos;
@@ -123,7 +128,7 @@ async function carregarAtivos() {
                    ${estado.selecionados.has(a.id) ? 'checked' : ''}>
             <span>
               <span class="nome">${escapar(a.nome)}</span>
-              ${a.rendimento.tipo === 'estimado' ? '<span class="selo estimado">estimado</span>' : ''}
+              ${TIPOS_NAO_CONTRATADOS.has(a.rendimento.tipo) ? '<span class="selo estimado">estimado</span>' : ''}
               ${a.tributacao.regime === 'isento' ? '<span class="selo isento">isento de IR</span>' : ''}
               <div class="meta">${rotuloRendimento(a)} · risco ${a.risco}/6</div>
             </span>
@@ -150,6 +155,8 @@ function rotuloRendimento(a) {
     case 'ipca_mais': return `IPCA + ${r.spread_aa}%`;
     case 'poupanca': return 'Regra da poupança';
     case 'estimado': return 'Retorno estimado';
+    case 'fundo_fii': return 'Dividend yield (fato) + valorização opcional';
+    case 'etf_historico': return 'Retorno estimado (histórico de preço)';
     default: return r.tipo;
   }
 }
@@ -195,6 +202,7 @@ async function simular() {
       cenario: $('#cenario').value,
       considerar_ir: $('#considerar-ir').checked,
       considerar_inflacao: $('#considerar-inflacao').checked,
+      considerar_valorizacao_projetada: $('#considerar-valorizacao').checked,
     };
 
     const [premissas, indicadores, porId] = await Promise.all([
@@ -204,7 +212,14 @@ async function simular() {
     estado.premissas = premissas;
 
     const escolhidos = Array.from(estado.selecionados).map((id) => porId[id]).filter(Boolean);
-    const saida = motor.comparar(escolhidos, indicadores, premissas, parametros);
+    // Só busca o histórico dos FII/ETF de fato marcados - a página não baixa
+    // os 13 arquivos de fundo pra simular 2 CDBs.
+    const tickersFundo = escolhidos
+      .filter((a) => a.rendimento.tipo === 'fundo_fii' || a.rendimento.tipo === 'etf_historico')
+      .map((a) => a.rendimento.ticker);
+    const fundos = tickersFundo.length ? await dados.fundos(tickersFundo) : {};
+
+    const saida = motor.comparar(escolhidos, indicadores, premissas, parametros, fundos);
     saida.parametros = parametros;
     saida.indicadores = indicadores;
 
@@ -256,6 +271,7 @@ function renderizarResultados(saida) {
       </tr>
       <tr class="linha-explicacao">
         <td colspan="${colunas}">${escapar(r.taxa.explicacao)}. ${escapar(r.impostos.detalhe)}.
+        ${r.dividendos_isentos ? ` Dividendo isento recebido ao longo do período: ${moeda(r.dividendos_isentos)}.` : ''}
         ${mostrarReal ? `Descontando IPCA projetado de ${pct(r.inflacao.ipca_aa_projetado)} a.a., sobra ${pct(r.rentabilidade_real_pct)} de ganho real.` : ''}</td>
       </tr>`;
   }).join('');
@@ -576,7 +592,8 @@ function ligarControles() {
   }));
   $('#serie-historica').addEventListener('change', carregarHistorico);
 
-  ['valor-inicial', 'aporte-mensal', 'meses', 'cenario', 'considerar-ir', 'considerar-inflacao']
+  ['valor-inicial', 'aporte-mensal', 'meses', 'cenario', 'considerar-ir', 'considerar-inflacao',
+    'considerar-valorizacao']
     .forEach((id) => $('#' + id).addEventListener('change', () => {
       if (estado.ultimaSimulacao) simular();
     }));

@@ -20,7 +20,8 @@ export function projetar(ativo, indicadores, premissas, {
   cenario = 'base',
   considerar_ir: considerarIr = true,
   considerar_inflacao: considerarInflacao = true,
-} = {}) {
+  considerar_valorizacao_projetada: considerarValorizacaoProjetada = false,
+} = {}, fundos = {}) {
   if (!Number.isFinite(meses) || meses < 1 || meses > MAX_MESES) {
     throw new Error(`Prazo deve estar entre 1 e ${MAX_MESES} meses`);
   }
@@ -31,12 +32,20 @@ export function projetar(ativo, indicadores, premissas, {
     throw new Error('Informe um valor inicial ou um aporte mensal');
   }
 
-  const taxa = resolver(ativo, indicadores, premissas, cenario);
+  const taxa = resolver(ativo, indicadores, premissas, cenario, fundos, considerarValorizacaoProjetada);
   const taxaAm = taxa.taxa_am;
+  // Só FII (regime 'fii') preenche estes dois campos, separando o dividendo
+  // (isento, não compõe o capital que sofre ganho de capital) da valorização
+  // patrimonial (tributável na venda). Para todo outro ativo, isentoAm é 0 e
+  // tributavelAm é a taxa cheia - o cálculo abaixo se reduz exatamente ao que
+  // era antes desta separação existir (ver docs/03-motor-de-calculo.md).
+  const isentoAm = taxa.componente_isento_am || 0;
+  const tributavelAm = taxa.componente_tributavel_am ?? taxaAm;
 
   const lotes = [];
   const serie = [{ mes: 0, bruto: arredondar(valorInicial), investido: arredondar(valorInicial) }];
   let investido = valorInicial;
+  let dividendosIsentos = 0;
 
   if (valorInicial > 0) {
     lotes.push({ mes_entrada: 1, principal: valorInicial, valor_final: valorInicial });
@@ -47,21 +56,32 @@ export function projetar(ativo, indicadores, premissas, {
       lotes.push({ mes_entrada: mes, principal: aporteMensal, valor_final: aporteMensal });
       investido += aporteMensal;
     }
-    for (const lote of lotes) lote.valor_final *= 1 + taxaAm;
-    const bruto = lotes.reduce((s, l) => s + l.valor_final, 0);
-    serie.push({ mes, bruto: arredondar(bruto), investido: arredondar(investido) });
+    for (const lote of lotes) {
+      dividendosIsentos += lote.valor_final * isentoAm;
+      lote.valor_final *= 1 + tributavelAm;
+    }
+    const brutoPatrimonialMes = lotes.reduce((s, l) => s + l.valor_final, 0);
+    serie.push({
+      mes,
+      bruto: arredondar(brutoPatrimonialMes + dividendosIsentos),
+      investido: arredondar(investido),
+    });
   }
 
-  const brutoFinal = lotes.reduce((s, l) => s + l.valor_final, 0);
+  // `brutoPatrimonial` é só a parte que ainda está "na cota" - é sobre ela
+  // que o IR de ganho de capital incide. Os dividendos já foram recebidos
+  // (isentos) mês a mês e não entram nos lotes.
+  const brutoPatrimonial = lotes.reduce((s, l) => s + l.valor_final, 0);
+  const brutoFinal = brutoPatrimonial + dividendosIsentos;
   for (const lote of lotes) {
     lote.dias = (meses - lote.mes_entrada + 1) * DIAS_MES_COMERCIAL;
   }
 
   const impostos = considerarIr
-    ? tributar(ativo.tributacao.regime, lotes, brutoFinal, premissas.tributacao)
+    ? tributar(ativo.tributacao.regime, lotes, brutoPatrimonial, premissas.tributacao)
     : { iof: 0, ir: 0, total: 0, aliquota_efetiva: 0, detalhe: 'Impostos desligados nesta simulação' };
 
-  const liquido = brutoFinal - impostos.total;
+  const liquido = brutoPatrimonial - impostos.total + dividendosIsentos;
   const inflacao = calcularInflacao(premissas, indicadores, cenario, meses);
   const liquidoReal = considerarInflacao ? liquido / inflacao.fator : liquido;
 
@@ -75,6 +95,7 @@ export function projetar(ativo, indicadores, premissas, {
     investido: arredondar(investido),
     bruto: arredondar(brutoFinal),
     rendimento_bruto: arredondar(brutoFinal - investido),
+    dividendos_isentos: arredondar(dividendosIsentos),
     impostos,
     liquido: arredondar(liquido),
     rendimento_liquido: arredondar(liquido - investido),
@@ -89,13 +110,13 @@ export function projetar(ativo, indicadores, premissas, {
   };
 }
 
-export function comparar(ativos, indicadores, premissas, parametros) {
+export function comparar(ativos, indicadores, premissas, parametros, fundos = {}) {
   const resultados = [];
   const erros = [];
 
   for (const ativo of ativos) {
     try {
-      resultados.push(projetar(ativo, indicadores, premissas, parametros));
+      resultados.push(projetar(ativo, indicadores, premissas, parametros, fundos));
     } catch (erro) {
       erros.push({ ativo_id: ativo.id, erro: erro.message });
     }

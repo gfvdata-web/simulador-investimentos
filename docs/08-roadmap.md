@@ -16,7 +16,12 @@ dados de mercado versionados, publicação no GitHub Pages.
 
 Sair dos 10 ativos-semente para algo que reflita o que você realmente considera.
 
-- Cadastrar os ativos que você de fato usa ou avalia.
+- ✅ **FII e ETF cadastrados** (2026-09): 8 FIIs (VILG11, ALZR11, BTLG11, GGRC11, RECR11,
+  HGLG11, XPLG11, KNCR11) via CVM (Informe Mensal), 5 ETFs (DIVO11, GOLD11, WRLD11,
+  XINA11, NASD11) via B3 (COTAHIST). Novo tipo de rendimento (`fundo_fii`,
+  `etf_historico`), novo regime tributário (`fii`, dividendo isento separado de ganho
+  de capital) — ver docs 02, 03, 04, 05.
+- Cadastrar os demais ativos que você de fato usa ou avalia.
 - Integrar o **Tesouro Transparente** para puxar taxa real de cada título público em vez
   do valor fixo no catálogo — hoje `tesouro-prefixado-2029` diz 12,50% porque alguém
   digitou isso.
@@ -72,6 +77,11 @@ constante.
 | `liquidez` e `fgc` são decorativos | não afetam nada no cálculo | `ativos.json` |
 | Sem testes automatizados | a tabela do doc 03 é conferida à mão | — |
 | Taxa de prefixado fixa no JSON | envelhece sem avisar | `ativos.json`, fase 1 |
+| Resumo de fundo é média simples, não ponderada | mês com PL pequeno pesa igual a mês com PL grande | `coletor/atualizar.py`, `_resumo_fii`/`_resumo_etf` |
+| ETF não separa distribuição de preço | se o ETF distribuir provento, ou está embutido no preço ou não é capturado | `b3_precos.py`, doc 05 |
+| Sem aba de histórico por fundo | `pontos` de cada FII/ETF é coletado mas só o `resumo` é usado hoje | `app/app.js` |
+
+*Nota sobre a linha acima (fundos):* adicionada em 2026-09 junto do cadastro de FII/ETF.
 
 ## Como escolher a próxima tarefa
 

@@ -10,11 +10,13 @@ esses arquivos e faz todo o cálculo no navegador.
   GitHub Actions (agendado, dias úteis 18h BRT)
         │
         ▼
-  coletor/atualizar.py ──> api.bcb.gov.br
-        │
+  coletor/atualizar.py ──> api.bcb.gov.br (indicadores)
+        │               ─> dados.cvm.gov.br (FII, fato)
+        │               ─> bvmf.bmfbovespa.com.br (B3 COTAHIST, preço de ETF)
         ▼  git commit
   dados/mercado/indicadores.json
   dados/mercado/series/*.json
+  dados/mercado/fundos/*.json
         │
         ▼  (arquivos estáticos, servidos pelo Pages)
   navegador
@@ -59,7 +61,9 @@ amarelo quando passa de `DIAS_ATE_VENCER` (10 dias) em `app/dados.js`.
    ausente cai para o fallback de `premissas.json` e marca `_degradado`.
 3. Para cada ativo marcado, `indexadores.resolver()` transforma o bloco `rendimento`
    em taxa anual efetiva — já sem taxas de administração e custódia — mais a frase
-   que explica como chegou nela.
+   que explica como chegou nela. Ativo do tipo `fundo_fii`/`etf_historico` também lê
+   `dados/mercado/fundos/{ticker}.json`, buscado sob demanda por `app/dados.js` só
+   para os ativos marcados.
 4. `motor.projetar()` roda a trajetória mês a mês criando um **lote** por entrada de
    dinheiro (ver doc 03).
 5. `tributos.tributar()` aplica IOF e IR lote a lote, porque a tabela regressiva conta

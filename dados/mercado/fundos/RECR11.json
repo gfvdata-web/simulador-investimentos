@@ -1,0 +1,235 @@
+{
+  "ticker": "RECR11",
+  "tipo": "fii",
+  "cnpj": "28.152.272/0001-26",
+  "rotulo": "RECR11 (REC Recebíveis Imobiliários FII)",
+  "segmento": "Papel (CRI)",
+  "fonte": "CVM - Dados Abertos (Informe Mensal FII)",
+  "coletado_em": "2026-09-11T01:34:17+00:00",
+  "pontos": [
+    {
+      "data": "2023-08-01",
+      "dividend_yield_pct": 0.6195,
+      "valorizacao_patrimonial_pct": -0.324,
+      "rentabilidade_efetiva_pct": 0.2955
+    },
+    {
+      "data": "2023-09-01",
+      "dividend_yield_pct": 0.78,
+      "valorizacao_patrimonial_pct": -0.8448,
+      "rentabilidade_efetiva_pct": -0.0648
+    },
+    {
+      "data": "2023-10-01",
+      "dividend_yield_pct": 0.8193,
+      "valorizacao_patrimonial_pct": -1.0563,
+      "rentabilidade_efetiva_pct": -0.237
+    },
+    {
+      "data": "2023-11-01",
+      "dividend_yield_pct": 0.8229,
+      "valorizacao_patrimonial_pct": 1.2967,
+      "rentabilidade_efetiva_pct": 2.1196
+    },
+    {
+      "data": "2023-12-01",
+      "dividend_yield_pct": 0.7959,
+      "valorizacao_patrimonial_pct": 0.7196,
+      "rentabilidade_efetiva_pct": 1.5155
+    },
+    {
+      "data": "2024-01-01",
+      "dividend_yield_pct": 0.8424,
+      "valorizacao_patrimonial_pct": -0.5316,
+      "rentabilidade_efetiva_pct": 0.3108
+    },
+    {
+      "data": "2024-02-01",
+      "dividend_yield_pct": 0.9201,
+      "valorizacao_patrimonial_pct": -0.2361,
+      "rentabilidade_efetiva_pct": 0.684
+    },
+    {
+      "data": "2024-03-01",
+      "dividend_yield_pct": 0.9852,
+      "valorizacao_patrimonial_pct": -0.4192,
+      "rentabilidade_efetiva_pct": 0.566
+    },
+    {
+      "data": "2024-04-01",
+      "dividend_yield_pct": 1.3577,
+      "valorizacao_patrimonial_pct": -1.549,
+      "rentabilidade_efetiva_pct": -0.1913
+    },
+    {
+      "data": "2024-05-01",
+      "dividend_yield_pct": 0.8125,
+      "valorizacao_patrimonial_pct": 0.5977,
+      "rentabilidade_efetiva_pct": 1.4102
+    },
+    {
+      "data": "2024-06-01",
+      "dividend_yield_pct": 0.8608,
+      "valorizacao_patrimonial_pct": -0.8499,
+      "rentabilidade_efetiva_pct": 0.0109
+    },
+    {
+      "data": "2024-07-01",
+      "dividend_yield_pct": 0.911,
+      "valorizacao_patrimonial_pct": 0.2508,
+      "rentabilidade_efetiva_pct": 1.1618
+    },
+    {
+      "data": "2024-08-01",
+      "dividend_yield_pct": 0.8018,
+      "valorizacao_patrimonial_pct": -0.2478,
+      "rentabilidade_efetiva_pct": 0.554
+    },
+    {
+      "data": "2024-09-01",
+      "dividend_yield_pct": 0.764,
+      "valorizacao_patrimonial_pct": -0.3982,
+      "rentabilidade_efetiva_pct": 0.3658
+    },
+    {
+      "data": "2024-10-01",
+      "dividend_yield_pct": 1.1628,
+      "valorizacao_patrimonial_pct": -0.9174,
+      "rentabilidade_efetiva_pct": 0.2454
+    },
+    {
+      "data": "2024-11-01",
+      "dividend_yield_pct": 1.0441,
+      "valorizacao_patrimonial_pct": -0.7038,
+      "rentabilidade_efetiva_pct": 0.3403
+    },
+    {
+      "data": "2024-12-01",
+      "dividend_yield_pct": 1.1329,
+      "valorizacao_patrimonial_pct": -1.9104,
+      "rentabilidade_efetiva_pct": -0.7775
+    },
+    {
+      "data": "2025-01-01",
+      "dividend_yield_pct": 1.1453,
+      "valorizacao_patrimonial_pct": 0.6831,
+      "rentabilidade_efetiva_pct": 1.8284
+    },
+    {
+      "data": "2025-02-01",
+      "dividend_yield_pct": 1.0486,
+      "valorizacao_patrimonial_pct": -0.5384,
+      "rentabilidade_efetiva_pct": 0.5102
+    },
+    {
+      "data": "2025-03-01",
+      "dividend_yield_pct": 1.2809,
+      "valorizacao_patrimonial_pct": -1.072,
+      "rentabilidade_efetiva_pct": 0.2089
+    },
+    {
+      "data": "2025-04-01",
+      "dividend_yield_pct": 1.5316,
+      "valorizacao_patrimonial_pct": 0.9935,
+      "rentabilidade_efetiva_pct": 2.5251
+    },
+    {
+      "data": "2025-05-01",
+      "dividend_yield_pct": 1.175,
+      "valorizacao_patrimonial_pct": -0.547,
+      "rentabilidade_efetiva_pct": 0.628
+    },
+    {
+      "data": "2025-06-01",
+      "dividend_yield_pct": 1.1364,
+      "valorizacao_patrimonial_pct": -0.2936,
+      "rentabilidade_efetiva_pct": 0.8428
+    },
+    {
+      "data": "2025-07-01",
+      "dividend_yield_pct": 1.0688,
+      "valorizacao_patrimonial_pct": -0.875,
+      "rentabilidade_efetiva_pct": 0.1938
+    },
+    {
+      "data": "2025-08-01",
+      "dividend_yield_pct": 0.8861,
+      "valorizacao_patrimonial_pct": 0.7293,
+      "rentabilidade_efetiva_pct": 1.6154
+    },
+    {
+      "data": "2025-09-01",
+      "dividend_yield_pct": 0.8354,
+      "valorizacao_patrimonial_pct": -0.217,
+      "rentabilidade_efetiva_pct": 0.6184
+    },
+    {
+      "data": "2025-10-01",
+      "dividend_yield_pct": 0.9066,
+      "valorizacao_patrimonial_pct": 0.3515,
+      "rentabilidade_efetiva_pct": 1.2581
+    },
+    {
+      "data": "2025-11-01",
+      "dividend_yield_pct": 0.9211,
+      "valorizacao_patrimonial_pct": 0.6469,
+      "rentabilidade_efetiva_pct": 1.568
+    },
+    {
+      "data": "2025-12-01",
+      "dividend_yield_pct": 0.9047,
+      "valorizacao_patrimonial_pct": -0.6468,
+      "rentabilidade_efetiva_pct": 0.2579
+    },
+    {
+      "data": "2026-01-01",
+      "dividend_yield_pct": 0.9304,
+      "valorizacao_patrimonial_pct": -0.2359,
+      "rentabilidade_efetiva_pct": 0.6945
+    },
+    {
+      "data": "2026-02-01",
+      "dividend_yield_pct": 0.8173,
+      "valorizacao_patrimonial_pct": 0.834,
+      "rentabilidade_efetiva_pct": 1.6513
+    },
+    {
+      "data": "2026-03-01",
+      "dividend_yield_pct": 1.1549,
+      "valorizacao_patrimonial_pct": -0.6205,
+      "rentabilidade_efetiva_pct": 0.5344
+    },
+    {
+      "data": "2026-04-01",
+      "dividend_yield_pct": 1.1835,
+      "valorizacao_patrimonial_pct": -0.0329,
+      "rentabilidade_efetiva_pct": 1.1506
+    },
+    {
+      "data": "2026-05-01",
+      "dividend_yield_pct": 1.2576,
+      "valorizacao_patrimonial_pct": -0.5409,
+      "rentabilidade_efetiva_pct": 0.7167
+    },
+    {
+      "data": "2026-06-01",
+      "dividend_yield_pct": 1.2168,
+      "valorizacao_patrimonial_pct": -2.1926,
+      "rentabilidade_efetiva_pct": -0.9758
+    },
+    {
+      "data": "2026-07-01",
+      "dividend_yield_pct": 1.2704,
+      "valorizacao_patrimonial_pct": 0.5665,
+      "rentabilidade_efetiva_pct": 1.8369
+    }
+  ],
+  "resumo": {
+    "janela_meses": 36,
+    "dividend_yield_am_medio_pct": 1.0029,
+    "valorizacao_patrimonial_am_media_pct": -0.2814,
+    "valorizacao_patrimonial_am_desvio_pct": 0.8051,
+    "referencia": "2026-07-01",
+    "metodo": "Média simples dos meses fechados publicados pela CVM (Informe Mensal FII)."
+  }
+}

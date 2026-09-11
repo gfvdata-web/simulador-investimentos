@@ -42,15 +42,30 @@ de seguir do que qualquer camada de binding.
 3. `renderizarResultados()` escreve o resumo em uma frase, a tabela, o gráfico e o
    painel de procedência.
 
+## Controles da simulação
+
+`#considerar-ir`, `#considerar-inflacao` e `#considerar-valorizacao` (a mais nova: liga
+a projeção de valorização patrimonial de FII, ver docs 02 e 03) seguem o mesmo padrão —
+checkbox lido direto em `simular()`, re-simula em `change`. Novo parâmetro booleano
+segue os mesmos três passos: campo em `index.html`, leitura em `simular()`, id na lista
+de `ligarControles()`.
+
 ## Convenções de interface
 
 **Ativos agrupados por classe, cada grupo colapsável.** Cada classe é um `<details open>`
 com `<summary>`; o contador `marcados/total` no canto direito é atualizado por
 `atualizarContagem()`. Abrir/fechar é só o comportamento nativo do `<details>`, sem JS.
 
-**Toda estimativa é marcada.** Ativo com `rendimento.tipo === 'estimado'` ganha o selo
-âmbar "estimado" na lista. Isso implementa a regra 3 do `CLAUDE.md` na camada visual —
-não remova ao redesenhar.
+**Toda estimativa é marcada.** Ativo cujo `rendimento.tipo` está em
+`TIPOS_NAO_CONTRATADOS` (`estimado`, `fundo_fii`, `etf_historico`) ganha o selo âmbar
+"estimado" na lista. Isso implementa a regra 3 do `CLAUDE.md` na camada visual — não
+remova ao redesenhar, e acrescente um tipo novo nesse `Set` se ele não for uma taxa
+contratada.
+
+**Dividendo isento aparece à parte.** Quando `resultado.dividendos_isentos > 0` (só em
+FII), a linha de explicação da tabela ganha uma frase extra dizendo quanto foi
+recebido isento ao longo do período — sem isso o número apareceria só embutido no
+"Líquido", escondendo que uma parte não pagou imposto nenhum.
 
 **Todo número explica de onde veio.** Cada linha da tabela tem, logo abaixo, uma linha
 em cinza com `taxa.explicacao`, `impostos.detalhe` e o efeito da inflação. O painel "de

@@ -42,6 +42,8 @@ Implementados em `app/nucleo/indexadores.js`, função `resolver`.
 | `ipca_mais` | `spread_aa` | IPCA projetado composto com juro real | híbrida |
 | `poupanca` | — | regra vigente da poupança, via série do BCB | contratada |
 | `estimado` | `chave_premissa` | aponta para um bloco de `estimativas` | **estimada** |
+| `fundo_fii` | `ticker` | dividend yield (fato, CVM) + valorização patrimonial opcional | **híbrida** |
+| `etf_historico` | `ticker` | CAGR de preço histórico (B3), ± desvio-padrão como cenário | **estimada** |
 
 A `natureza` volta junto do resultado e é o que faz a página marcar o selo
 "estimado". É o mecanismo que impede fato e palpite de se confundirem na tela.
@@ -50,10 +52,29 @@ A `natureza` volta junto do resultado e é o que faz a página marcar o selo
 `resolver()`, devolva `taxa_aa` + `explicacao` + `natureza`, documente a linha na
 tabela acima e só então cadastre ativos usando ele.
 
+### `fundo_fii` e `etf_historico` — os dois tipos que leem `dados/mercado/fundos/`
+
+Diferente de todo tipo acima, estes dois não calculam a taxa só a partir de
+`indicadores`/`premissas`: `resolver()` recebe um terceiro mapa, `fundos`
+(`{TICKER: conteúdo de dados/mercado/fundos/<ticker>.json}`), carregado por
+`app/dados.js` só para os tickers que o usuário marcou. Sem o arquivo daquele
+ticker coletado, o ativo cai em `erros` da comparação — nunca em zero.
+
+`fundo_fii` também é o único tipo que devolve `componente_isento_am` e
+`componente_tributavel_am` além de `taxa_am`: são eles que permitem ao motor
+separar o dividendo (isento) da valorização de cota (tributável), ver doc 03.
+A valorização só entra na conta quando `considerar_valorizacao_projetada` está
+ligado nos parâmetros da simulação — desligado (padrão), o FII soma só o
+dividendo e a cota fica "parada" na projeção.
+
+`etf_historico` não distingue componentes: o retorno inteiro (CAGR de preço) é
+tributável, igual a `estimado`. Ver doc 04 para como cada um é coletado e doc
+05 para o regime `fii`.
+
 ### Regimes tributários
 
 Valores aceitos em `tributacao.regime`, implementados em `app/nucleo/tributos.js`:
-`isento`, `rf_regressivo`, `etf_renda_variavel`, `acoes`, `cripto`,
+`isento`, `rf_regressivo`, `etf_renda_variavel`, `acoes`, `cripto`, `fii`,
 `fundo_longo_prazo`. Detalhes de cada um no doc 05.
 
 ## Schema das premissas
@@ -92,6 +113,12 @@ ainda não é usada — está reservada para o Monte Carlo da fase 5.
 
 `ipca_projetado_aa` segue o mesmo formato e é usado em dois lugares: no cálculo de
 `ipca_mais` e na conversão de valor nominal para valor real.
+
+**FII e ETF não usam este bloco.** O "palpite com fonte" deles não é editado à
+mão aqui — é calculado pelo coletor a partir de dado real (CVM/B3) e gravado em
+`resumo`, dentro de `dados/mercado/fundos/<ticker>.json`. Mesmo formato
+`retorno_aa: {pessimista, base, otimista}` para o ETF (reaproveita
+`valorDoCenario()`), mas a proveniência é outra: veja doc 04.
 
 ## Invariantes
 

@@ -23,6 +23,44 @@ Pública, sem chave, sem limite documentado. Módulo: `coletor/fontes/bcb_sgs.py
 | 196 | Poupança, rendimento (regra nova) | % a.m. | indicador e histórico |
 | 226 | TR mensal | % a.m. | reservado |
 
+### CVM — Dados Abertos, Informe Mensal de FII
+
+```
+https://dados.cvm.gov.br/dados/FII/DOC/INF_MENSAL/DADOS/inf_mensal_fii_{ano}.zip
+```
+
+Pública, sem chave, um arquivo por ano (histórico desde 2016) cobrindo todo o mercado
+de FII. Módulo: `coletor/fontes/cvm_fii.py`. O arquivo "complemento" dentro do zip já
+traz, por CNPJ e mês, três fatos calculados pela própria CVM — não um palpite deste
+projeto:
+
+| Coluna CVM | Vira no projeto | Natureza |
+|---|---|---|
+| `Percentual_Dividend_Yield_Mes` | `dividend_yield_pct` | fato |
+| `Percentual_Rentabilidade_Patrimonial_Mes` | `valorizacao_patrimonial_pct` | fato |
+| `Percentual_Rentabilidade_Efetiva_Mes` | `rentabilidade_efetiva_pct` | fato |
+
+A CVM identifica o fundo por **CNPJ**, não pelo ticker de bolsa — o mapeamento
+ticker → CNPJ é cadastral, verificado à mão uma vez (registro `FUNDOS` em
+`coletor/atualizar.py`), conferindo o CNPJ na CVM contra o ISIN publicado no
+COTAHIST da B3 (os dois batem: ISIN é sempre `BR` + a raiz do ticker + `CTF` + dígito,
+ex. `VILG11` → `BRVILGCTF001`). Ticker novo = uma linha nova ali, com a fonte da
+verificação registrada no comentário.
+
+### B3 — Séries Históricas (COTAHIST)
+
+```
+https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A{ano}.ZIP
+```
+
+Pública, sem chave, um arquivo por ano com o preço de fechamento de **todo**
+instrumento negociado na B3 naquele ano, em layout de largura fixa (não é CSV).
+Módulo: `coletor/fontes/b3_precos.py`. Usado para ETF, que a CVM não cobre com um
+informe de rendimento como faz para FII — a valorização de um ETF é **calculada por
+este projeto** a partir do fechamento (CAGR mensal composto), nunca um número pronto
+publicado por alguém. O método fica escrito no próprio `resumo` gravado, campo
+`metodo`, para nunca virar um número sem explicação.
+
 ## Armadilhas já encontradas
 
 Três coisas custaram tempo e estão resolvidas no código. Se mexer no cliente, não
@@ -81,10 +119,10 @@ que um que não mostra número.
 | Fonte | O que traz | Endereço | Situação |
 |---|---|---|---|
 | Tesouro Transparente | preços e taxas diárias de todos os títulos públicos | `tesourotransparente.gov.br` (CSV/API) | próxima a integrar |
-| B3 | cotações e composição de índices | dados públicos da B3 | a avaliar |
 | IBGE (SIDRA) | IPCA detalhado por grupo | `servicodados.ibge.gov.br` | a avaliar |
 | Coinbase / Kraken | preço de BTC em BRL | APIs públicas de mercado | a avaliar |
-| CVM | dados cadastrais e cotas de fundos | dados abertos da CVM | fase de fundos |
+
+CVM (Informe Mensal FII) e B3 (COTAHIST) já estão **em uso hoje** — ver seção acima.
 
 ## Como plugar uma fonte nova
 
@@ -109,4 +147,27 @@ python scripts/validar.py
 ```
 
 `--so` coleta apenas o que você nomear e **preserva** o resto do retrato, então dá para
-iterar numa fonte sem rebuscar tudo.
+iterar numa fonte sem rebuscar tudo. Vale para ticker de fundo também:
+`python coletor/atualizar.py --so VILG11,GOLD11`.
+
+## Como cadastrar um FII ou ETF novo
+
+Diferente de indicador (protocolo genérico acima), fundo tem formato próprio porque a
+fonte e os campos mudam por tipo. Passo a passo:
+
+1. Confirme o **ticker** no COTAHIST da B3 (garante que ele negocia) e, se for FII, o
+   **CNPJ** no informe mensal da CVM — os dois batem pelo ISIN (ver seção da CVM acima).
+2. Acrescente uma linha no dicionário `FUNDOS` de `coletor/atualizar.py`: `tipo` (`fii`
+   ou `etf`), `cnpj` (só FII), `rotulo`, `segmento`/`indice`.
+3. Rode `python coletor/atualizar.py --so SEUTICKER` e confira
+   `dados/mercado/fundos/SEUTICKER.json` — `pontos` com histórico, `resumo` com o que o
+   motor vai usar.
+4. Cadastre o ativo em `dados/catalogo/ativos.json`: `rendimento.tipo` (`fundo_fii` ou
+   `etf_historico`) + `rendimento.ticker`; `tributacao.regime` `fii` (FII) ou
+   `etf_renda_variavel` (ETF). Doc 02 tem o schema completo.
+5. `python scripts/validar.py` — ele confere que o ticker tem arquivo coletado e que o
+   tipo do arquivo bate com o tipo do rendimento (fii ↔ fii, etf ↔ etf).
+
+O arquivo de um fundo nunca é apagado se a coleta falhar (mesma filosofia das séries,
+seção "Degradação" acima) — o pior caso é o ativo ficar um dia sem atualizar, nunca
+com número inventado.

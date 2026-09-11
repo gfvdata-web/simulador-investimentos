@@ -67,6 +67,7 @@
     ],
     "ir_renda_variavel_aliquota": 15.0,
     "ir_cripto_aliquota": 15.0,
+    "ir_fii_aliquota": 20.0,
     "isencao_venda_acoes_mensal": 20000.0,
     "isencao_venda_cripto_mensal": 35000.0,
     "come_cotas_habilitado": false,
@@ -109,6 +110,7 @@
     "meses": 12,
     "cenario": "base",
     "considerar_ir": true,
-    "considerar_inflacao": true
+    "considerar_inflacao": true,
+    "considerar_valorizacao_projetada": false
   }
 }

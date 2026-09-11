@@ -1,5 +1,5 @@
 {
-  "coletado_em": "2026-09-11T00:56:22+00:00",
+  "coletado_em": "2026-09-11T01:35:36+00:00",
   "completo": true,
   "campos": {
     "cdi_aa": {
@@ -83,6 +83,138 @@
       "pontos": 124,
       "primeiro": "2016-06-01",
       "ultimo": "2026-09-01"
+    }
+  ],
+  "fundos": [
+    {
+      "ticker": "VILG11",
+      "tipo": "fii",
+      "rotulo": "VILG11 (Vinci Logística FII)",
+      "arquivo": "fundos/VILG11.json",
+      "pontos": 36,
+      "primeiro": "2023-08-01",
+      "ultimo": "2026-07-01",
+      "coletado_em": "2026-09-11T01:34:16+00:00"
+    },
+    {
+      "ticker": "ALZR11",
+      "tipo": "fii",
+      "rotulo": "ALZR11 (Alianza Trust Renda Imobiliária FII)",
+      "arquivo": "fundos/ALZR11.json",
+      "pontos": 36,
+      "primeiro": "2023-08-01",
+      "ultimo": "2026-07-01",
+      "coletado_em": "2026-09-11T01:34:16+00:00"
+    },
+    {
+      "ticker": "BTLG11",
+      "tipo": "fii",
+      "rotulo": "BTLG11 (BTG Pactual Logística FII)",
+      "arquivo": "fundos/BTLG11.json",
+      "pontos": 36,
+      "primeiro": "2023-08-01",
+      "ultimo": "2026-07-01",
+      "coletado_em": "2026-09-11T01:34:17+00:00"
+    },
+    {
+      "ticker": "GGRC11",
+      "tipo": "fii",
+      "rotulo": "GGRC11 (GGR Covepi Renda FII)",
+      "arquivo": "fundos/GGRC11.json",
+      "pontos": 36,
+      "primeiro": "2023-08-01",
+      "ultimo": "2026-07-01",
+      "coletado_em": "2026-09-11T01:34:17+00:00"
+    },
+    {
+      "ticker": "RECR11",
+      "tipo": "fii",
+      "rotulo": "RECR11 (REC Recebíveis Imobiliários FII)",
+      "arquivo": "fundos/RECR11.json",
+      "pontos": 36,
+      "primeiro": "2023-08-01",
+      "ultimo": "2026-07-01",
+      "coletado_em": "2026-09-11T01:34:17+00:00"
+    },
+    {
+      "ticker": "HGLG11",
+      "tipo": "fii",
+      "rotulo": "HGLG11 (Pátria Logística FII, ex-CSHG Logística)",
+      "arquivo": "fundos/HGLG11.json",
+      "pontos": 36,
+      "primeiro": "2023-08-01",
+      "ultimo": "2026-07-01",
+      "coletado_em": "2026-09-11T01:34:18+00:00"
+    },
+    {
+      "ticker": "XPLG11",
+      "tipo": "fii",
+      "rotulo": "XPLG11 (XP Log FII)",
+      "arquivo": "fundos/XPLG11.json",
+      "pontos": 36,
+      "primeiro": "2023-08-01",
+      "ultimo": "2026-07-01",
+      "coletado_em": "2026-09-11T01:34:18+00:00"
+    },
+    {
+      "ticker": "KNCR11",
+      "tipo": "fii",
+      "rotulo": "KNCR11 (Kinea Rendimentos Imobiliários FII)",
+      "arquivo": "fundos/KNCR11.json",
+      "pontos": 36,
+      "primeiro": "2023-08-01",
+      "ultimo": "2026-07-01",
+      "coletado_em": "2026-09-11T01:34:19+00:00"
+    },
+    {
+      "ticker": "DIVO11",
+      "tipo": "etf",
+      "rotulo": "DIVO11 (It Now IDIV)",
+      "arquivo": "fundos/DIVO11.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T01:34:42+00:00"
+    },
+    {
+      "ticker": "GOLD11",
+      "tipo": "etf",
+      "rotulo": "GOLD11 (Trend Ouro)",
+      "arquivo": "fundos/GOLD11.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T01:34:56+00:00"
+    },
+    {
+      "ticker": "WRLD11",
+      "tipo": "etf",
+      "rotulo": "WRLD11 (Investo MSCI World)",
+      "arquivo": "fundos/WRLD11.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T01:35:09+00:00"
+    },
+    {
+      "ticker": "XINA11",
+      "tipo": "etf",
+      "rotulo": "XINA11 (XP ETF China)",
+      "arquivo": "fundos/XINA11.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T01:35:22+00:00"
+    },
+    {
+      "ticker": "NASD11",
+      "tipo": "etf",
+      "rotulo": "NASD11 (Trend Nasdaq)",
+      "arquivo": "fundos/NASD11.json",
+      "pontos": 45,
+      "primeiro": "2023-01-31",
+      "ultimo": "2026-09-10",
+      "coletado_em": "2026-09-11T01:35:36+00:00"
     }
   ]
 }

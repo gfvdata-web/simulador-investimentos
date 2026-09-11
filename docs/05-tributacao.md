@@ -43,10 +43,29 @@ Vendas parceladas ao longo de meses poderiam ficar isentas e o simulador não mo
 15% sobre o ganho, isento se o total alienado no mês ficar até R$ 35.000. Mesma
 simplificação de venda única.
 
+### `fii`
+FII (fundo imobiliário) negociado em bolsa. Dois tributos bem separados, ao contrário
+de todo regime acima:
+
+- **Dividendo mensal — isento** de IR para pessoa física (fundo com +50 cotistas,
+  cotas só negociadas em bolsa — todo FII cadastrado hoje se qualifica). O motor já
+  tira essa parte do capital tributável antes de chamar `tributar()` (ver doc 03,
+  `componente_isento_am`); por isso `tributar()` só vê o que sobrou.
+- **Ganho de capital na venda de cotas — 20%**, `ir_fii_aliquota` em `premissas.json`,
+  **sem** a isenção mensal de R$ 20.000 que vale para ação.
+
+`tributar('fii', ...)` recebe só a parte patrimonial dos lotes (o dividendo nunca
+entrou neles) — se a cota não valorizou na projeção, `rendimento_total <= 0` e o
+regime devolve zero, exatamente como qualquer outro regime nesse caso.
+
+Sem come-cotas: diferente de um fundo comum, FII não antecipa IR semestral. Por isso
+ele pôde entrar no catálogo mesmo com `fundo_longo_prazo` ainda incompleto abaixo.
+
 ### `fundo_longo_prazo`
 Implementado de forma **incompleta**: hoje cobra 15% no resgate e ignora o come-cotas.
-Por isso não há nenhum fundo no catálogo semente — cadastrar um agora produziria um
-número otimista demais.
+Por isso não há nenhum fundo comum (multimercado, renda fixa longo prazo etc.) no
+catálogo — cadastrar um agora produziria um número otimista demais. FII (regime `fii`,
+acima) é diferente: não tem come-cotas, então não sofre desse problema.
 
 ## Come-cotas — o que falta
 
@@ -69,6 +88,10 @@ imposto já pago para não cobrar de novo no resgate. Ligue por
 - **Sem taxa de corretagem e emolumentos.** `taxas` cobre administração e custódia; o
   custo de cada operação não entra.
 - **Sem IR mensal via DARF em renda variável.** O imposto sai todo no resgate final.
+- **ETF (`etf_historico`) não separa distribuição de preço.** O retorno vem só do
+  fechamento na B3 (COTAHIST); se o ETF distribuir algum provento, ele já está
+  embutido no preço (ou não está sendo capturado) — não há um dado equivalente ao
+  informe mensal de FII para ETF. Ver doc 04.
 
 ## Ao mexer aqui
 

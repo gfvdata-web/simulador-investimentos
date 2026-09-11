@@ -29,10 +29,24 @@ const dec = (v, casas = 2) => v.toLocaleString('pt-BR', {
   minimumFractionDigits: casas, maximumFractionDigits: casas,
 });
 
-/** Devolve a taxa efetiva do ativo e a explicação de como chegou nela. */
-export function resolver(ativo, indicadores, premissas, cenario = 'base') {
+/** Devolve a taxa efetiva do ativo e a explicação de como chegou nela.
+
+    `fundos` é o mapa {ticker: conteúdo de dados/mercado/fundos/<ticker>.json},
+    só preenchido para quem selecionou um FII ou ETF (ver app/dados.js). Sem
+    isso os tipos 'fundo_fii' e 'etf_historico' não têm de onde ler. */
+export function resolver(ativo, indicadores, premissas, cenario = 'base', fundos = {}, considerarValorizacaoProjetada = false) {
   const spec = ativo.rendimento;
   const estimativas = premissas.estimativas || {};
+
+  const exigirFundo = (ticker) => {
+    const bloco = fundos[ticker];
+    if (!bloco || !bloco.resumo) {
+      throw new Error(
+        `"${ativo.nome}" depende do histórico de ${ticker}, que não está em dados/mercado/fundos/ `
+        + '(rode "python coletor/atualizar.py" para coletar)');
+    }
+    return bloco;
+  };
 
   // Indicador ausente daria NaN e viraria "R$ NaN" na tela. Falhar aqui faz o
   // ativo aparecer na lista de erros com o motivo, sem contaminar a comparação.
@@ -46,6 +60,12 @@ export function resolver(ativo, indicadores, premissas, cenario = 'base') {
   };
 
   let bruta, explicacao, natureza;
+  // Só 'fundo_fii' preenche isto: dividendo é isento e não deve compor o
+  // capital tributável (ver docs/05-tributacao.md, regime 'fii'). Para todo
+  // outro tipo, o motor trata 100% do crescimento como tributável, igual a
+  // antes desta separação existir.
+  let componenteIsentoAm;
+  let componenteTributavelAm;
 
   switch (spec.tipo) {
     case 'pos_cdi': {
@@ -95,12 +115,45 @@ export function resolver(ativo, indicadores, premissas, cenario = 'base') {
       natureza = 'estimada';
       break;
     }
+    case 'fundo_fii': {
+      const bloco = exigirFundo(spec.ticker);
+      const { resumo } = bloco;
+      const dyAm = resumo.dividend_yield_am_medio_pct;
+      const valorizacaoAm = considerarValorizacaoProjetada
+        ? resumo.valorizacao_patrimonial_am_media_pct : 0;
+      componenteIsentoAm = dyAm / 100;
+      componenteTributavelAm = valorizacaoAm / 100;
+      bruta = amParaAa(compor(dyAm, valorizacaoAm) / 100);
+      explicacao = `Dividend yield médio de ${dec(dyAm)}% a.m. (fato: média dos últimos `
+        + `${resumo.janela_meses} meses até ${resumo.referencia}, ${bloco.fonte})`
+        + (considerarValorizacaoProjetada
+          ? ` + valorização patrimonial projetada de ${dec(valorizacaoAm)}% a.m. (média do mesmo histórico)`
+          : ' + valorização de cota NÃO projetada (opção desligada)');
+      natureza = 'hibrida';
+      break;
+    }
+    case 'etf_historico': {
+      const bloco = exigirFundo(spec.ticker);
+      const { resumo } = bloco;
+      bruta = valorDoCenario(resumo.retorno_aa, cenario, null);
+      explicacao = `Retorno ESTIMADO de ${dec(bruta)}% a.a. (cenário ${cenario}), a partir do `
+        + `CAGR de preço dos últimos ${resumo.janela_meses} meses até ${resumo.referencia} `
+        + `(${dec(resumo.retorno_aa.base)}% a.a. no cenário base ± ${dec(resumo.volatilidade_aa)}% `
+        + `de desvio-padrão anualizado, ${bloco.fonte})`;
+      natureza = 'estimada';
+      break;
+    }
     default:
       throw new Error(`Tipo de rendimento não suportado: ${spec.tipo}`);
   }
 
   const taxas = ativo.taxas || {};
   const custo = (taxas.administracao_aa || 0) + (taxas.custodia_aa || 0);
+  // Nota: para 'fundo_fii', o DY e a valorização já vêm líquidos de despesas
+  // do fundo (a CVM os calcula sobre o patrimônio líquido). `custo` só existe
+  // para taxas ADICIONAIS que o simulador cobraria por fora (não é o caso de
+  // nenhum ativo hoje) - se um dia existir, teria que ser rateado entre os
+  // dois componentes abaixo, não só descontado de `bruta`.
   const liquidaDeTaxas = descontar(bruta, custo);
   if (custo) explicacao += `, menos ${custo}% a.a. de taxas`;
 
@@ -111,6 +164,8 @@ export function resolver(ativo, indicadores, premissas, cenario = 'base') {
     custo_aa: arredondar(custo, 4),
     explicacao,
     natureza,
+    ...(componenteIsentoAm !== undefined ? { componente_isento_am: componenteIsentoAm } : {}),
+    ...(componenteTributavelAm !== undefined ? { componente_tributavel_am: componenteTributavelAm } : {}),
   };
 }
 

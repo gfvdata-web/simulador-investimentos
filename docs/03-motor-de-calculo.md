@@ -61,6 +61,35 @@ fator_inflação = (1 + ipca_projetado/100)^(meses/12)
 valor_real = valor_líquido ÷ fator_inflação
 ```
 
+## Dividendo isento x valorização tributável (FII)
+
+Todo ativo, exceto `fundo_fii`, faz o lote inteiro crescer pela mesma
+`taxa_am` e tributa o rendimento inteiro no resgate. FII é diferente: o
+dividendo mensal é isento de IR (pessoa física, fundo listado com +50
+cotistas) e a valorização da cota só é tributada — a 20%, sem isenção mensal —
+se e quando a posição é "vendida" no fim da simulação.
+
+Por isso `resolver()` devolve, só para `fundo_fii`, dois componentes:
+
+```
+componente_isento_am        = dividend yield médio (fato, CVM)
+componente_tributavel_am    = valorização patrimonial média, OU 0 se
+                               "considerar_valorizacao_projetada" estiver desligado
+```
+
+E `projetar()` trata os dois separadamente, mês a mês:
+
+```
+dividendos_isentos  += lote.valor_final × componente_isento_am     (sai da posição, não compõe capital)
+lote.valor_final    *= 1 + componente_tributavel_am                (fica na cota, sofre ganho de capital depois)
+```
+
+Para todo outro tipo, `componente_isento_am` é `0` e `componente_tributavel_am`
+é a própria `taxa_am` — a conta se reduz exatamente ao que era antes de FII
+existir (dividendos_isentos fica sempre `0`). Essa equivalência foi conferida
+rodando o caso do CDB abaixo antes e depois da mudança: mesmo resultado, ao
+centavo.
+
 ## Casos conferidos à mão
 
 Com CDI em 13,90% a.a. e IPCA projetado em 4,443% a.a. (cenário base):
@@ -71,6 +100,13 @@ Com CDI em 13,90% a.a. e IPCA projetado em 4,443% a.a. (cenário base):
 | R$ 100, LCI 95% CDI, 12 meses | taxa 13,205% · bruto R$ 113,20 · isento · líquido R$ 113,20 | sim |
 | R$ 100, CDB 100% CDI, 12 meses, real | R$ 111,12 ÷ 1,04443 = R$ 106,39 | sim |
 | R$ 1.000 + R$ 200/mês, CDB 100% CDI, 24 meses | investido R$ 5.800 · bruto R$ 6.809,75 · IR R$ 182,30 (faixas 17,5% a 22,5%) | sim |
+| R$ 100, FII sintético (regime `fii`, dividend yield 0%, valorização 1%/mês), 12 meses, projeção ligada | cota: 100 × 1,01¹² = R$ 112,68 · ganho R$ 12,68 · IR 20% = R$ 2,54 · líquido R$ 110,14 · dividendos_isentos R$ 0 | sim |
+| R$ 100, VILG11 (FII real), 12 meses, projeção de valorização desligada | dividendos_isentos = Σ DY mensal medido pela CVM (~R$ 7,17 com o DY médio coletado em 2026-09) · sem ganho de capital (cota não se moveu na projeção) · IR R$ 0 · líquido = 100 + dividendos_isentos | sim, refeito em 2026-09-10 |
+
+O segundo caso é o que importa manter estável — não depende de dado coletado,
+só da fórmula (ver seção anterior). O terceiro depende do DY vigente do fundo:
+o que precisa continuar valendo é `impostos.ir === 0` (cota não valorizou) e
+`dividendos_isentos > 0`, não o valor exato em reais.
 
 **Ao mexer no motor, reconfira esta tabela.** Se um número mudar, ou você achou um bug
 antigo ou introduziu um novo — descubra qual antes de atualizar a tabela. Os dois

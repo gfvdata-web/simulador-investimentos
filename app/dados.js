@@ -4,8 +4,10 @@
 
      dados/catalogo/ativos.json       o que existe para simular
      dados/premissas/premissas.json   palpites e regras fiscais
-     dados/mercado/indicadores.json   retrato do mercado + manifesto das séries
-     dados/mercado/series/*.json      histórico mensal
+     dados/mercado/indicadores.json   retrato do mercado + manifesto das séries e fundos
+     dados/mercado/series/*.json      histórico mensal dos indicadores
+     dados/mercado/fundos/*.json      histórico mensal de cada FII/ETF (dividend
+                                       yield, valorização e/ou preço, ver docs/04)
 
    Os dois últimos são gerados pelo coletor (coletor/atualizar.py). Nada aqui
    sabe quais indicadores ou séries existem: a lista vem do próprio retrato,
@@ -20,6 +22,7 @@ const CAMINHOS = {
   mercado: 'dados/mercado/indicadores.json',
 };
 const DIR_MERCADO = 'dados/mercado/';
+const DIR_FUNDOS = 'dados/mercado/fundos/';
 
 /** Acima disso a página avisa que o retrato está velho. */
 export const DIAS_ATE_VENCER = 10;
@@ -172,4 +175,29 @@ export async function historico(serieId, meses = 60) {
     pontos: acumulado,
     acumulado_total_pct: acumulado[acumulado.length - 1].acumulado_pct,
   };
+}
+
+/* ---------------------------------------------------------- fundos (FII/ETF) */
+/** Manifesto dos fundos coletados: [{ticker, tipo, rotulo, arquivo, ...}]. */
+export async function fundosDisponiveis() {
+  const retrato = await retratoMercado();
+  return retrato.fundos || [];
+}
+
+/** Histórico + resumo de um conjunto de tickers, só o que `app/nucleo/` precisa
+    para resolver 'fundo_fii' e 'etf_historico'. Pede só os tickers dos ativos
+    selecionados - a página não carrega os 13 arquivos se o usuário marcou 2. */
+export async function fundos(tickers) {
+  const unicos = [...new Set(tickers)];
+  const entradas = await Promise.all(unicos.map(async (ticker) => {
+    try {
+      return [ticker, await lerJson(DIR_FUNDOS + `${ticker}.json`)];
+    } catch (erro) {
+      // Sem arquivo coletado ainda: o resolver do núcleo é quem decide o que
+      // fazer (hoje, o ativo cai em `erros` da comparação com uma mensagem
+      // clara) - não inventamos um valor aqui.
+      return [ticker, null];
+    }
+  }));
+  return Object.fromEntries(entradas.filter(([, valor]) => valor !== null));
 }

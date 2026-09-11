@@ -36,13 +36,17 @@ SimuladorInvestimentos/
 │       └── motor.js               projecao mes a mes por lote de aporte
 ├── coletor/                       o unico que fala com a internet
 │   ├── atualizar.py               roda no Actions, grava dados/mercado/
-│   └── fontes/bcb_sgs.py          cliente da API do Banco Central
+│   └── fontes/
+│       ├── bcb_sgs.py             cliente da API do Banco Central
+│       ├── cvm_fii.py             cliente do informe mensal de FII (CVM)
+│       └── b3_precos.py           cliente das series historicas (B3 COTAHIST)
 ├── dados/
 │   ├── catalogo/ativos.json       o que existe para simular      (edicao humana)
 │   ├── premissas/premissas.json   estimativas e regras fiscais   (edicao humana)
 │   └── mercado/                   retrato do mercado             (gerado, versionado)
 │       ├── indicadores.json
-│       └── series/{cdi,selic,ipca,poupanca}.json
+│       ├── series/{cdi,selic,ipca,poupanca}.json
+│       └── fundos/{TICKER}.json   um por FII/ETF cadastrado
 ├── .github/workflows/
 │   ├── atualizar-dados.yml        coleta agendada
 │   └── publicar.yml               publicacao no GitHub Pages

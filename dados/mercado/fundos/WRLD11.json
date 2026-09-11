@@ -1,0 +1,247 @@
+{
+  "ticker": "WRLD11",
+  "tipo": "etf",
+  "rotulo": "WRLD11 (Investo MSCI World)",
+  "indice": "MSCI World",
+  "fonte": "B3 - Séries Históricas (COTAHIST)",
+  "coletado_em": "2026-09-11T01:35:09+00:00",
+  "pontos": [
+    {
+      "data": "2023-01-31",
+      "fechamento": 82.25,
+      "variacao_mes_pct": null
+    },
+    {
+      "data": "2023-02-28",
+      "fechamento": 82.25,
+      "variacao_mes_pct": 0.0
+    },
+    {
+      "data": "2023-03-31",
+      "fechamento": 81.53,
+      "variacao_mes_pct": -0.8754
+    },
+    {
+      "data": "2023-04-28",
+      "fechamento": 81.44,
+      "variacao_mes_pct": -0.1104
+    },
+    {
+      "data": "2023-05-31",
+      "fechamento": 81.88,
+      "variacao_mes_pct": 0.5403
+    },
+    {
+      "data": "2023-06-30",
+      "fechamento": 81.43,
+      "variacao_mes_pct": -0.5496
+    },
+    {
+      "data": "2023-07-31",
+      "fechamento": 83.78,
+      "variacao_mes_pct": 2.8859
+    },
+    {
+      "data": "2023-08-31",
+      "fechamento": 86.4,
+      "variacao_mes_pct": 3.1272
+    },
+    {
+      "data": "2023-09-29",
+      "fechamento": 82.75,
+      "variacao_mes_pct": -4.2245
+    },
+    {
+      "data": "2023-10-31",
+      "fechamento": 80.18,
+      "variacao_mes_pct": -3.1057
+    },
+    {
+      "data": "2023-11-30",
+      "fechamento": 85.33,
+      "variacao_mes_pct": 6.423
+    },
+    {
+      "data": "2023-12-28",
+      "fechamento": 88.49,
+      "variacao_mes_pct": 3.7033
+    },
+    {
+      "data": "2024-01-31",
+      "fechamento": 90.17,
+      "variacao_mes_pct": 1.8985
+    },
+    {
+      "data": "2024-02-29",
+      "fechamento": 94.34,
+      "variacao_mes_pct": 4.6246
+    },
+    {
+      "data": "2024-03-28",
+      "fechamento": 98.59,
+      "variacao_mes_pct": 4.505
+    },
+    {
+      "data": "2024-04-30",
+      "fechamento": 98.13,
+      "variacao_mes_pct": -0.4666
+    },
+    {
+      "data": "2024-05-31",
+      "fechamento": 103.4,
+      "variacao_mes_pct": 5.3704
+    },
+    {
+      "data": "2024-06-28",
+      "fechamento": 111.76,
+      "variacao_mes_pct": 8.0851
+    },
+    {
+      "data": "2024-07-31",
+      "fechamento": 115.5,
+      "variacao_mes_pct": 3.3465
+    },
+    {
+      "data": "2024-08-30",
+      "fechamento": 117.45,
+      "variacao_mes_pct": 1.6883
+    },
+    {
+      "data": "2024-09-30",
+      "fechamento": 115.97,
+      "variacao_mes_pct": -1.2601
+    },
+    {
+      "data": "2024-10-31",
+      "fechamento": 120.67,
+      "variacao_mes_pct": 4.0528
+    },
+    {
+      "data": "2024-11-29",
+      "fechamento": 131.65,
+      "variacao_mes_pct": 9.0992
+    },
+    {
+      "data": "2024-12-30",
+      "fechamento": 130.19,
+      "variacao_mes_pct": -1.109
+    },
+    {
+      "data": "2025-01-31",
+      "fechamento": 126.6,
+      "variacao_mes_pct": -2.7575
+    },
+    {
+      "data": "2025-02-28",
+      "fechamento": 126.94,
+      "variacao_mes_pct": 0.2686
+    },
+    {
+      "data": "2025-03-31",
+      "fechamento": 118.31,
+      "variacao_mes_pct": -6.7985
+    },
+    {
+      "data": "2025-04-30",
+      "fechamento": 118.58,
+      "variacao_mes_pct": 0.2282
+    },
+    {
+      "data": "2025-05-30",
+      "fechamento": 126.15,
+      "variacao_mes_pct": 6.3839
+    },
+    {
+      "data": "2025-06-30",
+      "fechamento": 125.41,
+      "variacao_mes_pct": -0.5866
+    },
+    {
+      "data": "2025-07-31",
+      "fechamento": 130.52,
+      "variacao_mes_pct": 4.0746
+    },
+    {
+      "data": "2025-08-29",
+      "fechamento": 130.0,
+      "variacao_mes_pct": -0.3984
+    },
+    {
+      "data": "2025-09-30",
+      "fechamento": 131.93,
+      "variacao_mes_pct": 1.4846
+    },
+    {
+      "data": "2025-10-31",
+      "fechamento": 135.97,
+      "variacao_mes_pct": 3.0622
+    },
+    {
+      "data": "2025-11-28",
+      "fechamento": 135.11,
+      "variacao_mes_pct": -0.6325
+    },
+    {
+      "data": "2025-12-30",
+      "fechamento": 140.23,
+      "variacao_mes_pct": 3.7895
+    },
+    {
+      "data": "2026-01-30",
+      "fechamento": 138.16,
+      "variacao_mes_pct": -1.4761
+    },
+    {
+      "data": "2026-02-27",
+      "fechamento": 136.75,
+      "variacao_mes_pct": -1.0206
+    },
+    {
+      "data": "2026-03-31",
+      "fechamento": 129.6,
+      "variacao_mes_pct": -5.2285
+    },
+    {
+      "data": "2026-04-30",
+      "fechamento": 135.24,
+      "variacao_mes_pct": 4.3519
+    },
+    {
+      "data": "2026-05-29",
+      "fechamento": 143.93,
+      "variacao_mes_pct": 6.4256
+    },
+    {
+      "data": "2026-06-30",
+      "fechamento": 146.78,
+      "variacao_mes_pct": 1.9801
+    },
+    {
+      "data": "2026-07-31",
+      "fechamento": 142.99,
+      "variacao_mes_pct": -2.5821
+    },
+    {
+      "data": "2026-08-31",
+      "fechamento": 150.49,
+      "variacao_mes_pct": 5.2451
+    },
+    {
+      "data": "2026-09-10",
+      "fechamento": 146.4,
+      "variacao_mes_pct": -2.7178
+    }
+  ],
+  "resumo": {
+    "janela_meses": 43,
+    "retorno_am_medio_pct": 1.4759,
+    "retorno_aa": {
+      "pessimista": 6.9,
+      "base": 19.22,
+      "otimista": 31.54
+    },
+    "volatilidade_aa": 12.32,
+    "referencia": "2026-08-31",
+    "metodo": "CAGR mensal composto do fechamento (B3 COTAHIST) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente, ainda em curso, é excluído da média."
+  }
+}
