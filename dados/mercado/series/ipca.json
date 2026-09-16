@@ -5,7 +5,7 @@
   "arquivo": "series/ipca.json",
   "fonte": "Banco Central do Brasil - SGS",
   "referencia_fonte": 433,
-  "coletado_em": "2026-09-11T22:51:43+00:00",
+  "coletado_em": "2026-09-16T23:21:10+00:00",
   "pontos": [
     {
       "data": "2016-06-01",
