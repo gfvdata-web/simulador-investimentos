@@ -4,7 +4,7 @@
   "rotulo": "XINA11 (XP ETF China)",
   "indice": "ações chinesas",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-09-16T23:27:18+00:00",
+  "coletado_em": "2026-09-18T23:00:58+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -227,7 +227,7 @@
       "variacao_mes_pct": 0.4098
     },
     {
-      "data": "2026-09-15",
+      "data": "2026-09-17",
       "fechamento": 7.05,
       "variacao_mes_pct": -4.0816
     }
