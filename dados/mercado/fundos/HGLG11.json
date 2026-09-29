@@ -5,7 +5,7 @@
   "rotulo": "HGLG11 (Pátria Logística FII, ex-CSHG Logística)",
   "segmento": "Logística",
   "fonte": "CVM - Dados Abertos (Informe Mensal FII)",
-  "coletado_em": "2026-09-24T23:37:48+00:00",
+  "coletado_em": "2026-09-29T00:42:50+00:00",
   "pontos": [
     {
       "data": "2023-09-01",
@@ -219,16 +219,16 @@
     },
     {
       "data": "2026-08-01",
-      "dividend_yield_pct": 0.703,
-      "valorizacao_patrimonial_pct": -0.2056,
-      "rentabilidade_efetiva_pct": 0.4974
+      "dividend_yield_pct": 0.7027,
+      "valorizacao_patrimonial_pct": -0.2884,
+      "rentabilidade_efetiva_pct": 0.4143
     }
   ],
   "resumo": {
     "janela_meses": 36,
     "dividend_yield_am_medio_pct": 0.684,
-    "valorizacao_patrimonial_am_media_pct": 0.2198,
-    "valorizacao_patrimonial_am_desvio_pct": 1.0273,
+    "valorizacao_patrimonial_am_media_pct": 0.2175,
+    "valorizacao_patrimonial_am_desvio_pct": 1.0284,
     "referencia": "2026-08-01",
     "metodo": "Média simples dos meses fechados publicados pela CVM (Informe Mensal FII)."
   }
