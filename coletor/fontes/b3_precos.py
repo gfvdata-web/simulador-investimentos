@@ -25,13 +25,16 @@ Download: o arquivo anual tem ~90 MB e a conexao com a B3 cai no meio com
 frequencia (IncompleteRead). Por isso ele vem em blocos e, se cair, a proxima
 tentativa pede so o que falta (cabecalho Range; a B3 responde 206). Ha tambem
 um prazo total por arquivo: o TIMEOUT vale para cada leitura, e um download
-lento mas vivo ja estourou o limite de 6 h do Actions.
+lento mas vivo ja estourou o limite de 6 h do Actions. Cada queda e cada
+retomada saem no log (no Actions, como anotacao ::warning:: da execucao).
 """
 from __future__ import annotations
 
 import functools
 import http.client
 import io
+import os
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -55,6 +58,12 @@ class FalhaFonte(Exception):
 
 class ArquivoInexistente(FalhaFonte):
     """A B3 ainda nao publicou o arquivo do ano (HTTP 404, comum no inicio de janeiro)."""
+
+
+def _avisar(mensagem: str) -> None:
+    """Aviso no log; no Actions vira anotacao da execucao (aparece no resumo do run)."""
+    prefixo = "::warning::" if os.environ.get("GITHUB_ACTIONS") == "true" else "aviso: "
+    print(f"{prefixo}{mensagem}", file=sys.stderr, flush=True)
 
 
 def _tamanho_total(resposta) -> int | None:
@@ -94,8 +103,10 @@ def _baixar(ano: int) -> bytes:
                             f"({len(dados)} de {total or '?'} bytes)"
                         )
             if total is None or len(dados) == total:
+                if tentativa > 1:
+                    _avisar(f"B3 COTAHIST {ano}: download completo na tentativa {tentativa} ({len(dados)} bytes)")
                 return bytes(dados)
-            ultimo_erro = f"conexao fechada com {len(dados)} de {total} bytes"
+            ultimo_erro = "conexao fechada pelo servidor"
         except urllib.error.HTTPError as erro:
             if erro.code == 404:
                 raise ArquivoInexistente(f"B3 COTAHIST {ano}: arquivo nao publicado (HTTP 404)") from erro
@@ -105,8 +116,14 @@ def _baixar(ano: int) -> bytes:
         if time.monotonic() > limite:
             break
         if tentativa < TENTATIVAS:
+            _avisar(
+                f"B3 COTAHIST {ano}: tentativa {tentativa} caiu com {len(dados)} de {total or '?'} bytes "
+                f"({ultimo_erro}); retomando"
+            )
             time.sleep(min(2 ** tentativa, 30))
-    raise FalhaFonte(f"B3 COTAHIST {ano}: {ultimo_erro} (apos {tentativa} tentativas)")
+    raise FalhaFonte(
+        f"B3 COTAHIST {ano}: {ultimo_erro} ({len(dados)} de {total or '?'} bytes apos {tentativa} tentativas)"
+    )
 
 
 def _linhas_ano(ano: int):

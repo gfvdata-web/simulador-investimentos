@@ -63,7 +63,8 @@ publicado por alguém. O método fica escrito no próprio `resumo` gravado, camp
 
 Cada arquivo anual tem ~90 MB e a conexão com a B3 costuma cair no meio do download. O
 módulo baixa em blocos e, quando cai, retoma de onde parou (a B3 aceita `Range`), com até
-8 tentativas e prazo de 20 min por arquivo. Se mesmo assim um ano não vier, o ticker
+8 tentativas e prazo de 20 min por arquivo; cada queda e retomada sai no log (no Actions,
+como anotação de aviso da execução). Se mesmo assim um ano não vier, o ticker
 inteiro falha e o arquivo anterior é preservado — nunca uma série com um ano faltando. Só
 o ano corrente pode estar ausente (HTTP 404 no começo de janeiro, antes do primeiro pregão).
 
