@@ -20,11 +20,19 @@ da B3 e conferido linha a linha durante o desenvolvimento):
 
 Regra do projeto: este modulo NUNCA inventa numero. Se a rede falhar ou o
 ticker nao aparecer no periodo, ele avisa quem chamou.
+
+Download: o arquivo anual tem ~90 MB e a conexao com a B3 cai no meio com
+frequencia (IncompleteRead). Por isso ele vem em blocos e, se cair, a proxima
+tentativa pede so o que falta (cabecalho Range; a B3 responde 206). Ha tambem
+um prazo total por arquivo: o TIMEOUT vale para cada leitura, e um download
+lento mas vivo ja estourou o limite de 6 h do Actions.
 """
 from __future__ import annotations
 
 import functools
+import http.client
 import io
+import time
 import urllib.error
 import urllib.request
 import zipfile
@@ -32,13 +40,31 @@ from datetime import date
 
 NOME = "B3 - Séries Históricas (COTAHIST)"
 BASE = "https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A{ano}.ZIP"
-TIMEOUT = 60
-TENTATIVAS = 3
+TIMEOUT = 60  # segundos por leitura
+TENTATIVAS = 8  # cada uma retoma de onde a anterior parou
+PRAZO_ARQUIVO_S = 20 * 60  # prazo total para baixar um arquivo anual
+BLOCO = 1024 * 1024
 ANOS_PADRAO = 3
+
+ERROS_DOWNLOAD = (urllib.error.URLError, http.client.HTTPException, TimeoutError, OSError)
 
 
 class FalhaFonte(Exception):
     """A fonte oficial nao respondeu ou respondeu algo inesperado."""
+
+
+class ArquivoInexistente(FalhaFonte):
+    """A B3 ainda nao publicou o arquivo do ano (HTTP 404, comum no inicio de janeiro)."""
+
+
+def _tamanho_total(resposta) -> int | None:
+    """Tamanho do arquivo inteiro: Content-Range numa resposta 206, Content-Length numa 200."""
+    faixa = resposta.headers.get("Content-Range")  # "bytes 1000-88999/89000"
+    if faixa and "/" in faixa:
+        total = faixa.rsplit("/", 1)[1]
+        return int(total) if total.isdigit() else None
+    tamanho = resposta.headers.get("Content-Length")
+    return int(tamanho) if tamanho and tamanho.isdigit() else None
 
 
 @functools.lru_cache(maxsize=None)
@@ -46,19 +72,41 @@ def _baixar(ano: int) -> bytes:
     """Cacheado em memoria por ano: o arquivo cobre o mercado inteiro, entao
     uma coleta com varios tickers no mesmo ano baixa o arquivo uma vez so."""
     url = BASE.format(ano=ano)
-    requisicao = urllib.request.Request(
-        url, headers={"User-Agent": "SimuladorInvestimentos/1.0 (uso pessoal)"}
-    )
+    dados = bytearray()
+    total = None
+    limite = time.monotonic() + PRAZO_ARQUIVO_S
     ultimo_erro = None
     for tentativa in range(1, TENTATIVAS + 1):
+        cabecalhos = {"User-Agent": "SimuladorInvestimentos/1.0 (uso pessoal)"}
+        if dados:
+            cabecalhos["Range"] = f"bytes={len(dados)}-"
+        requisicao = urllib.request.Request(url, headers=cabecalhos)
         try:
             with urllib.request.urlopen(requisicao, timeout=TIMEOUT) as resposta:
-                return resposta.read()
-        except (urllib.error.URLError, TimeoutError, OSError) as erro:
+                if resposta.status != 206:
+                    dados.clear()  # servidor ignorou o Range: recomeca do zero
+                total = _tamanho_total(resposta) or total
+                while bloco := resposta.read(BLOCO):
+                    dados.extend(bloco)
+                    if time.monotonic() > limite:
+                        raise FalhaFonte(
+                            f"B3 COTAHIST {ano}: download passou de {PRAZO_ARQUIVO_S // 60} min "
+                            f"({len(dados)} de {total or '?'} bytes)"
+                        )
+            if total is None or len(dados) == total:
+                return bytes(dados)
+            ultimo_erro = f"conexao fechada com {len(dados)} de {total} bytes"
+        except urllib.error.HTTPError as erro:
+            if erro.code == 404:
+                raise ArquivoInexistente(f"B3 COTAHIST {ano}: arquivo nao publicado (HTTP 404)") from erro
             ultimo_erro = erro
-            if tentativa == TENTATIVAS:
-                raise FalhaFonte(f"B3 COTAHIST {ano}: {erro}") from erro
-    raise FalhaFonte(f"B3 COTAHIST {ano}: {ultimo_erro}")  # pragma: no cover
+        except ERROS_DOWNLOAD as erro:  # inclui IncompleteRead: tenta de novo a partir do que ja chegou
+            ultimo_erro = erro
+        if time.monotonic() > limite:
+            break
+        if tentativa < TENTATIVAS:
+            time.sleep(min(2 ** tentativa, 30))
+    raise FalhaFonte(f"B3 COTAHIST {ano}: {ultimo_erro} (apos {tentativa} tentativas)")
 
 
 def _linhas_ano(ano: int):
@@ -84,8 +132,11 @@ def fechamentos_diarios(ticker: str, anos: int = ANOS_PADRAO) -> list:
     inicio = max(ano_atual - anos, ano_atual - 10)
 
     pontos = []
-    falhas = []
     for ano in range(inicio, ano_atual + 1):
+        # Qualquer FalhaFonte sobe (o download acontece antes da primeira linha):
+        # um ano faltando no meio deixaria a serie com buraco, e a variacao mensal
+        # atravessando o buraco - melhor falhar e quem chamou preservar o arquivo
+        # anterior. Unica excecao: o ano corrente ainda sem arquivo publicado.
         try:
             for linha in _linhas_ano(ano):
                 if linha[12:24].strip() != ticker or linha[24:27] != "010":
@@ -94,12 +145,12 @@ def fechamentos_diarios(ticker: str, anos: int = ANOS_PADRAO) -> list:
                     "data": f"{linha[2:6]}-{linha[6:8]}-{linha[8:10]}",
                     "fechamento": int(linha[108:121]) / 100,
                 })
-        except FalhaFonte as erro:
-            falhas.append(str(erro))
+        except ArquivoInexistente:
+            if ano != ano_atual:
+                raise
 
     if not pontos:
-        detalhe = "; ".join(falhas) if falhas else "ticker sem pregao no periodo"
-        raise FalhaFonte(f"B3 COTAHIST: sem dados para {ticker} ({detalhe})")
+        raise FalhaFonte(f"B3 COTAHIST: sem dados para {ticker} (ticker sem pregao no periodo)")
 
     pontos.sort(key=lambda p: p["data"])
     return pontos
