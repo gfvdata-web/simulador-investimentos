@@ -4,17 +4,12 @@
   "cnpj": "26.269.983/0001-50",
   "rotulo": "Itaú Global Dinâmico Plus Multimercado",
   "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
-  "coletado_em": "2026-09-29T00:52:52+00:00",
+  "coletado_em": "2026-10-01T19:07:38+00:00",
   "pontos": [
-    {
-      "data": "2025-09-30",
-      "valor_cota": 22.74802,
-      "variacao_mes_pct": null
-    },
     {
       "data": "2025-10-31",
       "valor_cota": 23.180018,
-      "variacao_mes_pct": 1.8991
+      "variacao_mes_pct": null
     },
     {
       "data": "2025-11-28",
@@ -65,18 +60,23 @@
       "data": "2026-08-31",
       "valor_cota": 25.491076,
       "variacao_mes_pct": 1.1249
+    },
+    {
+      "data": "2026-09-29",
+      "valor_cota": 25.695578,
+      "variacao_mes_pct": 0.8022
     }
   ],
   "resumo": {
     "janela_meses": 11,
-    "retorno_am_medio_pct": 1.0458,
+    "retorno_am_medio_pct": 0.9461,
     "retorno_aa": {
-      "pessimista": 9.5,
-      "base": 13.3,
-      "otimista": 17.1
+      "pessimista": 8.29,
+      "base": 11.96,
+      "otimista": 15.64
     },
-    "volatilidade_aa": 3.8,
-    "referencia": "2026-08-31",
+    "volatilidade_aa": 3.68,
+    "referencia": "2026-09-29",
     "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
   }
 }

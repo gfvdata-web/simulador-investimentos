@@ -4,7 +4,7 @@
   "rotulo": "TSLA34 (BDR Tesla)",
   "indice": "ação TSLA (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-09-29T00:50:23+00:00",
+  "coletado_em": "2026-10-01T19:04:10+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -227,21 +227,21 @@
       "variacao_mes_pct": 20.9746
     },
     {
-      "data": "2026-09-28",
-      "fechamento": 58.21,
-      "variacao_mes_pct": -2.2994
+      "data": "2026-09-30",
+      "fechamento": 57.28,
+      "variacao_mes_pct": -3.8604
     }
   ],
   "resumo": {
-    "janela_meses": 43,
-    "retorno_am_medio_pct": 3.1023,
+    "janela_meses": 44,
+    "retorno_am_medio_pct": 2.944,
     "retorno_aa": {
-      "pessimista": -12.5,
-      "base": 44.28,
-      "otimista": 101.07
+      "pessimista": -14.59,
+      "base": 41.65,
+      "otimista": 97.89
     },
-    "volatilidade_aa": 56.78,
-    "referencia": "2026-08-31",
+    "volatilidade_aa": 56.24,
+    "referencia": "2026-09-30",
     "metodo": "CAGR mensal composto do fechamento (B3 COTAHIST) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente, ainda em curso, é excluído da média."
   }
 }

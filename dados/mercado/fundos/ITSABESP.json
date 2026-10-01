@@ -4,17 +4,12 @@
   "cnpj": "55.390.412/0001-77",
   "rotulo": "Itaú Sabesp Ações FIF RL",
   "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
-  "coletado_em": "2026-09-29T00:52:39+00:00",
+  "coletado_em": "2026-10-01T19:07:18+00:00",
   "pontos": [
-    {
-      "data": "2025-09-30",
-      "valor_cota": 1.688063,
-      "variacao_mes_pct": null
-    },
     {
       "data": "2025-10-31",
       "valor_cota": 1.683677,
-      "variacao_mes_pct": -0.2598
+      "variacao_mes_pct": null
     },
     {
       "data": "2025-11-28",
@@ -65,18 +60,23 @@
       "data": "2026-08-31",
       "valor_cota": 1.698519,
       "variacao_mes_pct": -8.7204
+    },
+    {
+      "data": "2026-09-29",
+      "valor_cota": 1.81739,
+      "variacao_mes_pct": 6.9985
     }
   ],
   "resumo": {
     "janela_meses": 11,
-    "retorno_am_medio_pct": 0.3368,
+    "retorno_am_medio_pct": 0.9967,
     "retorno_aa": {
-      "pessimista": -22.5,
-      "base": 4.12,
-      "otimista": 30.74
+      "pessimista": -14.85,
+      "base": 12.64,
+      "otimista": 40.13
     },
-    "volatilidade_aa": 26.62,
-    "referencia": "2026-08-31",
+    "volatilidade_aa": 27.49,
+    "referencia": "2026-09-29",
     "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
   }
 }

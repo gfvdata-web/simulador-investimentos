@@ -4,7 +4,7 @@
   "rotulo": "MSFT34 (BDR Microsoft)",
   "indice": "ação MSFT (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-09-29T00:49:57+00:00",
+  "coletado_em": "2026-10-01T19:03:33+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -227,21 +227,21 @@
       "variacao_mes_pct": 11.4251
     },
     {
-      "data": "2026-09-28",
-      "fechamento": 110.39,
-      "variacao_mes_pct": 0.7024
+      "data": "2026-09-30",
+      "fechamento": 110.25,
+      "variacao_mes_pct": 0.5747
     }
   ],
   "resumo": {
-    "janela_meses": 43,
-    "retorno_am_medio_pct": 2.053,
+    "janela_meses": 44,
+    "retorno_am_medio_pct": 2.0194,
     "retorno_aa": {
-      "pessimista": -0.3,
-      "base": 27.62,
-      "otimista": 55.54
+      "pessimista": -0.49,
+      "base": 27.11,
+      "otimista": 54.72
     },
-    "volatilidade_aa": 27.92,
-    "referencia": "2026-08-31",
+    "volatilidade_aa": 27.6,
+    "referencia": "2026-09-30",
     "metodo": "CAGR mensal composto do fechamento (B3 COTAHIST) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente, ainda em curso, é excluído da média."
   }
 }

@@ -4,17 +4,12 @@
   "cnpj": "46.467.345/0001-50",
   "rotulo": "Carteira Itaú Asset de Investimento Moderado Multimercado",
   "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
-  "coletado_em": "2026-09-29T00:53:18+00:00",
+  "coletado_em": "2026-10-01T19:08:20+00:00",
   "pontos": [
-    {
-      "data": "2025-09-30",
-      "valor_cota": 1.365728,
-      "variacao_mes_pct": null
-    },
     {
       "data": "2025-10-31",
       "valor_cota": 1.384839,
-      "variacao_mes_pct": 1.3993
+      "variacao_mes_pct": null
     },
     {
       "data": "2025-11-28",
@@ -65,18 +60,23 @@
       "data": "2026-08-31",
       "valor_cota": 1.543026,
       "variacao_mes_pct": 1.0788
+    },
+    {
+      "data": "2026-09-29",
+      "valor_cota": 1.559445,
+      "variacao_mes_pct": 1.0641
     }
   ],
   "resumo": {
     "janela_meses": 11,
-    "retorno_am_medio_pct": 1.1187,
+    "retorno_am_medio_pct": 1.0882,
     "retorno_aa": {
-      "pessimista": 11.51,
-      "base": 14.28,
-      "otimista": 17.05
+      "pessimista": 11.12,
+      "base": 13.87,
+      "otimista": 16.62
     },
-    "volatilidade_aa": 2.77,
-    "referencia": "2026-08-31",
+    "volatilidade_aa": 2.75,
+    "referencia": "2026-09-29",
     "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
   }
 }

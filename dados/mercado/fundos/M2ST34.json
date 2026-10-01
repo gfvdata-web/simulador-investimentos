@@ -4,7 +4,7 @@
   "rotulo": "M2ST34 (BDR Strategy, ex-MicroStrategy)",
   "indice": "ação MSTR (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-09-29T00:50:32+00:00",
+  "coletado_em": "2026-10-01T19:04:22+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -227,21 +227,21 @@
       "variacao_mes_pct": 45.2135
     },
     {
-      "data": "2026-09-28",
-      "fechamento": 11.74,
-      "variacao_mes_pct": 19.0669
+      "data": "2026-09-30",
+      "fechamento": 11.28,
+      "variacao_mes_pct": 14.4016
     }
   ],
   "resumo": {
-    "janela_meses": 43,
-    "retorno_am_medio_pct": 6.0921,
+    "janela_meses": 44,
+    "retorno_am_medio_pct": 6.2809,
     "retorno_aa": {
-      "pessimista": -12.99,
-      "base": 103.33,
-      "otimista": 219.64
+      "pessimista": -7.32,
+      "base": 107.71,
+      "otimista": 222.75
     },
-    "volatilidade_aa": 116.31,
-    "referencia": "2026-08-31",
+    "volatilidade_aa": 115.03,
+    "referencia": "2026-09-30",
     "metodo": "CAGR mensal composto do fechamento (B3 COTAHIST) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente, ainda em curso, é excluído da média."
   }
 }
