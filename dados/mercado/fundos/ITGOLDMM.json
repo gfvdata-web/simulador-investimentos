@@ -4,7 +4,7 @@
   "cnpj": "35.492.154/0001-22",
   "rotulo": "Itaú Index Gold Multimercado",
   "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
-  "coletado_em": "2026-10-02T00:28:49+00:00",
+  "coletado_em": "2026-10-03T00:12:23+00:00",
   "pontos": [
     {
       "data": "2025-10-31",
@@ -62,21 +62,21 @@
       "variacao_mes_pct": 10.2381
     },
     {
-      "data": "2026-09-29",
-      "valor_cota": 34.529871,
-      "variacao_mes_pct": -5.8658
+      "data": "2026-09-30",
+      "valor_cota": 34.560535,
+      "variacao_mes_pct": -5.7822
     }
   ],
   "resumo": {
     "janela_meses": 11,
-    "retorno_am_medio_pct": 1.1759,
+    "retorno_am_medio_pct": 1.1835,
     "retorno_aa": {
-      "pessimista": -12.52,
-      "base": 15.06,
-      "otimista": 42.64
+      "pessimista": -12.39,
+      "base": 15.16,
+      "otimista": 42.72
     },
-    "volatilidade_aa": 27.58,
-    "referencia": "2026-09-29",
+    "volatilidade_aa": 27.56,
+    "referencia": "2026-09-30",
     "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
   }
 }

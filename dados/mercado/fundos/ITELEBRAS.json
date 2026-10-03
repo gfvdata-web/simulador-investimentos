@@ -4,7 +4,7 @@
   "cnpj": "42.519.896/0001-60",
   "rotulo": "Itaú Eletrobras Ações FIC FI",
   "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
-  "coletado_em": "2026-10-02T00:28:14+00:00",
+  "coletado_em": "2026-10-03T00:11:36+00:00",
   "pontos": [
     {
       "data": "2025-10-31",
@@ -62,21 +62,21 @@
       "variacao_mes_pct": 0.5469
     },
     {
-      "data": "2026-09-29",
-      "valor_cota": 1.826687,
-      "variacao_mes_pct": 3.1322
+      "data": "2026-09-30",
+      "valor_cota": 1.844873,
+      "variacao_mes_pct": 4.1589
     }
   ],
   "resumo": {
     "janela_meses": 11,
-    "retorno_am_medio_pct": 2.5061,
+    "retorno_am_medio_pct": 2.5994,
     "retorno_aa": {
-      "pessimista": 5.34,
-      "base": 34.58,
-      "otimista": 63.83
+      "pessimista": 6.78,
+      "base": 36.06,
+      "otimista": 65.35
     },
-    "volatilidade_aa": 29.24,
-    "referencia": "2026-09-29",
+    "volatilidade_aa": 29.29,
+    "referencia": "2026-09-30",
     "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
   }
 }
