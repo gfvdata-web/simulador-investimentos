@@ -4,7 +4,7 @@
   "rotulo": "TSLA34 (BDR Tesla)",
   "indice": "ação TSLA (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-10-06T01:47:38+00:00",
+  "coletado_em": "2026-10-07T00:20:21+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -232,9 +232,9 @@
       "variacao_mes_pct": -3.8604
     },
     {
-      "data": "2026-10-05",
-      "fechamento": 59.12,
-      "variacao_mes_pct": 3.2123
+      "data": "2026-10-06",
+      "fechamento": 59.42,
+      "variacao_mes_pct": 3.736
     }
   ],
   "resumo": {
