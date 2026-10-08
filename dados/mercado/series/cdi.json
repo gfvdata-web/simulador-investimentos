@@ -5,12 +5,8 @@
   "arquivo": "series/cdi.json",
   "fonte": "Banco Central do Brasil - SGS",
   "referencia_fonte": 4391,
-  "coletado_em": "2026-10-07T00:13:10+00:00",
+  "coletado_em": "2026-10-08T00:31:25+00:00",
   "pontos": [
-    {
-      "data": "2016-06-01",
-      "valor": 1.16
-    },
     {
       "data": "2016-07-01",
       "valor": 1.11
@@ -505,7 +501,7 @@
     },
     {
       "data": "2026-10-01",
-      "valor": 0.15
+      "valor": 0.2
     }
   ]
 }
