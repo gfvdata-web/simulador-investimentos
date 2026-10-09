@@ -4,7 +4,7 @@
   "rotulo": "NFLX34 (BDR Netflix)",
   "indice": "ação NFLX (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-10-08T00:39:01+00:00",
+  "coletado_em": "2026-10-09T00:55:01+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -232,9 +232,9 @@
       "variacao_mes_pct": -14.758
     },
     {
-      "data": "2026-10-07",
-      "fechamento": 7.01,
-      "variacao_mes_pct": -2.9086
+      "data": "2026-10-08",
+      "fechamento": 7.22,
+      "variacao_mes_pct": 0.0
     }
   ],
   "resumo": {
