@@ -5,14 +5,8 @@
   "rotulo": "KNCR11 (Kinea Rendimentos Imobiliários FII)",
   "segmento": "Papel (pós-CDI)",
   "fonte": "CVM - Dados Abertos (Informe Mensal FII)",
-  "coletado_em": "2026-10-16T23:05:32+00:00",
+  "coletado_em": "2026-10-20T00:01:54+00:00",
   "pontos": [
-    {
-      "data": "2023-09-01",
-      "dividend_yield_pct": 1.0896,
-      "valorizacao_patrimonial_pct": 0.0227,
-      "rentabilidade_efetiva_pct": 1.1123
-    },
     {
       "data": "2023-10-01",
       "dividend_yield_pct": 1.0993,
@@ -222,14 +216,20 @@
       "dividend_yield_pct": 1.1217,
       "valorizacao_patrimonial_pct": 0.1138,
       "rentabilidade_efetiva_pct": 1.2355
+    },
+    {
+      "data": "2026-09-01",
+      "dividend_yield_pct": 1.101,
+      "valorizacao_patrimonial_pct": -0.0614,
+      "rentabilidade_efetiva_pct": 1.0396
     }
   ],
   "resumo": {
     "janela_meses": 36,
-    "dividend_yield_am_medio_pct": 1.0753,
-    "valorizacao_patrimonial_am_media_pct": 0.0459,
-    "valorizacao_patrimonial_am_desvio_pct": 0.0837,
-    "referencia": "2026-08-01",
+    "dividend_yield_am_medio_pct": 1.0756,
+    "valorizacao_patrimonial_am_media_pct": 0.0436,
+    "valorizacao_patrimonial_am_desvio_pct": 0.0855,
+    "referencia": "2026-09-01",
     "metodo": "Média simples dos meses fechados publicados pela CVM (Informe Mensal FII)."
   }
 }

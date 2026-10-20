@@ -5,14 +5,8 @@
   "rotulo": "XPLG11 (XP Log FII)",
   "segmento": "Logística",
   "fonte": "CVM - Dados Abertos (Informe Mensal FII)",
-  "coletado_em": "2026-10-16T23:05:32+00:00",
+  "coletado_em": "2026-10-20T00:01:54+00:00",
   "pontos": [
-    {
-      "data": "2023-09-01",
-      "dividend_yield_pct": 0.7039,
-      "valorizacao_patrimonial_pct": -0.2603,
-      "rentabilidade_efetiva_pct": 0.4436
-    },
     {
       "data": "2023-10-01",
       "dividend_yield_pct": 0.7057,
@@ -222,14 +216,20 @@
       "dividend_yield_pct": 0.7817,
       "valorizacao_patrimonial_pct": -0.2362,
       "rentabilidade_efetiva_pct": 0.5455
+    },
+    {
+      "data": "2026-09-01",
+      "dividend_yield_pct": 0.7836,
+      "valorizacao_patrimonial_pct": -0.2048,
+      "rentabilidade_efetiva_pct": 0.5788
     }
   ],
   "resumo": {
     "janela_meses": 36,
-    "dividend_yield_am_medio_pct": 0.7373,
-    "valorizacao_patrimonial_am_media_pct": -0.2017,
-    "valorizacao_patrimonial_am_desvio_pct": 0.5974,
-    "referencia": "2026-08-01",
+    "dividend_yield_am_medio_pct": 0.7395,
+    "valorizacao_patrimonial_am_media_pct": -0.2002,
+    "valorizacao_patrimonial_am_desvio_pct": 0.5973,
+    "referencia": "2026-09-01",
     "metodo": "Média simples dos meses fechados publicados pela CVM (Informe Mensal FII)."
   }
 }

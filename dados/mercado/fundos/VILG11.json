@@ -5,14 +5,8 @@
   "rotulo": "VILG11 (Vinci Logística FII)",
   "segmento": "Logística",
   "fonte": "CVM - Dados Abertos (Informe Mensal FII)",
-  "coletado_em": "2026-10-16T23:05:31+00:00",
+  "coletado_em": "2026-10-20T00:01:52+00:00",
   "pontos": [
-    {
-      "data": "2023-09-01",
-      "dividend_yield_pct": 0.6257,
-      "valorizacao_patrimonial_pct": -0.1611,
-      "rentabilidade_efetiva_pct": 0.4646
-    },
     {
       "data": "2023-10-01",
       "dividend_yield_pct": 0.6102,
@@ -222,14 +216,20 @@
       "dividend_yield_pct": 0.7501,
       "valorizacao_patrimonial_pct": -0.5816,
       "rentabilidade_efetiva_pct": 0.1685
+    },
+    {
+      "data": "2026-09-01",
+      "dividend_yield_pct": 0.7545,
+      "valorizacao_patrimonial_pct": -0.0334,
+      "rentabilidade_efetiva_pct": 0.7211
     }
   ],
   "resumo": {
     "janela_meses": 36,
-    "dividend_yield_am_medio_pct": 0.6006,
-    "valorizacao_patrimonial_am_media_pct": -0.0781,
-    "valorizacao_patrimonial_am_desvio_pct": 0.6306,
-    "referencia": "2026-08-01",
+    "dividend_yield_am_medio_pct": 0.6042,
+    "valorizacao_patrimonial_am_media_pct": -0.0746,
+    "valorizacao_patrimonial_am_desvio_pct": 0.6305,
+    "referencia": "2026-09-01",
     "metodo": "Média simples dos meses fechados publicados pela CVM (Informe Mensal FII)."
   }
 }

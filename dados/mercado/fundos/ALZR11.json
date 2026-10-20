@@ -5,14 +5,8 @@
   "rotulo": "ALZR11 (Alianza Trust Renda Imobiliária FII)",
   "segmento": "Híbrido",
   "fonte": "CVM - Dados Abertos (Informe Mensal FII)",
-  "coletado_em": "2026-10-16T23:05:31+00:00",
+  "coletado_em": "2026-10-20T00:01:52+00:00",
   "pontos": [
-    {
-      "data": "2023-09-01",
-      "dividend_yield_pct": 0.7527,
-      "valorizacao_patrimonial_pct": -0.6425,
-      "rentabilidade_efetiva_pct": 0.1102
-    },
     {
       "data": "2023-10-01",
       "dividend_yield_pct": 0.6481,
@@ -222,14 +216,20 @@
       "dividend_yield_pct": 0.8222,
       "valorizacao_patrimonial_pct": -0.7813,
       "rentabilidade_efetiva_pct": 0.0409
+    },
+    {
+      "data": "2026-09-01",
+      "dividend_yield_pct": 0.7413,
+      "valorizacao_patrimonial_pct": -0.0452,
+      "rentabilidade_efetiva_pct": 0.6961
     }
   ],
   "resumo": {
     "janela_meses": 36,
-    "dividend_yield_am_medio_pct": 0.7129,
-    "valorizacao_patrimonial_am_media_pct": -2.4108,
-    "valorizacao_patrimonial_am_desvio_pct": 15.0383,
-    "referencia": "2026-08-01",
+    "dividend_yield_am_medio_pct": 0.7126,
+    "valorizacao_patrimonial_am_media_pct": -2.3942,
+    "valorizacao_patrimonial_am_desvio_pct": 15.0406,
+    "referencia": "2026-09-01",
     "metodo": "Média simples dos meses fechados publicados pela CVM (Informe Mensal FII)."
   }
 }

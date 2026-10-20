@@ -4,7 +4,7 @@
   "rotulo": "MSFT34 (BDR Microsoft)",
   "indice": "ação MSFT (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-10-16T23:14:54+00:00",
+  "coletado_em": "2026-10-20T00:09:26+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -232,9 +232,9 @@
       "variacao_mes_pct": 0.5747
     },
     {
-      "data": "2026-10-15",
-      "fechamento": 114.2,
-      "variacao_mes_pct": 3.5828
+      "data": "2026-10-19",
+      "fechamento": 112.0,
+      "variacao_mes_pct": 1.5873
     }
   ],
   "resumo": {
