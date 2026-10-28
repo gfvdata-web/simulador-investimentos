@@ -4,7 +4,7 @@
   "rotulo": "WRLD11 (Investo MSCI World)",
   "indice": "MSCI World",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-10-27T00:14:42+00:00",
+  "coletado_em": "2026-10-28T00:14:18+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -232,9 +232,9 @@
       "variacao_mes_pct": -1.7808
     },
     {
-      "data": "2026-10-23",
-      "fechamento": 140.74,
-      "variacao_mes_pct": -4.7832
+      "data": "2026-10-27",
+      "fechamento": 152.62,
+      "variacao_mes_pct": 3.2542
     }
   ],
   "resumo": {
