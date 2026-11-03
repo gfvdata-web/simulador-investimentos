@@ -4,7 +4,7 @@
   "rotulo": "MELI34 (BDR MercadoLibre)",
   "indice": "ação MELI (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-10-31T00:19:54+00:00",
+  "coletado_em": "2026-11-03T02:48:53+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -238,15 +238,15 @@
     }
   ],
   "resumo": {
-    "janela_meses": 44,
-    "retorno_am_medio_pct": 1.3323,
+    "janela_meses": 45,
+    "retorno_am_medio_pct": 1.3012,
     "retorno_aa": {
-      "pessimista": -15.55,
-      "base": 17.21,
-      "otimista": 49.97
+      "pessimista": -15.61,
+      "base": 16.78,
+      "otimista": 49.18
     },
-    "volatilidade_aa": 32.76,
-    "referencia": "2026-09-30",
+    "volatilidade_aa": 32.39,
+    "referencia": "2026-10-30",
     "metodo": "CAGR mensal composto do fechamento (B3 COTAHIST) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente, ainda em curso, é excluído da média."
   }
 }

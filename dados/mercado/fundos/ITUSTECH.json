@@ -4,17 +4,12 @@
   "cnpj": "36.249.317/0001-03",
   "rotulo": "Itaú Index US Tech Ações",
   "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
-  "coletado_em": "2026-10-31T00:21:34+00:00",
+  "coletado_em": "2026-11-03T02:50:31+00:00",
   "pontos": [
-    {
-      "data": "2025-10-31",
-      "valor_cota": 44.848583,
-      "variacao_mes_pct": null
-    },
     {
       "data": "2025-11-28",
       "valor_cota": 44.450956,
-      "variacao_mes_pct": -0.8866
+      "variacao_mes_pct": null
     },
     {
       "data": "2025-12-31",
@@ -65,18 +60,23 @@
       "data": "2026-09-30",
       "valor_cota": 53.824234,
       "variacao_mes_pct": 2.0489
+    },
+    {
+      "data": "2026-10-29",
+      "valor_cota": 52.102672,
+      "variacao_mes_pct": -3.1985
     }
   ],
   "resumo": {
     "janela_meses": 11,
-    "retorno_am_medio_pct": 1.8901,
+    "retorno_am_medio_pct": 1.6799,
     "retorno_aa": {
-      "pessimista": 0.56,
-      "base": 25.19,
-      "otimista": 49.83
+      "pessimista": -2.93,
+      "base": 22.13,
+      "otimista": 47.19
     },
-    "volatilidade_aa": 24.63,
-    "referencia": "2026-09-30",
+    "volatilidade_aa": 25.06,
+    "referencia": "2026-10-29",
     "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
   }
 }

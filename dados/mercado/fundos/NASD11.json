@@ -4,7 +4,7 @@
   "rotulo": "NASD11 (Trend Nasdaq)",
   "indice": "Nasdaq-100",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-10-31T00:19:28+00:00",
+  "coletado_em": "2026-11-03T02:48:27+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -238,15 +238,15 @@
     }
   ],
   "resumo": {
-    "janela_meses": 44,
-    "retorno_am_medio_pct": 2.2892,
+    "janela_meses": 45,
+    "retorno_am_medio_pct": 2.1977,
     "retorno_aa": {
-      "pessimista": 12.96,
-      "base": 31.21,
-      "otimista": 49.46
+      "pessimista": 11.64,
+      "base": 29.81,
+      "otimista": 47.97
     },
-    "volatilidade_aa": 18.25,
-    "referencia": "2026-09-30",
+    "volatilidade_aa": 18.16,
+    "referencia": "2026-10-30",
     "metodo": "CAGR mensal composto do fechamento (B3 COTAHIST) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente, ainda em curso, é excluído da média."
   }
 }

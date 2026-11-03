@@ -1,5 +1,5 @@
 {
-  "coletado_em": "2026-10-31T00:24:05+00:00",
+  "coletado_em": "2026-11-03T02:52:57+00:00",
   "completo": true,
   "campos": {
     "cdi_aa": {
@@ -9,7 +9,7 @@
       "referencia_fonte": 4389,
       "valor": 13.65,
       "origem": "fonte oficial",
-      "referencia": "2026-10-29"
+      "referencia": "2026-10-30"
     },
     "selic_meta_aa": {
       "rotulo": "Selic meta",
@@ -94,7 +94,7 @@
       "pontos": 36,
       "primeiro": "2023-10-01",
       "ultimo": "2026-09-01",
-      "coletado_em": "2026-10-31T00:13:20+00:00"
+      "coletado_em": "2026-11-03T02:42:13+00:00"
     },
     {
       "ticker": "ALZR11",
@@ -104,7 +104,7 @@
       "pontos": 36,
       "primeiro": "2023-10-01",
       "ultimo": "2026-09-01",
-      "coletado_em": "2026-10-31T00:13:21+00:00"
+      "coletado_em": "2026-11-03T02:42:13+00:00"
     },
     {
       "ticker": "BTLG11",
@@ -114,7 +114,7 @@
       "pontos": 36,
       "primeiro": "2023-10-01",
       "ultimo": "2026-09-01",
-      "coletado_em": "2026-10-31T00:13:21+00:00"
+      "coletado_em": "2026-11-03T02:42:13+00:00"
     },
     {
       "ticker": "GGRC11",
@@ -124,7 +124,7 @@
       "pontos": 36,
       "primeiro": "2023-10-01",
       "ultimo": "2026-09-01",
-      "coletado_em": "2026-10-31T00:13:21+00:00"
+      "coletado_em": "2026-11-03T02:42:14+00:00"
     },
     {
       "ticker": "RECR11",
@@ -134,7 +134,7 @@
       "pontos": 36,
       "primeiro": "2023-10-01",
       "ultimo": "2026-09-01",
-      "coletado_em": "2026-10-31T00:13:22+00:00"
+      "coletado_em": "2026-11-03T02:42:14+00:00"
     },
     {
       "ticker": "HGLG11",
@@ -144,7 +144,7 @@
       "pontos": 36,
       "primeiro": "2023-10-01",
       "ultimo": "2026-09-01",
-      "coletado_em": "2026-10-31T00:13:22+00:00"
+      "coletado_em": "2026-11-03T02:42:14+00:00"
     },
     {
       "ticker": "XPLG11",
@@ -154,7 +154,7 @@
       "pontos": 36,
       "primeiro": "2023-10-01",
       "ultimo": "2026-09-01",
-      "coletado_em": "2026-10-31T00:13:22+00:00"
+      "coletado_em": "2026-11-03T02:42:15+00:00"
     },
     {
       "ticker": "KNCR11",
@@ -164,7 +164,7 @@
       "pontos": 36,
       "primeiro": "2023-10-01",
       "ultimo": "2026-09-01",
-      "coletado_em": "2026-10-31T00:13:23+00:00"
+      "coletado_em": "2026-11-03T02:42:15+00:00"
     },
     {
       "ticker": "DIVO11",
@@ -174,7 +174,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:18:37+00:00"
+      "coletado_em": "2026-11-03T02:47:36+00:00"
     },
     {
       "ticker": "GOLD11",
@@ -184,7 +184,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:18:50+00:00"
+      "coletado_em": "2026-11-03T02:47:48+00:00"
     },
     {
       "ticker": "WRLD11",
@@ -194,7 +194,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:19:03+00:00"
+      "coletado_em": "2026-11-03T02:48:01+00:00"
     },
     {
       "ticker": "XINA11",
@@ -204,7 +204,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:19:15+00:00"
+      "coletado_em": "2026-11-03T02:48:14+00:00"
     },
     {
       "ticker": "NASD11",
@@ -214,7 +214,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:19:28+00:00"
+      "coletado_em": "2026-11-03T02:48:27+00:00"
     },
     {
       "ticker": "MSFT34",
@@ -224,7 +224,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:19:41+00:00"
+      "coletado_em": "2026-11-03T02:48:40+00:00"
     },
     {
       "ticker": "MELI34",
@@ -234,7 +234,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:19:54+00:00"
+      "coletado_em": "2026-11-03T02:48:53+00:00"
     },
     {
       "ticker": "AMZO34",
@@ -244,7 +244,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:20:07+00:00"
+      "coletado_em": "2026-11-03T02:49:05+00:00"
     },
     {
       "ticker": "TSLA34",
@@ -254,7 +254,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:20:20+00:00"
+      "coletado_em": "2026-11-03T02:49:18+00:00"
     },
     {
       "ticker": "M2ST34",
@@ -264,7 +264,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:20:33+00:00"
+      "coletado_em": "2026-11-03T02:49:31+00:00"
     },
     {
       "ticker": "S2EA34",
@@ -274,7 +274,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:20:45+00:00"
+      "coletado_em": "2026-11-03T02:49:44+00:00"
     },
     {
       "ticker": "NFLX34",
@@ -284,7 +284,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:20:58+00:00"
+      "coletado_em": "2026-11-03T02:49:57+00:00"
     },
     {
       "ticker": "NVDC34",
@@ -294,7 +294,7 @@
       "pontos": 46,
       "primeiro": "2023-01-31",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-10-31T00:21:11+00:00"
+      "coletado_em": "2026-11-03T02:50:10+00:00"
     },
     {
       "ticker": "ITUSTECH",
@@ -302,9 +302,9 @@
       "rotulo": "Itaú Index US Tech Ações",
       "arquivo": "fundos/ITUSTECH.json",
       "pontos": 12,
-      "primeiro": "2025-10-31",
-      "ultimo": "2026-09-30",
-      "coletado_em": "2026-10-31T00:21:34+00:00"
+      "primeiro": "2025-11-28",
+      "ultimo": "2026-10-29",
+      "coletado_em": "2026-11-03T02:50:31+00:00"
     },
     {
       "ticker": "ITVALE",
@@ -312,9 +312,9 @@
       "rotulo": "Itaú Index Vale Ações",
       "arquivo": "fundos/ITVALE.json",
       "pontos": 12,
-      "primeiro": "2025-10-31",
-      "ultimo": "2026-09-30",
-      "coletado_em": "2026-10-31T00:21:56+00:00"
+      "primeiro": "2025-11-28",
+      "ultimo": "2026-10-29",
+      "coletado_em": "2026-11-03T02:50:52+00:00"
     },
     {
       "ticker": "ITUNIBCO",
@@ -322,9 +322,9 @@
       "rotulo": "Itaú Index Itaú Unibanco Ações",
       "arquivo": "fundos/ITUNIBCO.json",
       "pontos": 12,
-      "primeiro": "2025-10-31",
-      "ultimo": "2026-09-30",
-      "coletado_em": "2026-10-31T00:22:18+00:00"
+      "primeiro": "2025-11-28",
+      "ultimo": "2026-10-29",
+      "coletado_em": "2026-11-03T02:51:13+00:00"
     },
     {
       "ticker": "ITELEBRAS",
@@ -332,9 +332,9 @@
       "rotulo": "Itaú Eletrobras Ações FIC FI",
       "arquivo": "fundos/ITELEBRAS.json",
       "pontos": 12,
-      "primeiro": "2025-10-31",
-      "ultimo": "2026-09-30",
-      "coletado_em": "2026-10-31T00:22:39+00:00"
+      "primeiro": "2025-11-28",
+      "ultimo": "2026-10-29",
+      "coletado_em": "2026-11-03T02:51:33+00:00"
     },
     {
       "ticker": "ITSABESP",
@@ -342,9 +342,9 @@
       "rotulo": "Itaú Sabesp Ações FIF RL",
       "arquivo": "fundos/ITSABESP.json",
       "pontos": 12,
-      "primeiro": "2025-10-31",
-      "ultimo": "2026-09-30",
-      "coletado_em": "2026-10-31T00:23:01+00:00"
+      "primeiro": "2025-11-28",
+      "ultimo": "2026-10-29",
+      "coletado_em": "2026-11-03T02:51:55+00:00"
     },
     {
       "ticker": "ITGDPLUS",
@@ -352,9 +352,9 @@
       "rotulo": "Itaú Global Dinâmico Plus Multimercado",
       "arquivo": "fundos/ITGDPLUS.json",
       "pontos": 12,
-      "primeiro": "2025-10-31",
-      "ultimo": "2026-09-30",
-      "coletado_em": "2026-10-31T00:23:22+00:00"
+      "primeiro": "2025-11-28",
+      "ultimo": "2026-10-29",
+      "coletado_em": "2026-11-03T02:52:15+00:00"
     },
     {
       "ticker": "ITGOLDMM",
@@ -362,9 +362,9 @@
       "rotulo": "Itaú Index Gold Multimercado",
       "arquivo": "fundos/ITGOLDMM.json",
       "pontos": 12,
-      "primeiro": "2025-10-31",
-      "ultimo": "2026-09-30",
-      "coletado_em": "2026-10-31T00:23:44+00:00"
+      "primeiro": "2025-11-28",
+      "ultimo": "2026-10-29",
+      "coletado_em": "2026-11-03T02:52:36+00:00"
     },
     {
       "ticker": "ITMODMM",
@@ -372,9 +372,9 @@
       "rotulo": "Carteira Itaú Asset de Investimento Moderado Multimercado",
       "arquivo": "fundos/ITMODMM.json",
       "pontos": 12,
-      "primeiro": "2025-10-31",
-      "ultimo": "2026-09-30",
-      "coletado_em": "2026-10-31T00:24:05+00:00"
+      "primeiro": "2025-11-28",
+      "ultimo": "2026-10-29",
+      "coletado_em": "2026-11-03T02:52:57+00:00"
     }
   ]
 }

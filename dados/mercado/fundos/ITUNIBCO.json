@@ -4,17 +4,12 @@
   "cnpj": "36.347.678/0001-92",
   "rotulo": "Itaú Index Itaú Unibanco Ações",
   "fonte": "CVM - Dados Abertos (Informe Diário de Fundos)",
-  "coletado_em": "2026-10-31T00:22:18+00:00",
+  "coletado_em": "2026-11-03T02:51:13+00:00",
   "pontos": [
-    {
-      "data": "2025-10-31",
-      "valor_cota": 27.968223,
-      "variacao_mes_pct": null
-    },
     {
       "data": "2025-11-28",
       "valor_cota": 29.523142,
-      "variacao_mes_pct": 5.5596
+      "variacao_mes_pct": null
     },
     {
       "data": "2025-12-31",
@@ -65,18 +60,23 @@
       "data": "2026-09-30",
       "valor_cota": 34.679378,
       "variacao_mes_pct": 11.9536
+    },
+    {
+      "data": "2026-10-29",
+      "valor_cota": 30.9753,
+      "variacao_mes_pct": -10.6809
     }
   ],
   "resumo": {
     "janela_meses": 11,
-    "retorno_am_medio_pct": 2.2271,
+    "retorno_am_medio_pct": 0.7507,
     "retorno_aa": {
-      "pessimista": 4.04,
-      "base": 30.25,
-      "otimista": 56.47
+      "pessimista": -19.68,
+      "base": 9.39,
+      "otimista": 38.46
     },
-    "volatilidade_aa": 26.22,
-    "referencia": "2026-09-30",
+    "volatilidade_aa": 29.07,
+    "referencia": "2026-10-29",
     "metodo": "CAGR mensal composto do valor da cota (CVM, informe diário de FI) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente é excluído da média."
   }
 }

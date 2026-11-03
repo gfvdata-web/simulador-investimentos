@@ -4,7 +4,7 @@
   "rotulo": "AMZO34 (BDR Amazon)",
   "indice": "ação AMZN (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-10-31T00:20:07+00:00",
+  "coletado_em": "2026-11-03T02:49:05+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -238,15 +238,15 @@
     }
   ],
   "resumo": {
-    "janela_meses": 44,
-    "retorno_am_medio_pct": 2.4079,
+    "janela_meses": 45,
+    "retorno_am_medio_pct": 2.3857,
     "retorno_aa": {
-      "pessimista": 4.93,
-      "base": 33.05,
-      "otimista": 61.17
+      "pessimista": 4.9,
+      "base": 32.7,
+      "otimista": 60.51
     },
-    "volatilidade_aa": 28.12,
-    "referencia": "2026-09-30",
+    "volatilidade_aa": 27.8,
+    "referencia": "2026-10-30",
     "metodo": "CAGR mensal composto do fechamento (B3 COTAHIST) sobre os meses fechados da janela, +/- 1 desvio-padrão anualizado (desvio mensal x raiz de 12). O mês corrente, ainda em curso, é excluído da média."
   }
 }
