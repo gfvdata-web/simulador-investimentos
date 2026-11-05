@@ -4,7 +4,7 @@
   "rotulo": "M2ST34 (BDR Strategy, ex-MicroStrategy)",
   "indice": "ação MSTR (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-11-04T01:07:41+00:00",
+  "coletado_em": "2026-11-05T01:17:50+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -237,9 +237,9 @@
       "variacao_mes_pct": -10.0177
     },
     {
-      "data": "2026-11-03",
-      "fechamento": 10.59,
-      "variacao_mes_pct": 4.335
+      "data": "2026-11-04",
+      "fechamento": 11.23,
+      "variacao_mes_pct": 10.6404
     }
   ],
   "resumo": {
