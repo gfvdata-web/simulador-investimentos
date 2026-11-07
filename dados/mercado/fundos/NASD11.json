@@ -4,7 +4,7 @@
   "rotulo": "NASD11 (Trend Nasdaq)",
   "indice": "Nasdaq-100",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-11-06T01:20:19+00:00",
+  "coletado_em": "2026-11-07T00:37:49+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -237,9 +237,9 @@
       "variacao_mes_pct": -1.8282
     },
     {
-      "data": "2026-11-05",
-      "fechamento": 20.37,
-      "variacao_mes_pct": -5.1676
+      "data": "2026-11-06",
+      "fechamento": 20.72,
+      "variacao_mes_pct": -3.5382
     }
   ],
   "resumo": {
