@@ -4,7 +4,7 @@
   "rotulo": "DIVO11 (It Now IDIV)",
   "indice": "IDIV (dividendos B3)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-11-13T01:41:51+00:00",
+  "coletado_em": "2026-11-14T01:13:15+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -237,9 +237,9 @@
       "variacao_mes_pct": -9.8208
     },
     {
-      "data": "2026-11-12",
-      "fechamento": 122.59,
-      "variacao_mes_pct": 2.3802
+      "data": "2026-11-13",
+      "fechamento": 123.45,
+      "variacao_mes_pct": 3.0984
     }
   ],
   "resumo": {
