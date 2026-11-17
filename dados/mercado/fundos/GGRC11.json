@@ -5,14 +5,8 @@
   "rotulo": "GGRC11 (GGR Covepi Renda FII)",
   "segmento": "Logística",
   "fonte": "CVM - Dados Abertos (Informe Mensal FII)",
-  "coletado_em": "2026-11-14T01:06:57+00:00",
+  "coletado_em": "2026-11-17T03:16:22+00:00",
   "pontos": [
-    {
-      "data": "2023-10-01",
-      "dividend_yield_pct": null,
-      "valorizacao_patrimonial_pct": 0.8495,
-      "rentabilidade_efetiva_pct": 0.8495
-    },
     {
       "data": "2023-11-01",
       "dividend_yield_pct": null,
@@ -222,14 +216,20 @@
       "dividend_yield_pct": 0.9152,
       "valorizacao_patrimonial_pct": 0.9275,
       "rentabilidade_efetiva_pct": 1.8427
+    },
+    {
+      "data": "2026-10-01",
+      "dividend_yield_pct": 0.9008,
+      "valorizacao_patrimonial_pct": -1.5721,
+      "rentabilidade_efetiva_pct": -0.6713
     }
   ],
   "resumo": {
     "janela_meses": 36,
-    "dividend_yield_am_medio_pct": 0.2678,
-    "valorizacao_patrimonial_am_media_pct": 0.6061,
-    "valorizacao_patrimonial_am_desvio_pct": 0.7645,
-    "referencia": "2026-09-01",
+    "dividend_yield_am_medio_pct": 0.2913,
+    "valorizacao_patrimonial_am_media_pct": 0.5388,
+    "valorizacao_patrimonial_am_desvio_pct": 0.8448,
+    "referencia": "2026-10-01",
     "metodo": "Média simples dos meses fechados publicados pela CVM (Informe Mensal FII)."
   }
 }

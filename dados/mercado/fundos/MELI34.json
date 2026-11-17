@@ -4,7 +4,7 @@
   "rotulo": "MELI34 (BDR MercadoLibre)",
   "indice": "ação MELI (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-11-14T01:14:28+00:00",
+  "coletado_em": "2026-11-17T03:23:40+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -237,9 +237,9 @@
       "variacao_mes_pct": -0.0674
     },
     {
-      "data": "2026-11-13",
-      "fechamento": 69.89,
-      "variacao_mes_pct": -5.6815
+      "data": "2026-11-16",
+      "fechamento": 70.49,
+      "variacao_mes_pct": -4.8718
     }
   ],
   "resumo": {

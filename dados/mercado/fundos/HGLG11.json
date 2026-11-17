@@ -5,14 +5,8 @@
   "rotulo": "HGLG11 (Pátria Logística FII, ex-CSHG Logística)",
   "segmento": "Logística",
   "fonte": "CVM - Dados Abertos (Informe Mensal FII)",
-  "coletado_em": "2026-11-14T01:06:57+00:00",
+  "coletado_em": "2026-11-17T03:16:22+00:00",
   "pontos": [
-    {
-      "data": "2023-10-01",
-      "dividend_yield_pct": 0.7164,
-      "valorizacao_patrimonial_pct": -0.2757,
-      "rentabilidade_efetiva_pct": 0.4407
-    },
     {
       "data": "2023-11-01",
       "dividend_yield_pct": 0.7183,
@@ -222,14 +216,20 @@
       "dividend_yield_pct": 0.7052,
       "valorizacao_patrimonial_pct": -0.2861,
       "rentabilidade_efetiva_pct": 0.4191
+    },
+    {
+      "data": "2026-10-01",
+      "dividend_yield_pct": 0.6943,
+      "valorizacao_patrimonial_pct": -0.5584,
+      "rentabilidade_efetiva_pct": 0.1359
     }
   ],
   "resumo": {
     "janela_meses": 36,
-    "dividend_yield_am_medio_pct": 0.6837,
-    "valorizacao_patrimonial_am_media_pct": 0.213,
-    "valorizacao_patrimonial_am_desvio_pct": 1.0303,
-    "referencia": "2026-09-01",
+    "dividend_yield_am_medio_pct": 0.6831,
+    "valorizacao_patrimonial_am_media_pct": 0.2051,
+    "valorizacao_patrimonial_am_desvio_pct": 1.0352,
+    "referencia": "2026-10-01",
     "metodo": "Média simples dos meses fechados publicados pela CVM (Informe Mensal FII)."
   }
 }

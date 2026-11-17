@@ -5,14 +5,8 @@
   "rotulo": "BTLG11 (BTG Pactual Logística FII)",
   "segmento": "Logística",
   "fonte": "CVM - Dados Abertos (Informe Mensal FII)",
-  "coletado_em": "2026-11-14T01:06:56+00:00",
+  "coletado_em": "2026-11-17T03:16:22+00:00",
   "pontos": [
-    {
-      "data": "2023-10-01",
-      "dividend_yield_pct": 0.57,
-      "valorizacao_patrimonial_pct": 0.683,
-      "rentabilidade_efetiva_pct": 1.253
-    },
     {
       "data": "2023-11-01",
       "dividend_yield_pct": 0.6355,
@@ -222,14 +216,20 @@
       "dividend_yield_pct": 0.6876,
       "valorizacao_patrimonial_pct": -0.1716,
       "rentabilidade_efetiva_pct": 0.516
+    },
+    {
+      "data": "2026-10-01",
+      "dividend_yield_pct": 1.0645,
+      "valorizacao_patrimonial_pct": -0.0707,
+      "rentabilidade_efetiva_pct": 0.9938
     }
   ],
   "resumo": {
     "janela_meses": 36,
-    "dividend_yield_am_medio_pct": 0.782,
-    "valorizacao_patrimonial_am_media_pct": 0.2624,
-    "valorizacao_patrimonial_am_desvio_pct": 1.1308,
-    "referencia": "2026-09-01",
+    "dividend_yield_am_medio_pct": 0.7957,
+    "valorizacao_patrimonial_am_media_pct": 0.2415,
+    "valorizacao_patrimonial_am_desvio_pct": 1.1297,
+    "referencia": "2026-10-01",
     "metodo": "Média simples dos meses fechados publicados pela CVM (Informe Mensal FII)."
   }
 }
