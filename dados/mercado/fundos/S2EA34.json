@@ -4,7 +4,7 @@
   "rotulo": "S2EA34 (BDR Sea Limited)",
   "indice": "ação SE (NYSE)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-11-17T03:24:12+00:00",
+  "coletado_em": "2026-11-18T02:46:37+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -237,9 +237,9 @@
       "variacao_mes_pct": -19.8015
     },
     {
-      "data": "2026-11-16",
-      "fechamento": 16.64,
-      "variacao_mes_pct": 2.9703
+      "data": "2026-11-17",
+      "fechamento": 16.09,
+      "variacao_mes_pct": -0.4332
     }
   ],
   "resumo": {

@@ -1,5 +1,5 @@
 {
-  "coletado_em": "2026-11-17T03:26:04+00:00",
+  "coletado_em": "2026-11-18T02:48:29+00:00",
   "completo": true,
   "campos": {
     "cdi_aa": {
@@ -9,7 +9,7 @@
       "referencia_fonte": 4389,
       "valor": 13.65,
       "origem": "fonte oficial",
-      "referencia": "2026-11-13"
+      "referencia": "2026-11-16"
     },
     "selic_meta_aa": {
       "rotulo": "Selic meta",
@@ -94,7 +94,7 @@
       "pontos": 36,
       "primeiro": "2023-11-01",
       "ultimo": "2026-10-01",
-      "coletado_em": "2026-11-17T03:16:21+00:00"
+      "coletado_em": "2026-11-18T02:38:47+00:00"
     },
     {
       "ticker": "ALZR11",
@@ -104,7 +104,7 @@
       "pontos": 36,
       "primeiro": "2023-11-01",
       "ultimo": "2026-10-01",
-      "coletado_em": "2026-11-17T03:16:22+00:00"
+      "coletado_em": "2026-11-18T02:38:48+00:00"
     },
     {
       "ticker": "BTLG11",
@@ -114,7 +114,7 @@
       "pontos": 36,
       "primeiro": "2023-11-01",
       "ultimo": "2026-10-01",
-      "coletado_em": "2026-11-17T03:16:22+00:00"
+      "coletado_em": "2026-11-18T02:38:48+00:00"
     },
     {
       "ticker": "GGRC11",
@@ -124,7 +124,7 @@
       "pontos": 36,
       "primeiro": "2023-11-01",
       "ultimo": "2026-10-01",
-      "coletado_em": "2026-11-17T03:16:22+00:00"
+      "coletado_em": "2026-11-18T02:38:48+00:00"
     },
     {
       "ticker": "RECR11",
@@ -134,7 +134,7 @@
       "pontos": 36,
       "primeiro": "2023-11-01",
       "ultimo": "2026-10-01",
-      "coletado_em": "2026-11-17T03:16:22+00:00"
+      "coletado_em": "2026-11-18T02:38:48+00:00"
     },
     {
       "ticker": "HGLG11",
@@ -144,7 +144,7 @@
       "pontos": 36,
       "primeiro": "2023-11-01",
       "ultimo": "2026-10-01",
-      "coletado_em": "2026-11-17T03:16:22+00:00"
+      "coletado_em": "2026-11-18T02:38:48+00:00"
     },
     {
       "ticker": "XPLG11",
@@ -154,7 +154,7 @@
       "pontos": 36,
       "primeiro": "2023-11-01",
       "ultimo": "2026-10-01",
-      "coletado_em": "2026-11-17T03:16:22+00:00"
+      "coletado_em": "2026-11-18T02:38:48+00:00"
     },
     {
       "ticker": "KNCR11",
@@ -164,7 +164,7 @@
       "pontos": 36,
       "primeiro": "2023-11-01",
       "ultimo": "2026-10-01",
-      "coletado_em": "2026-11-17T03:16:23+00:00"
+      "coletado_em": "2026-11-18T02:38:49+00:00"
     },
     {
       "ticker": "DIVO11",
@@ -183,8 +183,8 @@
       "arquivo": "fundos/GOLD11.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:23:01+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:45:25+00:00"
     },
     {
       "ticker": "WRLD11",
@@ -193,8 +193,8 @@
       "arquivo": "fundos/WRLD11.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:23:09+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:45:33+00:00"
     },
     {
       "ticker": "XINA11",
@@ -203,8 +203,8 @@
       "arquivo": "fundos/XINA11.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:23:17+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:45:41+00:00"
     },
     {
       "ticker": "NASD11",
@@ -213,8 +213,8 @@
       "arquivo": "fundos/NASD11.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:23:25+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:45:49+00:00"
     },
     {
       "ticker": "MSFT34",
@@ -223,8 +223,8 @@
       "arquivo": "fundos/MSFT34.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:23:32+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:45:57+00:00"
     },
     {
       "ticker": "MELI34",
@@ -233,8 +233,8 @@
       "arquivo": "fundos/MELI34.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:23:40+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:46:05+00:00"
     },
     {
       "ticker": "AMZO34",
@@ -243,8 +243,8 @@
       "arquivo": "fundos/AMZO34.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:23:48+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:46:13+00:00"
     },
     {
       "ticker": "TSLA34",
@@ -253,8 +253,8 @@
       "arquivo": "fundos/TSLA34.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:23:55+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:46:21+00:00"
     },
     {
       "ticker": "M2ST34",
@@ -263,8 +263,8 @@
       "arquivo": "fundos/M2ST34.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:24:04+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:46:29+00:00"
     },
     {
       "ticker": "S2EA34",
@@ -273,8 +273,8 @@
       "arquivo": "fundos/S2EA34.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:24:12+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:46:37+00:00"
     },
     {
       "ticker": "NFLX34",
@@ -283,8 +283,8 @@
       "arquivo": "fundos/NFLX34.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:24:20+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:46:44+00:00"
     },
     {
       "ticker": "NVDC34",
@@ -293,8 +293,8 @@
       "arquivo": "fundos/NVDC34.json",
       "pontos": 47,
       "primeiro": "2023-01-31",
-      "ultimo": "2026-11-16",
-      "coletado_em": "2026-11-17T03:24:28+00:00"
+      "ultimo": "2026-11-17",
+      "coletado_em": "2026-11-18T02:46:52+00:00"
     },
     {
       "ticker": "ITUSTECH",
@@ -304,7 +304,7 @@
       "pontos": 12,
       "primeiro": "2025-11-28",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-11-17T03:24:42+00:00"
+      "coletado_em": "2026-11-18T02:47:06+00:00"
     },
     {
       "ticker": "ITVALE",
@@ -314,7 +314,7 @@
       "pontos": 12,
       "primeiro": "2025-11-28",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-11-17T03:24:53+00:00"
+      "coletado_em": "2026-11-18T02:47:18+00:00"
     },
     {
       "ticker": "ITUNIBCO",
@@ -324,7 +324,7 @@
       "pontos": 12,
       "primeiro": "2025-11-28",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-11-17T03:25:05+00:00"
+      "coletado_em": "2026-11-18T02:47:30+00:00"
     },
     {
       "ticker": "ITELEBRAS",
@@ -334,7 +334,7 @@
       "pontos": 12,
       "primeiro": "2025-11-28",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-11-17T03:25:17+00:00"
+      "coletado_em": "2026-11-18T02:47:41+00:00"
     },
     {
       "ticker": "ITSABESP",
@@ -344,7 +344,7 @@
       "pontos": 12,
       "primeiro": "2025-11-28",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-11-17T03:25:29+00:00"
+      "coletado_em": "2026-11-18T02:47:53+00:00"
     },
     {
       "ticker": "ITGDPLUS",
@@ -354,7 +354,7 @@
       "pontos": 12,
       "primeiro": "2025-11-28",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-11-17T03:25:41+00:00"
+      "coletado_em": "2026-11-18T02:48:05+00:00"
     },
     {
       "ticker": "ITGOLDMM",
@@ -364,7 +364,7 @@
       "pontos": 12,
       "primeiro": "2025-11-28",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-11-17T03:25:52+00:00"
+      "coletado_em": "2026-11-18T02:48:17+00:00"
     },
     {
       "ticker": "ITMODMM",
@@ -374,7 +374,7 @@
       "pontos": 12,
       "primeiro": "2025-11-28",
       "ultimo": "2026-10-30",
-      "coletado_em": "2026-11-17T03:26:04+00:00"
+      "coletado_em": "2026-11-18T02:48:29+00:00"
     }
   ]
 }
