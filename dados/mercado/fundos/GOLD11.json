@@ -4,7 +4,7 @@
   "rotulo": "GOLD11 (Trend Ouro)",
   "indice": "ouro (commodity)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-11-24T05:09:59+00:00",
+  "coletado_em": "2026-11-25T03:59:52+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -237,9 +237,9 @@
       "variacao_mes_pct": -1.7504
     },
     {
-      "data": "2026-11-23",
-      "fechamento": 22.33,
-      "variacao_mes_pct": 2.0101
+      "data": "2026-11-24",
+      "fechamento": 21.76,
+      "variacao_mes_pct": -0.5939
     }
   ],
   "resumo": {
