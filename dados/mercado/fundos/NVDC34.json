@@ -4,7 +4,7 @@
   "rotulo": "NVDC34 (BDR Nvidia)",
   "indice": "ação NVDA (Nasdaq)",
   "fonte": "B3 - Séries Históricas (COTAHIST)",
-  "coletado_em": "2026-11-25T04:02:06+00:00",
+  "coletado_em": "2026-11-26T03:24:54+00:00",
   "pontos": [
     {
       "data": "2023-01-31",
@@ -237,9 +237,9 @@
       "variacao_mes_pct": -5.7374
     },
     {
-      "data": "2026-11-24",
-      "fechamento": 19.11,
-      "variacao_mes_pct": -18.0883
+      "data": "2026-11-25",
+      "fechamento": 18.0,
+      "variacao_mes_pct": -22.8461
     }
   ],
   "resumo": {
